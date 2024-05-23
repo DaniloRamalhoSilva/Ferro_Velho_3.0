@@ -1,0 +1,63 @@
+--- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> CRIA TABELA CLIENTE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+USE [bd_ferroVelho]
+GO
+
+/****** Object:  Table [dbo].[tb_cliente]    Script Date: 01/09/2021 14:23:58 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+CREATE TABLE [dbo].[tb_cliente](
+	[id_cliente] [int] IDENTITY(1,1) NOT NULL,
+	[cpf_cliente] [varchar](20) NULL,
+	[nome_cliente] [varchar](100) NOT NULL,
+	[tel_cliente] [varchar](11) NULL,
+ CONSTRAINT [PK_tb_cliente] PRIMARY KEY CLUSTERED 
+(
+	[id_cliente] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+--- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ALTERA TB_CAIXA <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ALTER TABLE tb_caixa ADD 
+desc_caixa VARCHAR(100) NULL, 
+id_cliente INT NULL;
+
+--- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ALTERA TB_COMPRA <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ALTER TABLE tb_compra ADD 
+desconto_compra DECIMAL(18, 2) NULL, 
+subtot_compra DECIMAL(18, 2) NULL ,
+id_cliente INT NULL;
+
+
+--- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ALTERA fk TB_CAIXA <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+alter table tb_caixa
+add constraint tb_caixa_tb_cliente_FK FOREIGN KEY ( id_cliente ) references tb_cliente(id_cliente)
+
+
+
+
+--- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ALTERA fk TB_CAIXA <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+alter table tb_compra
+add constraint FK_tb_compra_tb_cliente FOREIGN KEY ( id_cliente ) references tb_cliente(id_cliente)
+
+
+--- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ACERTA VALORES TB_COMPRA <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+update tb_compra set subtot_compra = valor_nota
+update tb_compra set desconto_compra = 0
+
+
+--- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NÃO PERMITIR NULO TB_COMPRA <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+

@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="DataClasses1">
+  <DataContextMoniker Name="/DataClasses1DataContext" />
+  <nestedChildShapes>
+    <classShape Id="08bd5ce0-08f3-4ac0-b229-027525056c8d" absoluteBounds="2.25, 0.75, 2, 0.125">
+      <DataClassMoniker Name="/DataClasses1DataContext/Produto" />
+    </classShape>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>

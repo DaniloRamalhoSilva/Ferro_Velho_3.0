@@ -1,0 +1,56 @@
+USE [bd_ferroVelho]
+GO
+/****** Object:  Trigger [dbo].[tg_delet]    Script Date: 23/06/2021 11:24:52 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE trigger [dbo].[tg_delet] on [dbo].[tb_compra]
+instead of delete as begin 
+declare @id int
+
+select @id = id_compra from deleted
+
+delete from tb_itemc where @id = id_compra
+delete from tb_compra where @id = id_compra
+
+end
+
+
+USE [bd_ferroVelho]
+GO
+/****** Object:  Trigger [dbo].[tg_delete]    Script Date: 23/06/2021 11:25:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE trigger [dbo].[tg_delete] on [dbo].[tb_venda]
+instead of delete as begin 
+declare @id int
+
+select @id = id_venda from deleted
+
+delete from tb_itemv where @id = id_venda
+delete from tb_venda where @id = id_venda
+
+end
+
+
+
+USE [bd_ferroVelho]
+GO
+/****** Object:  Trigger [dbo].[tg_delet]    Script Date: 15/07/2021 16:45:16 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE trigger [dbo].[tg_deleted] on [dbo].[tb_comprar]
+instead of delete as begin 
+declare @id int
+
+select @id = id_comprar from deleted
+
+delete from tb_itemcr where @id = id_comprar
+delete from tb_comprar where @id = id_comprar
+
+end

@@ -1,0 +1,39 @@
+USE [bd_ferroVelho]
+GO
+
+/****** Object:  Table [dbo].[tb_itemcr]    Script Date: 15/07/2021 16:51:15 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[tb_itemcr](
+	[id_item] [int] IDENTITY(1,1) NOT NULL,
+	[id_prod] [int] NOT NULL,
+	[id_comprar] [int] NOT NULL,
+	[quant_item] [decimal](18, 3) NOT NULL,
+	[subTot_item] [decimal](18, 3) NOT NULL,
+	[valor_item] [decimal](18, 3) NOT NULL,
+ CONSTRAINT [PK_tb_itemcr] PRIMARY KEY CLUSTERED 
+(
+	[id_item] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+ALTER TABLE [dbo].[tb_itemcr]  WITH CHECK ADD  CONSTRAINT [FK_tb_itemcr_tb_comprar] FOREIGN KEY([id_comprar])
+REFERENCES [dbo].[tb_comprar] ([id_comprar])
+GO
+
+ALTER TABLE [dbo].[tb_itemcr] CHECK CONSTRAINT [FK_tb_itemcr_tb_comprar]
+GO
+
+ALTER TABLE [dbo].[tb_itemcr]  WITH CHECK ADD  CONSTRAINT [FK_tb_itemcr_tb_itemcr] FOREIGN KEY([id_prod])
+REFERENCES [dbo].[tb_produtos] ([id_prod])
+GO
+
+ALTER TABLE [dbo].[tb_itemcr] CHECK CONSTRAINT [FK_tb_itemcr_tb_itemcr]
+GO
+

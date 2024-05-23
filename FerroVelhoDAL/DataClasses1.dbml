@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="ferrovelho" Class="DataClasses1DataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=DANILO\SQLEXPRESS;Initial Catalog=ferrovelho;Integrated Security=True" SettingsObjectName="FerroVelhoDAL.Properties.Settings" SettingsPropertyName="ferrovelhoConnectionString2" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.Produto" Member="Produto">
+    <Type Name="Produto">
+      <Column Name="id_prod" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="desc_prod" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="valor_prod" Type="System.Double" DbType="Float" CanBeNull="true" />
+    </Type>
+  </Table>
+</Database>

@@ -1,0 +1,486 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>FerroVelho</RootNamespace>
+    <AssemblyName>FerroVelho</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>C:\Users\daniloramalho\Desktop\Reciclagem\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ProductName>Sistema compra e venda</ProductName>
+    <PublisherName>Danilo</PublisherName>
+    <SuiteName>Compra e Venda</SuiteName>
+    <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
+    <AutorunEnabled>true</AutorunEnabled>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.0</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <CreateDesktopShortcut>true</CreateDesktopShortcut>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>8D244AF19900B4A6797F95D7125FD7D3FF508D6A</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>FerroVelho_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>false</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.ReportViewer.Common, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.150.1449.0\lib\net40\Microsoft.ReportViewer.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.DataVisualization, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.150.1449.0\lib\net40\Microsoft.ReportViewer.DataVisualization.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.Design, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.150.1449.0\lib\net40\Microsoft.ReportViewer.Design.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.ProcessingObjectModel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.150.1449.0\lib\net40\Microsoft.ReportViewer.ProcessingObjectModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WinForms, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.150.1449.0\lib\net40\Microsoft.ReportViewer.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Types, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SqlServer.Types.14.0.314.76\lib\net40\Microsoft.SqlServer.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="bd_ferroVelhoDataSet.cs">
+      <DependentUpon>bd_ferroVelhoDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="bd_ferroVelhoDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>bd_ferroVelhoDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Classes\DataContextFactory.cs" />
+    <Compile Include="Dao.cs" />
+    <Compile Include="Operaçoes\fm_adiantamentoOp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Operaçoes\fm_adiantamentoOp.Designer.cs">
+      <DependentUpon>fm_adiantamentoOp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuração\fm_cabecario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Configuração\fm_cabecario.Designer.cs">
+      <DependentUpon>fm_cabecario.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Cadastro\fm_cadCliente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Cadastro\fm_cadCliente.Designer.cs">
+      <DependentUpon>fm_cadCliente.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Cadastro\fm_cadUsuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Cadastro\fm_cadUsuario.Designer.cs">
+      <DependentUpon>fm_cadUsuario.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuração\fm_cofigImpressaora.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Configuração\fm_cofigImpressaora.Designer.cs">
+      <DependentUpon>fm_cofigImpressaora.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configuração\fm_configuracao.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Configuração\fm_configuracao.Designer.cs">
+      <DependentUpon>fm_configuracao.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Consulta\fm_estoque.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Consulta\fm_estoque.Designer.cs">
+      <DependentUpon>fm_estoque.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Iniciação\fm_login.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Iniciação\fm_login.Designer.cs">
+      <DependentUpon>fm_login.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Iniciação\fm_menuPrincipal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Iniciação\fm_menuPrincipal.Designer.cs">
+      <DependentUpon>fm_menuPrincipal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Cadastro\fm_cadProduto.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Cadastro\fm_cadProduto.Designer.cs">
+      <DependentUpon>fm_cadProduto.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Consulta\fm_movRecursos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Consulta\fm_movRecursos.Designer.cs">
+      <DependentUpon>fm_movRecursos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Consulta\fm_notasCompra.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Consulta\fm_notasCompra.Designer.cs">
+      <DependentUpon>fm_notasCompra.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Consulta\fm_notasVenda.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Consulta\fm_notasVenda.Designer.cs">
+      <DependentUpon>fm_notasVenda.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Operaçoes\fm_outrasEntradas.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Operaçoes\fm_outrasEntradas.Designer.cs">
+      <DependentUpon>fm_outrasEntradas.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Operaçoes\fm_outrasMovimentacoes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Operaçoes\fm_outrasMovimentacoes.Designer.cs">
+      <DependentUpon>fm_outrasMovimentacoes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Operaçoes\fm_outrasSaidas.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Operaçoes\fm_outrasSaidas.Designer.cs">
+      <DependentUpon>fm_outrasSaidas.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Operaçoes\fm_recebmentoOp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Operaçoes\fm_recebmentoOp.Designer.cs">
+      <DependentUpon>fm_recebmentoOp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Operaçoes\fm_recurcos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Operaçoes\fm_recurcos.Designer.cs">
+      <DependentUpon>fm_recurcos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Operaçoes\fm_vender.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Operaçoes\fm_vender.Designer.cs">
+      <DependentUpon>fm_vender.cs</DependentUpon>
+    </Compile>
+    <Compile Include="imprimir.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Relatorios\fm_impEstoque.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Relatorios\fm_impEstoque.Designer.cs">
+      <DependentUpon>fm_impEstoque.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Relatorios\fm_impEstoque2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Relatorios\fm_impEstoque2.Designer.cs">
+      <DependentUpon>fm_impEstoque2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Relatorios\fm_impFinanceiro.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Relatorios\fm_impFinanceiro.Designer.cs">
+      <DependentUpon>fm_impFinanceiro.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Relatorios\fm_relCompra.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Relatorios\fm_relCompra.Designer.cs">
+      <DependentUpon>fm_relCompra.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Relatorios\fm_relFluxoCaixa.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Relatorios\fm_relFluxoCaixa.Designer.cs">
+      <DependentUpon>fm_relFluxoCaixa.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Relatorios\fm_relLucro.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Relatorios\fm_relLucro.Designer.cs">
+      <DependentUpon>fm_relLucro.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Relatorios\fm_relProduto.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Relatorios\fm_relProduto.Designer.cs">
+      <DependentUpon>fm_relProduto.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Relatorios\fm_relVenda.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Relatorios\fm_relVenda.Designer.cs">
+      <DependentUpon>fm_relVenda.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Relatorios\fm_repEstoque.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Relatorios\fm_repEstoque.Designer.cs">
+      <DependentUpon>fm_repEstoque.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SqlServerTypes\Loader.cs" />
+    <EmbeddedResource Include="Operaçoes\fm_adiantamentoOp.resx">
+      <DependentUpon>fm_adiantamentoOp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuração\fm_cabecario.resx">
+      <DependentUpon>fm_cabecario.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Cadastro\fm_cadCliente.resx">
+      <DependentUpon>fm_cadCliente.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Cadastro\fm_cadUsuario.resx">
+      <DependentUpon>fm_cadUsuario.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuração\fm_cofigImpressaora.resx">
+      <DependentUpon>fm_cofigImpressaora.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuração\fm_configuracao.resx">
+      <DependentUpon>fm_configuracao.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Consulta\fm_estoque.resx">
+      <DependentUpon>fm_estoque.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Iniciação\fm_login.resx">
+      <DependentUpon>fm_login.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Iniciação\fm_menuPrincipal.resx">
+      <DependentUpon>fm_menuPrincipal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Cadastro\fm_cadProduto.resx">
+      <DependentUpon>fm_cadProduto.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Consulta\fm_movRecursos.resx">
+      <DependentUpon>fm_movRecursos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Consulta\fm_notasCompra.resx">
+      <DependentUpon>fm_notasCompra.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Consulta\fm_notasVenda.resx">
+      <DependentUpon>fm_notasVenda.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Operaçoes\fm_outrasEntradas.resx">
+      <DependentUpon>fm_outrasEntradas.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Operaçoes\fm_outrasMovimentacoes.resx">
+      <DependentUpon>fm_outrasMovimentacoes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Operaçoes\fm_outrasSaidas.resx">
+      <DependentUpon>fm_outrasSaidas.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Operaçoes\fm_recebmentoOp.resx">
+      <DependentUpon>fm_recebmentoOp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Operaçoes\fm_recurcos.resx">
+      <DependentUpon>fm_recurcos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Operaçoes\fm_vender.resx">
+      <DependentUpon>fm_vender.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Relatorios\fm_impEstoque.resx">
+      <DependentUpon>fm_impEstoque.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Relatorios\fm_impEstoque2.resx">
+      <DependentUpon>fm_impEstoque2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Relatorios\fm_impFinanceiro.resx">
+      <DependentUpon>fm_impFinanceiro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Relatorios\fm_relCompra.resx">
+      <DependentUpon>fm_relCompra.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Relatorios\fm_relFluxoCaixa.resx">
+      <DependentUpon>fm_relFluxoCaixa.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Relatorios\fm_relLucro.resx">
+      <DependentUpon>fm_relLucro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Relatorios\fm_relProduto.resx">
+      <DependentUpon>fm_relProduto.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Relatorios\fm_relVenda.resx">
+      <DependentUpon>fm_relVenda.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Relatorios\fm_repEstoque.resx">
+      <DependentUpon>fm_repEstoque.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="rel_comprovante.rdlc" />
+    <EmbeddedResource Include="rel_estoque2.rdlc" />
+    <EmbeddedResource Include="rel_financeiroSimp.rdlc" />
+    <EmbeddedResource Include="rel_FinanceiroDetaA4.rdlc" />
+    <EmbeddedResource Include="rel_FinanceiroSimpA4.rdlc" />
+    <EmbeddedResource Include="rel_produtos.rdlc">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="rel_estoque.rdlc">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="rel_compra.rdlc">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report1.rdlc">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report2.rdlc">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="rel_venda.rdlc">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="bd_ferroVelhoDataSet.xsc">
+      <DependentUpon>bd_ferroVelhoDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="bd_ferroVelhoDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>bd_ferroVelhoDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="bd_ferroVelhoDataSet.xss">
+      <DependentUpon>bd_ferroVelhoDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="FerroVelho_TemporaryKey.pfx" />
+    <None Include="packages.config" />
+    <None Include="Properties\app.manifest" />
+    <None Include="Properties\DataSources\FerroVelhoDAL.Produto.datasource" />
+    <None Include="Properties\DataSources\FerroVelhoDAL.ProdutoAki.datasource" />
+    <None Include="Properties\DataSources\FerroVelhoDAO.tb_caixa.datasource" />
+    <None Include="Properties\DataSources\FerroVelhoDAO.tb_cliente.datasource" />
+    <None Include="Properties\DataSources\FerroVelhoDAO.tb_compra.datasource" />
+    <None Include="Properties\DataSources\FerroVelhoDAO.tb_impressora.datasource" />
+    <None Include="Properties\DataSources\FerroVelhoDAO.tb_item.datasource" />
+    <None Include="Properties\DataSources\FerroVelhoDAO.tb_itemc.datasource" />
+    <None Include="Properties\DataSources\FerroVelhoDAO.tb_itemv.datasource" />
+    <None Include="Properties\DataSources\FerroVelhoDAO.tb_produtos.datasource" />
+    <None Include="Properties\DataSources\FerroVelhoDAO.tb_tipoUsuario.datasource" />
+    <None Include="Properties\DataSources\FerroVelhoDAO.tb_usuario.datasource" />
+    <None Include="Properties\DataSources\FerroVelhoDAO.tb_venda.datasource" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="icon.ico" />
+    <Content Include="SqlServerTypes\readme.htm" />
+    <Content Include="SqlServerTypes\x64\msvcr120.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x64\SqlServerSpatial140.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x86\msvcr120.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x86\SqlServerSpatial140.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 e x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
