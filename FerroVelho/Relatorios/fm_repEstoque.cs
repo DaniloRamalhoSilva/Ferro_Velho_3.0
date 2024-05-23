@@ -1,5 +1,4 @@
-﻿using FerroVelhoDAO;
-using Microsoft.Reporting.WinForms;
+﻿using Microsoft.Reporting.WinForms;
 using System;
 using System.Collections.Generic;
 using System.Data;
