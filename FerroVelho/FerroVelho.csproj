@@ -120,7 +120,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>bd_ferroVelhoDataSet.xsd</DependentUpon>
     </Compile>
-    <Compile Include="Classes\DataContextFactory.cs" />
     <Compile Include="Dao.cs" />
     <Compile Include="Operaçoes\fm_adiantamentoOp.cs">
       <SubType>Form</SubType>
@@ -481,6 +480,11 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\FerroVelhoDAO\FerroVelhoDAO.csproj">
+      <Project>{9890fd44-b96f-4dfc-a241-2f1e9de4f9db}</Project>
+      <Name>FerroVelhoDAO</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
