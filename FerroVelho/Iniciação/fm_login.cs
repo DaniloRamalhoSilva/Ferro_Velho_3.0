@@ -10,7 +10,7 @@ namespace FerroVelho
         #region [ VARIAVEIS GLOBAL ]
 
         // Cria a conexão com a DAL
-        private static DataContextFactory _DAO = new DataContextFactory();
+        private DataContextFactory _DAO = new DataContextFactory();
 
         #endregion
 
@@ -57,8 +57,8 @@ namespace FerroVelho
 
         private void fm_login_Load(object sender, EventArgs e)
         {
-            DataContextFactory.FU_lerConfiguracao();
-            DataContextFactory.FU_lerCabecario();
+            _DAO.FU_lerConfiguracao();
+            _DAO.FU_lerCabecario();
         }
 
         private void btn_logar_Click(object sender, EventArgs e)

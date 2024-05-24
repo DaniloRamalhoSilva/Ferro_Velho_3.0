@@ -8,15 +8,15 @@ namespace FerroVelhoDAO
 {
     public class DataContextFactory
     {
-        public static string _usuarioId;
-        public static string _usuarioPermissao;
-        public static string _usuarioNome;
-        public static string _nome;
-        public static string _tel;
-        public static string _endereco;
-        private static string _conexaoUser;
+        public string _usuarioId;
+        public string _usuarioPermissao;
+        public string _usuarioNome;
+        public string _nome;
+        public string _tel;
+        public string _endereco;
+        private string _conexaoUser;
 
-        public static SqlConnection GetConnection()
+        public SqlConnection GetConnection()
         {
             SqlConnection con = new SqlConnection(_conexaoUser);
             con.Open();
@@ -24,7 +24,7 @@ namespace FerroVelhoDAO
 
         }
 
-        public static void FU_lerCabecario()
+        public void FU_lerCabecario()
         {
             try
             {
@@ -44,7 +44,7 @@ namespace FerroVelhoDAO
             }
         }
 
-        public static void FU_lerConfiguracao()
+        public void FU_lerConfiguracao()
         {
             try
             {
