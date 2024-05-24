@@ -5,11 +5,11 @@ using System.Xml.Linq;
 
 namespace FerroVelhoDAO
 {
-    internal class DataContextFactory
+    public class DataContextFactory
     {
-        private static string _nome;
-        private static string _tel;
-        private static string _endereco;
+        public string _nome;
+        public string _tel;
+        public string _endereco;
         private static string _conexaoUser;
 
         public static SqlConnection GetConnection()
