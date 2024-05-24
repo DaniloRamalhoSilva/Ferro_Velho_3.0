@@ -2,14 +2,18 @@
 using System.Data.SqlClient;
 using System.Data;
 using System.Xml.Linq;
+using FerroVelho;
 
 namespace FerroVelhoDAO
 {
     public class DataContextFactory
     {
-        public string _nome;
-        public string _tel;
-        public string _endereco;
+        public static string _usuarioId;
+        public static string _usuarioPermissao;
+        public static string _usuarioNome;
+        public static string _nome;
+        public static string _tel;
+        public static string _endereco;
         private static string _conexaoUser;
 
         public static SqlConnection GetConnection()
@@ -54,6 +58,33 @@ namespace FerroVelhoDAO
             }
 
         }
+
+        public ValidacaoEnum ValidarLoginUsuario(string nomeUsuario, string senhaUsuario)
+        {
+            try
+            {
+                string[] arrPar = new string[] { "@nome_usuario", "@senha_usuario" };
+                string[] arrVal = new string[] { nomeUsuario, senhaUsuario };
+                DataTable dt = GetDataTableBySP("s_tb_usuario_login", arrPar, arrVal);
+                                
+                if (dt.Rows.Count > 0)
+                {
+                    _usuarioId = dt.Rows[0]["id_usuario"].ToString();
+                    _usuarioNome = dt.Rows[0]["nome_usuario"].ToString();
+                    _usuarioPermissao = dt.Rows[0]["permi_usuario"].ToString();
+                    return ValidacaoEnum.SUCESSO;
+                }
+                else
+                {
+                    return ValidacaoEnum.USUARIO_SENHA_INVALIDO;
+                }
+            }
+            catch
+            {
+                return ValidacaoEnum.SEM_CONEXA_BANCO_DADOS;
+            }
+        }
+
 
         public virtual DataTable GetDataTableBySP(string storedProcedure, object[] arrParametros = null, object[] arrParametrosValores = null, bool enviarDbNullValue = true)
         {
@@ -109,4 +140,6 @@ namespace FerroVelhoDAO
         }
 
     }
+
+
 }

@@ -28,18 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.Label nome_usuarioLabel;
             System.Windows.Forms.Label senha_usuarioLabel;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(fm_login));
-            this.tb_usuarioBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.txt_nome = new System.Windows.Forms.TextBox();
             this.txt_senha = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btn_logar = new System.Windows.Forms.Button();
+            this.btn_cancelar = new System.Windows.Forms.Button();
             nome_usuarioLabel = new System.Windows.Forms.Label();
             senha_usuarioLabel = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.tb_usuarioBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // nome_usuarioLabel
@@ -66,10 +63,6 @@
             senha_usuarioLabel.TabIndex = 7;
             senha_usuarioLabel.Text = "Senha:";
             // 
-            // tb_usuarioBindingSource
-            // 
-            this.tb_usuarioBindingSource.DataSource = typeof(FerroVelhoDAO.tb_usuario);
-            // 
             // txt_nome
             // 
             this.txt_nome.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -88,43 +81,43 @@
             this.txt_senha.TabIndex = 8;
             this.txt_senha.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txt_senha_KeyPress);
             // 
-            // button1
+            // btn_logar
             // 
-            this.button1.BackColor = System.Drawing.Color.Transparent;
-            this.button1.FlatAppearance.BorderColor = System.Drawing.Color.White;
-            this.button1.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
-            this.button1.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Green;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.ForeColor = System.Drawing.Color.White;
-            this.button1.Image = ((System.Drawing.Image)(resources.GetObject("button1.Image")));
-            this.button1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button1.Location = new System.Drawing.Point(131, 207);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(112, 33);
-            this.button1.TabIndex = 9;
-            this.button1.Text = "Login";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btn_logar.BackColor = System.Drawing.Color.Transparent;
+            this.btn_logar.FlatAppearance.BorderColor = System.Drawing.Color.White;
+            this.btn_logar.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
+            this.btn_logar.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Green;
+            this.btn_logar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_logar.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_logar.ForeColor = System.Drawing.Color.White;
+            this.btn_logar.Image = ((System.Drawing.Image)(resources.GetObject("btn_logar.Image")));
+            this.btn_logar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btn_logar.Location = new System.Drawing.Point(131, 207);
+            this.btn_logar.Name = "btn_logar";
+            this.btn_logar.Size = new System.Drawing.Size(112, 33);
+            this.btn_logar.TabIndex = 9;
+            this.btn_logar.Text = "Login";
+            this.btn_logar.UseVisualStyleBackColor = false;
+            this.btn_logar.Click += new System.EventHandler(this.btn_logar_Click);
             // 
-            // button2
+            // btn_cancelar
             // 
-            this.button2.BackColor = System.Drawing.Color.Transparent;
-            this.button2.FlatAppearance.BorderColor = System.Drawing.Color.White;
-            this.button2.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.button2.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button2.ForeColor = System.Drawing.Color.White;
-            this.button2.Image = ((System.Drawing.Image)(resources.GetObject("button2.Image")));
-            this.button2.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button2.Location = new System.Drawing.Point(272, 207);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(112, 33);
-            this.button2.TabIndex = 10;
-            this.button2.Text = "     Cancelar";
-            this.button2.UseVisualStyleBackColor = false;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.btn_cancelar.BackColor = System.Drawing.Color.Transparent;
+            this.btn_cancelar.FlatAppearance.BorderColor = System.Drawing.Color.White;
+            this.btn_cancelar.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.btn_cancelar.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.btn_cancelar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_cancelar.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_cancelar.ForeColor = System.Drawing.Color.White;
+            this.btn_cancelar.Image = ((System.Drawing.Image)(resources.GetObject("btn_cancelar.Image")));
+            this.btn_cancelar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btn_cancelar.Location = new System.Drawing.Point(272, 207);
+            this.btn_cancelar.Name = "btn_cancelar";
+            this.btn_cancelar.Size = new System.Drawing.Size(112, 33);
+            this.btn_cancelar.TabIndex = 10;
+            this.btn_cancelar.Text = "     Cancelar";
+            this.btn_cancelar.UseVisualStyleBackColor = false;
+            this.btn_cancelar.Click += new System.EventHandler(this.btn_cancelar_Click);
             // 
             // fm_login
             // 
@@ -132,8 +125,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.ClientSize = new System.Drawing.Size(498, 299);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btn_cancelar);
+            this.Controls.Add(this.btn_logar);
             this.Controls.Add(nome_usuarioLabel);
             this.Controls.Add(this.txt_nome);
             this.Controls.Add(senha_usuarioLabel);
@@ -143,18 +136,15 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Login";
             this.Load += new System.EventHandler(this.fm_login_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.tb_usuarioBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.BindingSource tb_usuarioBindingSource;
         private System.Windows.Forms.TextBox txt_nome;
         private System.Windows.Forms.TextBox txt_senha;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btn_logar;
+        private System.Windows.Forms.Button btn_cancelar;
     }
 }

@@ -123,14 +123,11 @@
   <metadata name="senha_usuarioLabel.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
-  <metadata name="tb_usuarioBindingSource.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="button1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="btn_logar.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAIGNIUk0AAHolAACAgwAA+f8AAIDoAABS
-        CAABFVgAADqXAAAXb9daH5AAAAAJcEhZcwAACxMAAAsTAQCanBgAAATwSURBVDhPVZR/UNN1GMcfAUNB
+        CAABFVgAADqXAAAXb9daH5AAAAAJcEhZcwAACxEAAAsRAX9kX5EAAATwSURBVDhPVZR/UNN1GMcfAUNB
         rzu7NMXDSYpa6gzEOMxD7/K0P6j8QRdScAnE4aWnl2BanpoXY6CWBahD6yxAMfZDmIyRLYU5DdwQBkMG
         wRYwtmVsuF8ONp6e77fc8rl7f+77fJ7ned3n1/MFRISsrKyAsrOzISMjA3Jzc+fW1tYe6ezs1IpFIq9I
         KHR0abXNMplsz969e2enpqZCWlraM2JY7EAJrPbt28dCc3Jylty7d6+HYmi1Wm26nodt7e0PNAaD0cfM
@@ -155,10 +152,10 @@
         TkSuQmCC
 </value>
   </data>
-  <data name="button2.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="btn_cancelar.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAIGNIUk0AAHolAACAgwAA+f8AAIDoAABS
-        CAABFVgAADqXAAAXb9daH5AAAAAJcEhZcwAACxMAAAsTAQCanBgAAATqSURBVDhPbZVpTFRXFMcvtAji
+        CAABFVgAADqXAAAXb9daH5AAAAAJcEhZcwAACxEAAAsRAX9kX5EAAATqSURBVDhPbZVpTFRXFMcvtAji
         ArK5JEARhaD4QYoLCuISkxkNldEPNoa06URoKdrYaCpqUD8UQqwxNo21VmuLGmkrgXYESWEWYIZlWGZY
         hLKPMApBKcOgIIjy7/+90MQaT3Lyknvf/d1z/uec94Rk77i6ioSEBKFWq0VoaKgICwsTH6rVS27cu3cg
         PSsr86ZGc/3n/Pwfv8jIOPHRkSOK9IyMd0+dOiViY2Lk8y6vuWwSMDExUXxAaFBIiO+VvLxvG1taHqOn
