@@ -28,7 +28,7 @@ private int m_currentPageIndex;
         {
             InitializeComponent();
             dt_inicio.Value = DateTime.Now;
-            dt_fim.Value = DateTime.Now;
+            dt_fim.Value = DateTime.Now;            
         }
 
         #endregion
@@ -150,6 +150,7 @@ private int m_currentPageIndex;
         private void fm_repEstoque_Load(object sender, EventArgs e)
         {
             Pesquisa();
+            txt_codProd.Focus();
         }
 
         private void bt_pesquisa_Click(object sender, EventArgs e)
@@ -167,7 +168,19 @@ private int m_currentPageIndex;
             AbrirTelaImpressao();
         }
 
-        #endregion
+        private void txt_codProd_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (char.IsDigit(e.KeyChar) || e.KeyChar.Equals((char)Keys.Back) || char.IsPunctuation(e.KeyChar))
+            {
+                return;
+            }
+            if (e.KeyChar == 13)
+            {
+                Pesquisa();
+            }
+            e.Handled = true;
+        }
 
+        #endregion
     }
 }

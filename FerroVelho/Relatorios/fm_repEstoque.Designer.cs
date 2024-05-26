@@ -30,10 +30,16 @@
         {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(fm_repEstoque));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(fm_repEstoque));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.id_prod = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.desc_prod = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Inicio = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Peso = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Total = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.bt_imprimir = new System.Windows.Forms.Button();
             this.tb_impressoraBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.bt_relImp = new System.Windows.Forms.Button();
@@ -41,14 +47,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.dt_inicio = new System.Windows.Forms.DateTimePicker();
             this.label1 = new System.Windows.Forms.Label();
-            this.bt_pesquisa = new System.Windows.Forms.Button();
             this.dt_fim = new System.Windows.Forms.DateTimePicker();
-            this.id_prod = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.desc_prod = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Inicio = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Peso = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Total = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.bt_pesquisa = new System.Windows.Forms.Button();
             this.txt_codProd = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -85,6 +85,56 @@
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.Size = new System.Drawing.Size(757, 469);
             this.dataGridView1.TabIndex = 42;
+            // 
+            // id_prod
+            // 
+            this.id_prod.DataPropertyName = "Codigo";
+            this.id_prod.HeaderText = "Codigo";
+            this.id_prod.Name = "id_prod";
+            this.id_prod.ReadOnly = true;
+            this.id_prod.Width = 60;
+            // 
+            // desc_prod
+            // 
+            this.desc_prod.DataPropertyName = "Descrição";
+            this.desc_prod.HeaderText = "Descrição";
+            this.desc_prod.Name = "desc_prod";
+            this.desc_prod.ReadOnly = true;
+            this.desc_prod.Width = 250;
+            // 
+            // Inicio
+            // 
+            this.Inicio.DataPropertyName = "Inicio";
+            this.Inicio.HeaderText = "Inicio";
+            this.Inicio.Name = "Inicio";
+            this.Inicio.ReadOnly = true;
+            // 
+            // Peso
+            // 
+            this.Peso.DataPropertyName = "Entrada";
+            dataGridViewCellStyle5.Format = "N3";
+            dataGridViewCellStyle5.NullValue = null;
+            this.Peso.DefaultCellStyle = dataGridViewCellStyle5;
+            this.Peso.HeaderText = "Entrada";
+            this.Peso.Name = "Peso";
+            this.Peso.ReadOnly = true;
+            // 
+            // Total
+            // 
+            this.Total.DataPropertyName = "Saida";
+            dataGridViewCellStyle6.Format = "N3";
+            dataGridViewCellStyle6.NullValue = null;
+            this.Total.DefaultCellStyle = dataGridViewCellStyle6;
+            this.Total.HeaderText = "Saida";
+            this.Total.Name = "Total";
+            this.Total.ReadOnly = true;
+            // 
+            // Column1
+            // 
+            this.Column1.DataPropertyName = "Saldo";
+            this.Column1.HeaderText = "Saldo";
+            this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
             // 
             // bt_imprimir
             // 
@@ -160,6 +210,17 @@
             this.label1.TabIndex = 54;
             this.label1.Text = "Data Fim:";
             // 
+            // dt_fim
+            // 
+            this.dt_fim.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.dt_fim.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dt_fim.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dt_fim.Location = new System.Drawing.Point(123, 33);
+            this.dt_fim.Name = "dt_fim";
+            this.dt_fim.Size = new System.Drawing.Size(105, 26);
+            this.dt_fim.TabIndex = 53;
+            this.dt_fim.Value = new System.DateTime(2021, 6, 15, 0, 0, 0, 0);
+            // 
             // bt_pesquisa
             // 
             this.bt_pesquisa.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -173,74 +234,14 @@
             this.bt_pesquisa.UseVisualStyleBackColor = true;
             this.bt_pesquisa.Click += new System.EventHandler(this.bt_pesquisa_Click);
             // 
-            // dt_fim
-            // 
-            this.dt_fim.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.dt_fim.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dt_fim.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dt_fim.Location = new System.Drawing.Point(123, 33);
-            this.dt_fim.Name = "dt_fim";
-            this.dt_fim.Size = new System.Drawing.Size(105, 26);
-            this.dt_fim.TabIndex = 53;
-            this.dt_fim.Value = new System.DateTime(2021, 6, 15, 0, 0, 0, 0);
-            // 
-            // id_prod
-            // 
-            this.id_prod.DataPropertyName = "Codigo";
-            this.id_prod.HeaderText = "Codigo";
-            this.id_prod.Name = "id_prod";
-            this.id_prod.ReadOnly = true;
-            this.id_prod.Width = 60;
-            // 
-            // desc_prod
-            // 
-            this.desc_prod.DataPropertyName = "Descrição";
-            this.desc_prod.HeaderText = "Descrição";
-            this.desc_prod.Name = "desc_prod";
-            this.desc_prod.ReadOnly = true;
-            this.desc_prod.Width = 250;
-            // 
-            // Inicio
-            // 
-            this.Inicio.DataPropertyName = "Inicio";
-            this.Inicio.HeaderText = "Inicio";
-            this.Inicio.Name = "Inicio";
-            this.Inicio.ReadOnly = true;
-            // 
-            // Peso
-            // 
-            this.Peso.DataPropertyName = "Entrada";
-            dataGridViewCellStyle5.Format = "N3";
-            dataGridViewCellStyle5.NullValue = null;
-            this.Peso.DefaultCellStyle = dataGridViewCellStyle5;
-            this.Peso.HeaderText = "Entrada";
-            this.Peso.Name = "Peso";
-            this.Peso.ReadOnly = true;
-            // 
-            // Total
-            // 
-            this.Total.DataPropertyName = "Saida";
-            dataGridViewCellStyle6.Format = "N3";
-            dataGridViewCellStyle6.NullValue = null;
-            this.Total.DefaultCellStyle = dataGridViewCellStyle6;
-            this.Total.HeaderText = "Saida";
-            this.Total.Name = "Total";
-            this.Total.ReadOnly = true;
-            // 
-            // Column1
-            // 
-            this.Column1.DataPropertyName = "Saldo";
-            this.Column1.HeaderText = "Saldo";
-            this.Column1.Name = "Column1";
-            this.Column1.ReadOnly = true;
-            // 
             // txt_codProd
             // 
             this.txt_codProd.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txt_codProd.Location = new System.Drawing.Point(253, 27);
             this.txt_codProd.Name = "txt_codProd";
             this.txt_codProd.Size = new System.Drawing.Size(80, 44);
-            this.txt_codProd.TabIndex = 58;
+            this.txt_codProd.TabIndex = 1;
+            this.txt_codProd.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txt_codProd_KeyPress);
             // 
             // label3
             // 
