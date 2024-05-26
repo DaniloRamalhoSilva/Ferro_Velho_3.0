@@ -66,7 +66,7 @@ namespace FerroVelhoDAO
     #endregion
 		
 		public FerroVelhoDataContext() : 
-				base(global::FerroVelhoDAO.Properties.Settings.Default.bd_ferroVelhoConnectionString1, mappingSource)
+				base("Data Source=DANILO;Initial Catalog=bd_ferroVelho;User ID=ramalho", mappingSource)
 		{
 			OnCreated();
 		}

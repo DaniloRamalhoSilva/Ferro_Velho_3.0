@@ -18,6 +18,7 @@ namespace FerroVelho
         {
             InitializeComponent();
             guia = Vguia;
+            txt_descricao.Focus();
         }
 
         int guia;
@@ -105,7 +106,7 @@ namespace FerroVelho
             txt_cnpj.Text = "";
             txt_id.Text = "";
 
-            txt_cnpj.Focus();
+            txt_descricao.Focus();
 
             btn_cancelar.Visible = true;
             btn_salvar.Visible = true;
@@ -143,8 +144,8 @@ namespace FerroVelho
                 MessageBox.Show("Selecione um item valido!");
             }
             else
-            {                
-                txt_cnpj.Focus();
+            {
+                txt_descricao.Focus();
 
                 btn_cancelar.Visible = true;
                 btn_salvar.Visible = true;

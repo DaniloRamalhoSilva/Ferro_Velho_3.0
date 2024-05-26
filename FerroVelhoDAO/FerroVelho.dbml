@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><Database Name="bd_ferroVelho" Class="FerroVelhoDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
-  <Connection Mode="AppSettings" ConnectionString="Data Source=DANILO;Initial Catalog=bd_ferroVelho;User ID=ramalho" SettingsObjectName="FerroVelhoDAO.Properties.Settings" SettingsPropertyName="bd_ferroVelhoConnectionString1" Provider="System.Data.SqlClient" />
+  <Connection Mode="ConnectionString" ConnectionString="Data Source=DANILO;Initial Catalog=bd_ferroVelho;User ID=ramalho" Provider="System.Data.SqlClient" />
   <Table Name="dbo.tb_impressora" Member="tb_impressora">
     <Type Name="tb_impressora">
       <Column Name="id_impressora" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />

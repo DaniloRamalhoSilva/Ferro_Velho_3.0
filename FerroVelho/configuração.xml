@@ -1,1 +1,1 @@
-﻿<configConexao><dataUser>Data Source=SERVIDOR;Initial Catalog=bd_ferroVelho;User ID=ramalho;Password=16zero51990</dataUser><dataImp>Data Source=SERVIDOR;Initial Catalog=bd_ferroVelho;User ID=ramalho;Password=16zero51990</dataImp></configConexao>
+﻿<configConexao><dataUser>Data Source=DESKTOP-4APJQA0;Initial Catalog=bd_ferroVelho;User ID=ramalho;Password=16zero51990</dataUser><dataImp>Data Source=DESKTOP-4APJQA0;Initial Catalog=bd_ferroVelho;User ID=ramalho;Password=16zero51990</dataImp></configConexao>

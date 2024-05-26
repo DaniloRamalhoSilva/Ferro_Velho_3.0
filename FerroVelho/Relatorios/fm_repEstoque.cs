@@ -2,7 +2,6 @@
 using Microsoft.Reporting.WinForms;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -10,137 +9,47 @@ using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FerroVelho.Relatorios
 {
     public partial class fm_repEstoque : Form
     {
+        #region [ VARIAVEIS GLOBAL ]
+
+private int m_currentPageIndex;
+        private IList<Stream> m_streams;
+
+        #endregion
+
+        #region [ CONSTRUTOR ]
+
         public fm_repEstoque()
         {
             InitializeComponent();
-        }
-        
-        private void fm_repEstoque_Load(object sender, EventArgs e)
-        {
-            dt_fim.Value = DateTime.Now;
             dt_inicio.Value = DateTime.Now;
-
-            pesquisa();
-            DataTable dt = DataContextFactory.Filtrar(comando);
-            dataGridView1.DataSource = dt;
-            dataGridView1.DataMember = dt.TableName;
-
+            dt_fim.Value = DateTime.Now;
         }
 
+        #endregion
 
-        private void bt_pesquisa_Click(object sender, EventArgs e)
+        #region [ MÉTODOS PRIVADOS ]
+
+        private void AbrirTelaImpressao()
         {
-            pesquisa();
-            DataTable dt = DataContextFactory.Filtrar(comando);
-            dataGridView1.DataSource = dt;
-            dataGridView1.DataMember = dt.TableName;
-        }
-
-        private void bt_imprimir_Click(object sender, EventArgs e)
-        {                        
-            imprimir();                    
-        }
-
-        DateTime comeco, inicio, fim;
-        string comando, Pinicio, Pcomeço1, Pcomeço2, Pfim;
-        public DataTable Propriedade { get; set; }
-
-
-        public DataTable pesquisa()
-        {
-            inicio = dt_inicio.MinDate;
-            comeco = dt_inicio.Value;
-            fim = dt_fim.Value;
-
-            Pinicio = inicio.ToString();
-            Pcomeço1 = comeco.Date.Add(new TimeSpan(00, 00, -01)).ToString();
-            Pcomeço2 = comeco.Date.Add(new TimeSpan(00, 00, 00)).ToString();
-            Pfim = fim.ToString();
-
-            comando = "SELECT e.IdProduto as Codigo, tb_produtos.desc_prod as Descrição, sum(e.Inicio) as Inicio, sum(e.Entrada) as Entrada, sum(e.Saida) as Saida, sum(e.Inicio) + sum(e.Entrada) - sum(e.Saida) as Estoque " +
-                "FROM(SELECT a.IdProduto, sum(a.Entrada) - sum(a.Saida) as Inicio, 0 as Entrada, 0 As Saida " +
-                "FROM(SELECT tb_compra.data_compra as data, tb_itemc.id_prod as IdProduto, sum(tb_itemc.quant_item) as Entrada, 0 As Saida " +
-                "FROM tb_itemc " +
-                "INNER JOIN tb_compra on tb_itemc.id_compra = tb_compra.id_compra " +
-                "where tb_compra.data_compra between '" + Pinicio + "' and '" + Pcomeço1 + "' " + 
-                "GROUP BY tb_compra.data_compra, tb_itemc.id_prod " +
-                "union all " +
-                "SELECT tb_venda.data_venda as data, tb_itemv.id_prod as IdProduto, 0 as Entrada, sum(tb_itemv.quant_item) As Saida " +
-                "FROM tb_itemv " +
-                "INNER JOIN tb_venda on tb_itemv.id_venda = tb_venda.id_venda " +
-                "where tb_venda.data_venda between '" + Pinicio + "' and '" + Pcomeço1 + "' " +
-                "GROUP BY tb_venda.data_venda, tb_itemv.id_prod)a " +
-                "GROUP BY a.IdProduto " +
-                "union all " +
-                "SELECT a.IdProduto, 0 as Inicio, sum(a.Entrada) as Entrada, sum(a.Saida) As Saida " +
-                "FROM(SELECT tb_compra.data_compra as data, tb_itemc.id_prod as IdProduto, sum(tb_itemc.quant_item) as Entrada, 0 As Saida " +
-                "FROM tb_itemc " +
-                "INNER JOIN tb_compra on tb_itemc.id_compra = tb_compra.id_compra " +
-                "where tb_compra.data_compra between '" + Pcomeço2 + "' and '" + Pfim + "' " +
-                "GROUP BY tb_compra.data_compra, tb_itemc.id_prod " +
-                "union all " +
-                "SELECT tb_venda.data_venda as data, tb_itemv.id_prod as IdProduto, 0 as Entrada, sum(tb_itemv.quant_item) As Saida " +
-                "FROM tb_itemv " +
-                "INNER JOIN tb_venda on tb_itemv.id_venda = tb_venda.id_venda " +
-                "where tb_venda.data_venda between '" + Pcomeço2 + "' and '" + Pfim + "' " +
-                "GROUP BY tb_venda.data_venda, tb_itemv.id_prod)a " +
-                "GROUP BY a.IdProduto)e " +
-                "INNER JOIN tb_produtos ON e.IdProduto = tb_produtos.id_prod " +
-                "GROUP BY e.IdProduto, tb_produtos.desc_prod";
-            DataTable dt = DataContextFactory.Filtrar(comando);            
-            return dt;
-        }
-
-
-
-        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>     IMPRIMIR                <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-
-        private void bt_relImp_Click(object sender, EventArgs e)
-        {
-            fm_impEstoque fm = new fm_impEstoque(pesquisa());
+            DataTable dt = Pesquisa();
+            fm_impEstoque fm = new fm_impEstoque(dt);
             fm.Show();
         }
 
-        private int m_currentPageIndex;
-        private IList<Stream> m_streams;
-
-        public void imprimir()
+        private Stream CreateStream(string name, string fileNameExtension, Encoding encoding, string mimeType, bool willSeek)
         {
-            this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
-
-            LocalReport report = new LocalReport();
-            report.ReportPath = @"..\..\rel_estoque.rdlc";
-            report.DataSources.Add(new ReportDataSource("DataSet1", LoadSalesData()));            
-            report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("empressa", DataContextFactory.nome));
-            report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("tel", DataContextFactory.tel));
-            report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("end", DataContextFactory.endereco));
-            Export(report);
-            Print();
-        }
-        
-        private DataTable LoadSalesData()
-        {
-            DataTable dt = DataContextFactory.Filtrar(comando);
-            return dt;
+            Stream stream = new MemoryStream();
+            m_streams.Add(stream);
+            return stream;
         }
 
-        public tb_impressora impressoraCorrente
-        {
-            get
-            {
-                return (tb_impressora)this.tb_impressoraBindingSource.Current;
-            }
-        }
-
-        public void Export(LocalReport report)
+        private void Export(LocalReport report)
         {
             string deviceInfo =
               @"<DeviceInfo>
@@ -158,11 +67,37 @@ namespace FerroVelho.Relatorios
                 stream.Position = 0;
         }
 
-        private Stream CreateStream(string name, string fileNameExtension, Encoding encoding, string mimeType, bool willSeek)
+        public void Imprimir()
         {
-            Stream stream = new MemoryStream();
-            m_streams.Add(stream);
-            return stream;
+            string[] arrPar = new string[] { "@id_impressora" };
+            string[] arrVal = new string[] { "1" };
+            DataTable dt = DataContextFactory.GetDataTableBySP("s_tb_impressora", arrPar, arrVal);
+
+            this.tb_impressoraBindingSource.DataSource = dt;
+
+            LocalReport report = new LocalReport();
+            report.ReportPath = @"..\..\rel_estoque.rdlc";
+            report.DataSources.Add(new ReportDataSource("DataSet1", dt));
+            report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("empressa", DataContextFactory.nome));
+            report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("tel", DataContextFactory.tel));
+            report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("end", DataContextFactory.endereco));
+            Export(report);
+            Print();
+        }
+
+        private DataTable Pesquisa()
+        {
+            DateTime dataInicio = dt_inicio.Value;
+            DateTime dataFim = dt_fim.Value;
+
+            string[] arrPar = new string[] { "@dataInicial", "@dataFinal", "@id_prod" };
+            string[] arrVal = new string[] { dataInicio.ToString("dd/MM/yyyy 00:00:00.00"), dataFim.ToString("dd/MM/yyyy 23:59:59.99"), string.IsNullOrEmpty(txt_codProd.Text)? null :  txt_codProd.Text.Trim() };
+            DataTable dt = DataContextFactory.GetDataTableBySP("s_tb_estoque", arrPar, arrVal);
+
+            dataGridView1.DataSource = dt;
+            dataGridView1.DataMember = dt.TableName;
+
+            return dt;
         }
 
         public void Print()
@@ -206,5 +141,33 @@ namespace FerroVelho.Relatorios
             m_currentPageIndex++;
             ev.HasMorePages = (m_currentPageIndex < m_streams.Count);
         }
+
+
+        #endregion
+
+        #region  [EVENTOS ]
+
+        private void fm_repEstoque_Load(object sender, EventArgs e)
+        {
+            Pesquisa();
+        }
+
+        private void bt_pesquisa_Click(object sender, EventArgs e)
+        {
+            Pesquisa();
+        }
+
+        private void bt_imprimir_Click(object sender, EventArgs e)
+        {
+            Imprimir();
+        }
+
+        private void bt_relImp_Click(object sender, EventArgs e)
+        {
+            AbrirTelaImpressao();
+        }
+
+        #endregion
+
     }
 }
