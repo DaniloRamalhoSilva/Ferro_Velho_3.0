@@ -8,7 +8,7 @@ namespace FerroVelho.Classes
 {
     internal class Caixa
     {
-        private static FerroVelhoDAO.DataContextFactory _DAO = new FerroVelhoDAO.DataContextFactory();
+        private static FerroVelhoDAO.DataContextFactoryNew _DAO = new FerroVelhoDAO.DataContextFactoryNew();
 
         public decimal? Saldo;
         public decimal? Entrada;

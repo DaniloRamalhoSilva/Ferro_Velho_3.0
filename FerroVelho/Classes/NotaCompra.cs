@@ -5,7 +5,7 @@ namespace FerroVelho.Classes
 {
     internal class NotaCompra
     {
-        private static FerroVelhoDAO.DataContextFactory _DAO = new FerroVelhoDAO.DataContextFactory();
+        private static FerroVelhoDAO.DataContextFactoryNew _DAO = new FerroVelhoDAO.DataContextFactoryNew();
 
         public string Id { get; set; }
         public string DataCompra { get; set; }
@@ -59,7 +59,7 @@ namespace FerroVelho.Classes
 
     internal class ItemCompra
     {
-        public static FerroVelhoDAO.DataContextFactory _DAO = new FerroVelhoDAO.DataContextFactory();
+        public static FerroVelhoDAO.DataContextFactoryNew _DAO = new FerroVelhoDAO.DataContextFactoryNew();
 
         public string Id { get; set; }
         public string IdProduto { get; set; }

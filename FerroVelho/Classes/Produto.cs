@@ -6,7 +6,7 @@ namespace FerroVelho.Classes
 {
     internal class Produto
     {
-        private static FerroVelhoDAO.DataContextFactory _DAO = new FerroVelhoDAO.DataContextFactory();
+        private static FerroVelhoDAO.DataContextFactoryNew _DAO = new FerroVelhoDAO.DataContextFactoryNew();
 
         public string Id { get; set; }
         public string Name { get; set; }

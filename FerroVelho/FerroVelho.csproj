@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>FerroVelho</RootNamespace>
     <AssemblyName>FerroVelho</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -34,6 +34,7 @@
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -120,11 +121,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>bd_ferroVelhoDataSet.xsd</DependentUpon>
     </Compile>
-    <Compile Include="Classes\Caixa.cs" />
-    <Compile Include="Classes\Cliente.cs" />
-    <Compile Include="Classes\NotaCompra.cs" />
-    <Compile Include="Classes\Comum.cs" />
-    <Compile Include="Classes\Produto.cs" />
     <Compile Include="Dao.cs" />
     <Compile Include="Operaçoes\fm_adiantamentoOp.cs">
       <SubType>Form</SubType>
@@ -363,6 +359,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="Relatorios\fm_impEstoque.resx">
       <DependentUpon>fm_impEstoque.cs</DependentUpon>
@@ -458,6 +455,12 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FerroVelhoDAO\FerroVelhoDAO.csproj">
+      <Project>{9890fd44-b96f-4dfc-a241-2f1e9de4f9db}</Project>
+      <Name>FerroVelhoDAO</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="icon.ico" />
     <Content Include="SqlServerTypes\readme.htm" />
     <Content Include="SqlServerTypes\x64\msvcr120.dll">
@@ -485,11 +488,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FerroVelhoDAO\FerroVelhoDAO.csproj">
-      <Project>{9890fd44-b96f-4dfc-a241-2f1e9de4f9db}</Project>
-      <Name>FerroVelhoDAO</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
