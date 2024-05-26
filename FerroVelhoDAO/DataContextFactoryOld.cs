@@ -12,24 +12,24 @@ namespace FerroVelhoDAO
 {
     public class DataContextFactoryOld
     {
-        private static FerroVelhoDataContext dataContext;
-        public static tb_usuario usu;
+        //private static FerroVelhoDataContext dataContext;
+        //public static tb_usuario usu;
         public static string nome;
         public static string tel;
         public static string endereco;
         public static string conexaoUser;
         public static string conexaoImp;
 
-        public static FerroVelhoDataContext DataContext
-        {
-            get
-            {
-                if (dataContext == null)
-                    dataContext = new FerroVelhoDataContext();
-                dataContext.Connection.ConnectionString = conexaoUser;
-                return dataContext;
-            } 
-        }
+        //public static FerroVelhoDataContext DataContext
+        //{
+        //    get
+        //    {
+        //        if (dataContext == null)
+        //            dataContext = new FerroVelhoDataContext();
+        //        dataContext.Connection.ConnectionString = conexaoUser;
+        //        return dataContext;
+        //    } 
+        //}
 
         public static SqlConnection Conectar()
         {

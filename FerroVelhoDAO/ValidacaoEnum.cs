@@ -21,5 +21,8 @@ namespace FerroVelho
 
         [Description("String de conexão: User inexistente")]
         SEM_CONEXA_BANCO_DADOS = 5,
+
+        [Description("Saldo insuficiente para essa compra! Necessário almentar valor em caixa")]
+        SALDO_INSIFICIENTE = 6,
     }
 }

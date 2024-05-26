@@ -1,38 +1,480 @@
-﻿using FerroVelho.Operaçoes;
+﻿using FerroVelho.Classes;
+using FerroVelho.Operaçoes;
 using FerroVelho.Relatorios;
 using FerroVelhoDAO;
 using Microsoft.Reporting.WinForms;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FerroVelho
 {
     public partial class fm_menulPrincipal : Form
     {
-        
-        public int usu;
+
+        #region [ VARIAVEIS GLOBAL ]
+
+        private int _usu;
+        private int _guia;
+        decimal saldo;
+        NotaCompra _compraCorrente = null;
+        Produto _produtoCorrente = new Produto();
+
+
+        #endregion
+
+        #region [ CONSTRUTOR ]
 
         public fm_menulPrincipal()
         {
-            InitializeComponent();           
+            InitializeComponent();
+            CarregarTela();
         }
+
+        #endregion
+
+        #region [ MÉTODOS PRIVADOS ]
+
+        private decimal Quantidade
+        {
+            get { return Convert.ToDecimal(txt_quant.Text); }
+            set 
+            { 
+                txt_quant.Text = value.ToString("N3");
+                CalcularSubTotal();
+            }
+        }
+
+        private string CodProduto
+        {
+            get { return txt_codProd.Text; }
+            set 
+            {
+                _produtoCorrente.GetProdutoId(value);
+                
+                txt_codProd.Text = _produtoCorrente.Id.ToString();
+                txt_valProd.Text = _produtoCorrente.Valor.ToString("N2");
+                cb_desProd.SelectedValue = Convert.ToInt32(_produtoCorrente.Id);
+               
+                CalcularSubTotal();
+            }
+        }
+
+
+
+
+
+        #endregion
+
+        #region [ MÉTODOS PRIVADOS ]
+
+        private void CalcularSubTotal()
+        {
+            if(string.IsNullOrEmpty(txt_quant.Text) && string.IsNullOrEmpty(txt_codProd.Text))
+            {
+                decimal peso = Convert.ToDecimal(txt_quant.Text);
+                decimal valor = ;
+                decimal valorProduto = Quantidade * _produtoCorrente.Valor;
+
+                txt_subTot.Text = valorProduto.ToString("N2");
+            }
+            txt_subTot.Text = 0.ToString("N2");
+        }
+
+        //private void calcula()
+        //{
+        //    decimal quant, desconto;
+
+        //    if (txt_quant.Text == "")
+        //    {
+        //        quant = 0;
+        //    }
+        //    else
+        //    {
+        //        try
+        //        {
+        //            quant = Convert.ToDecimal(txt_quant.Text);
+        //        }
+        //        catch
+        //        {
+        //            MessageBox.Show("Digite um valor valido! ");
+        //            quant = 0;
+        //            txt_quant.Focus();
+        //        }
+        //    }
+
+        //    if (lb_desconto.Text == "")
+        //    {
+        //        desconto = 0;
+        //    }
+
+        //    else
+        //    {
+        //        try
+        //        {
+        //            desconto = Convert.ToDecimal(lb_desconto.Text);
+        //        }
+        //        catch
+        //        {
+        //            MessageBox.Show("Digite um valor valido!");
+        //            desconto = 0;
+        //            lb_desconto.Focus();
+        //        }
+        //    }
+
+        //    decimal valor = Convert.ToDecimal(txt_valProd.Text);
+        //    decimal sobTotItem = valor * quant;
+        //    decimal subTotalNOta = 0;
+        //    decimal total;
+
+        //    foreach (DataGridViewRow dg in dg_compra.Rows)
+        //    {
+        //        subTotalNOta = subTotalNOta + Convert.ToDecimal(dg.Cells[3].Value);
+        //    }
+
+        //    total = subTotalNOta - desconto;
+
+        //    txt_quant.Text = quant.ToString("N1");
+        //    txt_subTot.Text = sobTotItem.ToString("N2");
+        //    lb_subtotal.Text = subTotalNOta.ToString("N2");
+        //    labelTotal.Text = total.ToString("N2");
+        //    lb_desconto.Text = desconto.ToString("N2");
+
+        //    if (txt_nNota.Text != "")
+        //    {
+        //        verificaCredito();
+        //    }
+        //}
+
+        private void CarregarTela()
+        {
+            Produto produto = new Produto();
+            cb_desProd.DataSource = _produtoCorrente.DadaTableProdutos;
+            cb_desProd.DisplayMember = "desc_prod";
+            cb_desProd.ValueMember = "id_prod";
+            cb_desProd.SelectedIndex = -1;
+            txt_quant.Focus();
+            _guia = 0;
+        }
+
+        private void AdicionarItem()
+        {
+            if (txt_quant.Text != "" && txt_valProd.Text != "" && cb_desProd.Text != "" && txt_codProd.Text != "")
+            {
+                if (_compraCorrente == null)
+                {
+                    _compraCorrente = new NotaCompra();                   
+                }
+
+                ItemCompra itemCompra = new ItemCompra();
+
+                itemCompra.Quantidade = 
+
+                _compraCorrente.ItensCompras.Add(itemCompra);
+
+                novoItem();
+                bt_finalCompra.Enabled = true;
+
+                dg_compra.DataSource = this.tbitemcBindingSource;
+                this.tbitemcBindingSource.DataSource = DataContextFactory.DataContext.tb_itemc.Where(x => x.id_compra == this.compraCorrente.id_compra);
+                calcula();
+                
+                upDateValor();
+
+                txt_codProd.Text = "";
+                txt_valProd.Text = (0).ToString("N2");
+                txt_quant.Text = "";
+                txt_subTot.Text = (0).ToString("N2");
+                cb_desProd.SelectedIndex = -1;
+                txt_quant.Focus();
+
+            }
+            else
+            {
+                MessageBox.Show("Todos os campos são obrigatorios!");
+                txt_quant.Focus();
+            }
+        }
+
+        private void Excluir()
+        {
+            try
+            {
+                string aki = ((tb_produtos)dg_compra[0, dg_compra.CurrentRow.Index].Value).desc_prod;
+                if (MessageBox.Show("Realmente deseja excuir: " + aki, "Confirmação", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    this.tbitemcBindingSource.RemoveCurrent();
+                    DataContextFactory.DataContext.SubmitChanges();
+                    MessageBox.Show("Produto excluido com sucesso!");
+                    calcula();
+
+                    upDateValor();
+
+                    txt_quant.Focus();
+                }
+
+                if (dg_compra.RowCount == 0)
+                {
+                    this.tb_compraBindingSource.RemoveCurrent();
+                    DataContextFactory.DataContext.SubmitChanges();
+                    limpar();
+                    txt_quant.Focus();
+                    bt_finalCompra.Enabled = false;
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Selecione um item valido!");
+            }
+        }
+
+        private void finalizar()
+        {
+            if (checkBox1.Checked == true)
+            {
+                imprimirNF(_compraCorrente.IdCompra);
+            }
+
+            limpar(true);
+        }
+
+        private void InformarCliente()
+        {
+            if (cb_info_cliente.Checked == true)
+            {
+                fm_cadCliente fm = new fm_cadCliente(0);
+                tb_cliente cliente = new tb_cliente();
+                fm.ShowDialog();
+                cliente = fm.Propriedade;
+
+                if (cliente != null)
+                {
+                    txt_nome.Text = cliente.nome_cliente;
+                    txt_telefone.Text = cliente.tel_cliente;
+                    txt_cpf.Text = cliente.cpf_cliente;
+                    txt_idCliente.Text = cliente.id_cliente.ToString();
+
+                    tb_clienteBindingSource.DataSource = cliente;
+
+                    lb_nome.Visible = true;
+                    lb_telefone.Visible = true;
+                    lb_cpf.Visible = true;
+                    txt_nome.Visible = true;
+                    txt_telefone.Visible = true;
+                    txt_cpf.Visible = true;
+                    chek_addCredito.Enabled = true;
+
+                    Dao dao = new Dao();
+
+                    saldo = dao.valorDevedor(clienteCorrente.id_cliente);
+                    lb_desconto.Text = saldo.ToString("N2");
+                    calcula();
+                    if (txt_nNota.Text != "")
+                    {
+                        upDateValor();
+                    }
+                }
+                else
+                {
+                    cb_info_cliente.Checked = false;
+                }
+
+            }
+            else
+            {
+                if (guia != 1)
+                {
+                    tb_cliente cliente = new tb_cliente();
+                    tb_clienteBindingSource.DataSource = cliente;
+
+                    chek_addCredito.Enabled = false;
+
+                    lb_nome.Visible = false;
+                    lb_telefone.Visible = false;
+                    lb_cpf.Visible = false;
+                    txt_nome.Visible = false;
+                    txt_telefone.Visible = false;
+                    txt_cpf.Visible = false;
+                    txt_nome.Text = "";
+                    txt_telefone.Text = "";
+                    txt_cpf.Text = "";
+                    txt_idCliente.Text = "";
+                    lb_desconto.Text = (0).ToString("N2");
+                    calcula();
+                    if (txt_nNota.Text != "")
+                    {
+                        upDateValor();
+                    }
+                }
+
+            }
+        }
+
+        private void limpar(bool tudo = false)
+        {
+            txt_codProd.Text = "";
+            txt_valProd.Text = (0).ToString("N2");
+            txt_quant.Text = "";
+            txt_subTot.Text = (0).ToString("N2");
+            labelTotal.Text = (0).ToString("N2");
+            lb_desconto.Text = (0).ToString("N2");
+            lb_subtotal.Text = (0).ToString("N2");
+            saldo = 0;
+            cb_desProd.SelectedIndex = -1;
+            bt_finalCompra.Enabled = false;
+            txt_nome.Text = "";
+            txt_telefone.Text = "";
+            txt_cpf.Text = "";
+            cb_info_cliente.Checked = false;
+            
+            if (tudo)
+            {
+                _compraCorrente = null;
+                dg_compra.DataSource = null;
+                dg_compra.Refresh();
+                chek_addCredito.Checked = false;
+                chek_addCredito.Enabled = false;
+                txt_quant.Focus();
+            }
+        }
+
+        private void novoItem()
+        {
+            ItemCompra itemCompra = new ItemCompra();
+
+            itemCompra.id_prod = produtoCorrente.id_prod;
+            itemCompra.id_compra = compraCorrente.id_compra;
+            itemCompra.quant_item = Convert.ToDecimal(txt_quant.Text);
+            itemCompra.subTot_item = Convert.ToDecimal(txt_subTot.Text);
+            itemCompra.valor_item = Convert.ToDecimal(txt_valProd.Text);
+
+
+        }
+
+        //private void novaNota()
+        //{
+            
+
+
+        //    tb_Compra.desconto_compra = 0;
+        //    tb_Compra.subtot_compra = 0;
+        //    tb_Compra.valor_nota = Convert.ToDecimal(labelTotal.Text);
+
+        //    SqlCommand comando;
+        //    comando = new SqlCommand();
+        //    comando.CommandType = CommandType.Text;
+        //    comando.CommandText = "Insert into tb_compra(data_compra, usuario, desconto_compra, subtot_compra, valor_nota )  OUTPUT Inserted.id_compra values(@data_compra, @usuario , @desconto_compra, @subtot_compra, @valor_nota)";
+        //    comando.Parameters.AddWithValue("@data_compra", tb_Compra.data_compra);
+        //    comando.Parameters.AddWithValue("@usuario", tb_Compra.usuario);
+        //    comando.Parameters.AddWithValue("@desconto_compra", tb_Compra.desconto_compra);
+        //    comando.Parameters.AddWithValue("@subtot_compra", tb_Compra.subtot_compra);
+        //    comando.Parameters.AddWithValue("@valor_nota", tb_Compra.valor_nota);
+
+        //    SqlDataReader dr = DataContextFactory.CRUDID(comando);
+
+        //    if (dr.HasRows)
+        //    {
+        //        dr.Read();
+
+        //        int BuscaID = (int)dr["id_compra"];
+
+        //        comando = new SqlCommand();
+        //        comando.CommandType = CommandType.Text;
+        //        comando.CommandText = "Select * From tb_compra where id_compra=@id_compra";
+        //        comando.Parameters.AddWithValue("@id_compra", BuscaID);
+        //        SqlDataReader dr2 = DataContextFactory.Selecionar(comando);
+
+        //        if (dr2.HasRows)
+        //        {
+        //            dr2.Read();
+        //            tb_Compra.id_compra = (int)dr2["id_compra"];
+        //            tb_Compra.data_compra = (DateTime)dr2["data_compra"];
+        //            tb_Compra.usuario = (int)dr2["usuario"];
+        //            tb_Compra.desconto_compra = (decimal)dr2["desconto_compra"];
+        //            tb_Compra.subtot_compra = (decimal)dr2["subtot_compra"];
+        //            tb_Compra.valor_nota = (decimal)dr2["valor_nota"];
+        //        }
+        //        else
+        //        {
+        //            tb_Compra = null;
+        //        }
+        //        dr.Close();
+
+        //    }
+        //    else
+        //    {
+        //        tb_Compra = null;
+        //    }
+        //    dr.Close();
+
+        //    this.tb_compraBindingSource.DataSource = tb_Compra;
+
+        //}
+
+        private void upDateValor()
+        {
+            this.compraCorrente.valor_nota = Convert.ToDecimal(labelTotal.Text);
+            this.compraCorrente.desconto_compra = Convert.ToDecimal(lb_desconto.Text);
+            this.compraCorrente.subtot_compra = Convert.ToDecimal(lb_subtotal.Text);
+
+            SqlCommand comando;
+            comando = new SqlCommand();
+            comando.CommandType = CommandType.Text;
+
+            if (clienteCorrente != null && clienteCorrente.id_cliente != 0)
+            {
+                this.compraCorrente.id_cliente = clienteCorrente.id_cliente;
+                comando.CommandText = "UPDATE tb_compra SET desconto_compra=@desconto_compra, subtot_compra=@subtot_compra, valor_nota=@valor_nota, id_cliente=@id_cliente WHERE id_compra=@id_compra";
+                comando.Parameters.AddWithValue("@id_compra", compraCorrente.id_compra);
+                comando.Parameters.AddWithValue("@desconto_compra", compraCorrente.desconto_compra);
+                comando.Parameters.AddWithValue("@subtot_compra", compraCorrente.subtot_compra);
+                comando.Parameters.AddWithValue("@valor_nota", compraCorrente.valor_nota);
+                comando.Parameters.AddWithValue("@id_cliente", compraCorrente.id_cliente);
+            }
+            else
+            {
+                comando.CommandText = "UPDATE tb_compra SET desconto_compra=@desconto_compra, subtot_compra=@subtot_compra, valor_nota=@valor_nota, id_cliente= Null WHERE id_compra=@id_compra";
+                comando.Parameters.AddWithValue("@id_compra", compraCorrente.id_compra);
+                comando.Parameters.AddWithValue("@desconto_compra", compraCorrente.desconto_compra);
+                comando.Parameters.AddWithValue("@subtot_compra", compraCorrente.subtot_compra);
+                comando.Parameters.AddWithValue("@valor_nota", compraCorrente.valor_nota);
+            }
+
+            DataContextFactory.CRUD(comando);
+        }
+
+        private void verificaCredito()
+        {
+            if (chek_addCredito.Checked == true)
+            {
+                labelTotal.Text = 0.ToString("N2");
+                upDateValor();
+            }
+            else
+            {
+                if (guia != 1)
+                {
+                    upDateValor();
+                }
+            }
+        }
+
+        #endregion
+
+        #region  [ EVENTOS MENU ]
 
         private void fm_menulPrincipal_Load(object sender, EventArgs e)
         {
-            txt_operador.Text = DataContextFactory.usu.nome_usuario;
-            if (DataContextFactory.usu.tb_tipoUsuario.id_tipoUsuario == 2)
+            txt_operador.Text = _DAO._usuarioNome;
+            if (_DAO._usuarioId == "2")
             {
                 operacaoToolStripMenuItem.Visible = true;
                 cadastroToolStripMenuItem.Visible = true;
@@ -60,16 +502,16 @@ namespace FerroVelho
             fm_cadastroProduto cadastroProduto = new fm_cadastroProduto();
             cadastroProduto.ShowDialog();
         }
-        
+
         private void comprarToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            groupBox2.Visible = true;           
+            groupBox2.Visible = true;
         }
 
         private void impressorasToolStripMenuItem_Click(object sender, EventArgs e)
         {
-          fm_cofigImpressaora cofigImpressaora = new fm_cofigImpressaora();
-          cofigImpressaora.ShowDialog();
+            fm_cofigImpressaora cofigImpressaora = new fm_cofigImpressaora();
+            cofigImpressaora.ShowDialog();
         }
 
         private void venderToolStripMenuItem_Click(object sender, EventArgs e)
@@ -102,7 +544,7 @@ namespace FerroVelho
         {
             fm_outrasEntradas fm = new fm_outrasEntradas();
             fm.ShowDialog();
-        }            
+        }
 
         private void addRecurçosToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -192,7 +634,7 @@ namespace FerroVelho
         //    fm_adiantamentoOp fm = new fm_adiantamentoOp();
         //    fm.ShowDialog();
         //}
-        
+
         private void pagamentoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             fm_adiantamentoOp fm = new fm_adiantamentoOp();
@@ -217,68 +659,51 @@ namespace FerroVelho
             fm.ShowDialog();
         }
 
-        // Codigos referente a compra >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        int guia;
+        #endregion
 
-        private void groupBox2_Layout(object sender, LayoutEventArgs e)
-        {
-            this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos;            
-            cb_desProd.DataSource = tb_produtosBindingSource;
-            cb_desProd.DisplayMember = "desc_prod";
-            cb_desProd.ValueMember = "id_prod";
-            cb_desProd.SelectedIndex = -1;
-            txt_quant.Focus();
-            guia = 0;
-        }
-               
+        #region  [ EVENTOS COMPRA ]
+        
         private void cb_desProd_Leave(object sender, EventArgs e)
-        {           
-            txt_codProd.Text = Convert.ToString(this.produtoCorrente.id_prod);
-            txt_valProd.Text = (Convert.ToDecimal(this.produtoCorrente.val_prod)).ToString("N2");
-
-            calcula();
-            
+        {
+            CodProduto = cb_desProd.SelectedValue.ToString();
         }
                
         private void txt_codProd_Leave(object sender, EventArgs e)
         {
             if (txt_codProd.Text != "" )
             {
-                cb_desProd.SelectedValue = Convert.ToInt32(txt_codProd.Text);
-                txt_valProd.Text = (Convert.ToDecimal(this.produtoCorrente.val_prod)).ToString("N2");
-
-                calcula();
-                
+                _produtoCorrente.GetProdutoId(txt_codProd.Text);
+                cb_desProd.SelectedValue = Convert.ToInt32(_produtoCorrente.Id);
+                txt_valProd.Text = _produtoCorrente.Valor.ToString("N2");
+                CalcularSubTotal();
             }
             else
             {
                 cb_desProd.SelectedIndex = -1;
-                txt_valProd.Text = (0).ToString("N2");
-                calcula();
-                
-            }
-            
+                txt_valProd.Text = (0).ToString("N2");          
+            }            
         }
 
         private void txt_quant_Leave(object sender, EventArgs e)
-        {            
-            calcula();            
+        {
+            Quantidade = Convert.ToDecimal(txt_quant.Text);
         }
 
         private void txt_valProd_Leave(object sender, EventArgs e)
         {
             try
             {
-                txt_valProd.Text = Convert.ToDecimal(txt_valProd.Text).ToString("N2");
-                calcula();                
+                if (Convert.ToDecimal(txt_valProd.Text) != _produtoCorrente.Valor)
+                    _produtoCorrente.Valor = Convert.ToDecimal(txt_valProd.Text);
+       
+                txt_valProd.Text = _produtoCorrente.Valor.ToString("N2");
+                CalcularSubTotal();
             }
             catch
             {
                 MessageBox.Show("Digite um valor valido!");
                 txt_valProd.Text = (0).ToString("N2");
-            }
-            
-            
+            }            
         }
 
         private void bt_fechar_Click(object sender, EventArgs e)
@@ -291,306 +716,19 @@ namespace FerroVelho
             else
             {
                 MessageBox.Show("Imposivel sair compra em andamento!");
-            }
-            
+            }            
         }
-        private void clicar()
-        {
-            if (txt_quant.Text != "" && txt_valProd.Text != "" && cb_desProd.Text != "" && txt_codProd.Text != "")
-            {
-                if (txt_nNota.Text == "")
-                {
-                    novaNota();
-                    novoItem();
-
-                    txt_nNota.Text = compraCorrente.id_compra.ToString();
-                    bt_finalCompra.Enabled = true;
-                }
-                else
-                {
-                    novoItem();
-                }
-                dg_compra.DataSource = this.tbitemcBindingSource;
-                this.tbitemcBindingSource.DataSource = DataContextFactory.DataContext.tb_itemc.Where(x => x.id_compra == this.compraCorrente.id_compra);
-                calcula();
-                
-                upDateValor();
-
-                txt_codProd.Text = "";
-                txt_valProd.Text = (0).ToString("N2");
-                txt_quant.Text = "";
-                txt_subTot.Text = (0).ToString("N2");
-                cb_desProd.SelectedIndex = -1;
-                txt_quant.Focus();
-
-            }
-            else
-            {
-                MessageBox.Show("Todos os campos são obrigatorios!");
-                txt_quant.Focus();
-            }
-        }
-
-        private void upDateValor()
-        {
-            this.compraCorrente.valor_nota = Convert.ToDecimal(labelTotal.Text);
-            this.compraCorrente.desconto_compra = Convert.ToDecimal(lb_desconto.Text);
-            this.compraCorrente.subtot_compra = Convert.ToDecimal(lb_subtotal.Text);
-
-            SqlCommand comando;
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-
-            if (clienteCorrente != null && clienteCorrente.id_cliente != 0)
-            {
-                this.compraCorrente.id_cliente = clienteCorrente.id_cliente;
-                comando.CommandText = "UPDATE tb_compra SET desconto_compra=@desconto_compra, subtot_compra=@subtot_compra, valor_nota=@valor_nota, id_cliente=@id_cliente WHERE id_compra=@id_compra";
-                comando.Parameters.AddWithValue("@id_compra", compraCorrente.id_compra);
-                comando.Parameters.AddWithValue("@desconto_compra", compraCorrente.desconto_compra);
-                comando.Parameters.AddWithValue("@subtot_compra", compraCorrente.subtot_compra);
-                comando.Parameters.AddWithValue("@valor_nota", compraCorrente.valor_nota);
-                comando.Parameters.AddWithValue("@id_cliente", compraCorrente.id_cliente);
-            }
-            else
-            {
-                comando.CommandText = "UPDATE tb_compra SET desconto_compra=@desconto_compra, subtot_compra=@subtot_compra, valor_nota=@valor_nota, id_cliente= Null WHERE id_compra=@id_compra";
-                comando.Parameters.AddWithValue("@id_compra", compraCorrente.id_compra);
-                comando.Parameters.AddWithValue("@desconto_compra", compraCorrente.desconto_compra);
-                comando.Parameters.AddWithValue("@subtot_compra", compraCorrente.subtot_compra);
-                comando.Parameters.AddWithValue("@valor_nota", compraCorrente.valor_nota);                
-            }
-
-            DataContextFactory.CRUD(comando);
-        }
-        
+                 
         private void bt_novoItem_Click_1(object sender, EventArgs e)
-        {            
-            clicar();            
+        {
+            AdicionarItem();            
         }        
 
         private void bt_excluir_Click(object sender, EventArgs e)
         {
-            try
-            {
-                string aki = ((tb_produtos)dg_compra[0, dg_compra.CurrentRow.Index].Value).desc_prod;
-                if (MessageBox.Show("Realmente deseja excuir: " + aki, "Confirmação", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    this.tbitemcBindingSource.RemoveCurrent();
-                    DataContextFactory.DataContext.SubmitChanges();
-                    MessageBox.Show("Produto excluido com sucesso!");
-                    calcula();
-                                        
-                    upDateValor();
-
-                    txt_quant.Focus();
-                }
-
-                if (dg_compra.RowCount == 0)
-                {
-                    this.tb_compraBindingSource.RemoveCurrent();
-                    DataContextFactory.DataContext.SubmitChanges();
-                    limpar();
-                    txt_quant.Focus();
-                    bt_finalCompra.Enabled = false;                    
-                }
-            }
-            catch
-            {
-                MessageBox.Show("Selecione um item valido!");
-            }
+            Excluir();
         }
-
-        private void novaNota()
-        {
-            tb_compra tb_Compra = new tb_compra();
-
-            tb_Compra.data_compra = DateTime.Now;
-            tb_Compra.usuario = DataContextFactory.usu.id_usuario;
-            tb_Compra.desconto_compra = 0;
-            tb_Compra.subtot_compra = 0;
-            tb_Compra.valor_nota = Convert.ToDecimal(labelTotal.Text);
-
-            SqlCommand comando;
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "Insert into tb_compra(data_compra, usuario, desconto_compra, subtot_compra, valor_nota )  OUTPUT Inserted.id_compra values(@data_compra, @usuario , @desconto_compra, @subtot_compra, @valor_nota)";
-            comando.Parameters.AddWithValue("@data_compra", tb_Compra.data_compra);
-            comando.Parameters.AddWithValue("@usuario", tb_Compra.usuario);
-            comando.Parameters.AddWithValue("@desconto_compra", tb_Compra.desconto_compra);
-            comando.Parameters.AddWithValue("@subtot_compra", tb_Compra.subtot_compra);
-            comando.Parameters.AddWithValue("@valor_nota", tb_Compra.valor_nota);
-
-            SqlDataReader dr = DataContextFactory.CRUDID(comando);
-
-            if (dr.HasRows)
-            {
-                dr.Read();
-
-                int BuscaID = (int)dr["id_compra"];
-
-                comando = new SqlCommand();
-                comando.CommandType = CommandType.Text;
-                comando.CommandText = "Select * From tb_compra where id_compra=@id_compra";
-                comando.Parameters.AddWithValue("@id_compra", BuscaID);
-                SqlDataReader dr2 = DataContextFactory.Selecionar(comando);
-
-                if (dr2.HasRows)
-                {
-                    dr2.Read();
-                    tb_Compra.id_compra = (int)dr2["id_compra"];
-                    tb_Compra.data_compra = (DateTime)dr2["data_compra"];
-                    tb_Compra.usuario = (int)dr2["usuario"];
-                    tb_Compra.desconto_compra = (decimal)dr2["desconto_compra"];
-                    tb_Compra.subtot_compra = (decimal)dr2["subtot_compra"];
-                    tb_Compra.valor_nota = (decimal)dr2["valor_nota"];
-                }
-                else
-                {
-                    tb_Compra = null;
-                }
-                dr.Close();
-                
-            }
-            else
-            {
-                tb_Compra = null;
-            }
-            dr.Close();
-            
-            this.tb_compraBindingSource.DataSource = tb_Compra;
-                        
-        }
-
-        private void novoItem()
-        {
-            fm_recurcos fm = new fm_recurcos();
-            decimal saldo = fm.calcular();
-
-            if (saldo >= Convert.ToDecimal(txt_subTot.Text))
-            {
-
-                tb_itemc tb_Itemc = new tb_itemc();
-
-                tb_Itemc.id_prod = produtoCorrente.id_prod;
-                tb_Itemc.id_compra = compraCorrente.id_compra;
-                tb_Itemc.quant_item = Convert.ToDecimal(txt_quant.Text);
-                tb_Itemc.subTot_item = Convert.ToDecimal(txt_subTot.Text);
-                tb_Itemc.valor_item = Convert.ToDecimal(txt_valProd.Text);
-
-                SqlCommand comando;
-                comando = new SqlCommand();
-                comando.CommandType = CommandType.Text;
-                comando.CommandText = "Insert into tb_Itemc(id_prod, id_compra, quant_item, subTot_item, valor_item) values(@id_prod, @id_compra, @quant_item, @subTot_item, @valor_item)";
-                comando.Parameters.AddWithValue("@id_prod", tb_Itemc.id_prod);
-                comando.Parameters.AddWithValue("@id_compra", tb_Itemc.id_compra);
-                comando.Parameters.AddWithValue("@quant_item", tb_Itemc.quant_item);
-                comando.Parameters.AddWithValue("@subTot_item", tb_Itemc.subTot_item);
-                comando.Parameters.AddWithValue("@valor_item", tb_Itemc.valor_item);
-                
-                DataContextFactory.CRUD(comando);
-
-            }
-            else
-            {
-                MessageBox.Show("Saldo insuficiente para essa compra! Necessário almentar valor em caixa");
-            }
-        }
-                        
-        public tb_compra compraCorrente
-        {
-            get
-            {
-                return (tb_compra)this.tb_compraBindingSource.Current;
-            }
-        }
-
-        public tb_itemc itemCorrente
-        {
-            get
-            {
-                return (tb_itemc)this.tbitemcBindingSource.Current;
-            }
-        }       
-               
-        public tb_produtos produtoCorrente
-        {
-            get
-            {
-                return (tb_produtos)this.tb_produtosBindingSource.Current;
-            }
-        }
-
-        public tb_cliente clienteCorrente
-        {
-            get
-            {
-                return (tb_cliente)this.tb_clienteBindingSource.Current;
-            }
-        }
-
-        private void calcula()
-        {
-            decimal quant, desconto;
-
-            if (txt_quant.Text == "")
-            {
-                quant = 0;
-            }
-            else
-            {
-                try
-                {
-                    quant = Convert.ToDecimal(txt_quant.Text);
-                }
-                catch
-                {
-                    MessageBox.Show("Digite um valor valido! ");
-                    quant = 0;
-                    txt_quant.Focus();
-                }                
-            }
-            if (lb_desconto.Text == "")
-            {
-                desconto = 0;
-            }
-            else
-            {
-                try
-                {
-                    desconto = Convert.ToDecimal(lb_desconto.Text);
-                }
-                catch
-                {
-                    MessageBox.Show("Digite um valor valido!");
-                    desconto = 0;
-                    lb_desconto.Focus();
-                }
-            }
-
-            decimal valor = Convert.ToDecimal(txt_valProd.Text);
-            decimal sobTotItem = valor * quant;
-            decimal subTotalNOta = 0;            
-            decimal total;
-
-            foreach (DataGridViewRow dg in dg_compra.Rows)
-            {
-                subTotalNOta = subTotalNOta + Convert.ToDecimal(dg.Cells[3].Value);                
-            }
-             
-            total = subTotalNOta - desconto;
-
-            txt_quant.Text = quant.ToString("N1");
-            txt_subTot.Text = sobTotItem.ToString("N2");
-            lb_subtotal.Text = subTotalNOta.ToString("N2");            
-            labelTotal.Text = total.ToString("N2");
-            lb_desconto.Text = desconto.ToString("N2");
-
-            if (txt_nNota.Text != "")
-            {
-                verificaCredito();
-            }            
-        }            
- 
+        
         private void dg_compra_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if(e.Value != null && e.ColumnIndex == 0)
@@ -599,23 +737,6 @@ namespace FerroVelho
             }
         }
         
-        private void finalizar()
-        {            
-            if (checkBox1.Checked == true)
-            {
-                imprimirNF(compraCorrente.id_compra);
-            }            
-
-            limpar();
-            dg_compra.DataSource = null;
-            dg_compra.Refresh();
-            tb_cliente cliente = new tb_cliente();
-            tb_clienteBindingSource.DataSource = cliente;
-            chek_addCredito.Checked = false;
-            chek_addCredito.Enabled = false;
-            txt_quant.Focus();
-        }
-
         private void bt_finalCompra_Click(object sender, EventArgs e)
         {
             if (Convert.ToDecimal(labelTotal.Text) < 0)
@@ -631,102 +752,11 @@ namespace FerroVelho
                 guia = 0;
             }            
         }
-
-        private void limpar()
-        {
-
-            txt_codProd.Text = "";
-            txt_nNota.Text = "";
-            txt_valProd.Text = (0).ToString("N2");
-            txt_quant.Text = "";
-            txt_subTot.Text = (0).ToString("N2");            
-            labelTotal.Text = (0).ToString("N2");
-            lb_desconto.Text = (0).ToString("N2");
-            lb_subtotal.Text = (0).ToString("N2");
-            saldo = 0;
-            cb_desProd.SelectedIndex = -1;
-            bt_finalCompra.Enabled = false;
-            txt_nome.Text = "";
-            txt_telefone.Text = "";
-            txt_cpf.Text = "";
-            checkBox2.Checked = false;            
-
-        }
-
-        decimal saldo;
+                        
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox2.Checked == true)
-            {
-                fm_cadCliente fm = new fm_cadCliente(0);
-                tb_cliente cliente = new tb_cliente();
-                fm.ShowDialog();
-                cliente = fm.Propriedade;
-
-                if (cliente != null)
-                {
-                    txt_nome.Text = cliente.nome_cliente;
-                    txt_telefone.Text = cliente.tel_cliente;
-                    txt_cpf.Text = cliente.cpf_cliente;
-                    txt_idCliente.Text = cliente.id_cliente.ToString();
-
-                    tb_clienteBindingSource.DataSource = cliente;
-
-                    lb_nome.Visible = true;
-                    lb_telefone.Visible = true;
-                    lb_cpf.Visible = true;
-                    txt_nome.Visible = true;
-                    txt_telefone.Visible = true;
-                    txt_cpf.Visible = true;
-                    chek_addCredito.Enabled = true;
-
-                    Dao dao = new Dao();
-
-                    saldo = dao.valorDevedor(clienteCorrente.id_cliente);
-                    lb_desconto.Text = saldo.ToString("N2");
-                    calcula();
-                    if (txt_nNota.Text != "")
-                    {
-                        upDateValor();
-                    }
-                }
-                else
-                {
-                    checkBox2.Checked = false;
-                }
-                                
-            }
-            else
-            {
-                if (guia != 1)
-                {
-                    tb_cliente cliente = new tb_cliente();
-                    tb_clienteBindingSource.DataSource = cliente;
-
-                    chek_addCredito.Enabled = false;
-
-                    lb_nome.Visible = false;
-                    lb_telefone.Visible = false;
-                    lb_cpf.Visible = false;
-                    txt_nome.Visible = false;
-                    txt_telefone.Visible = false;
-                    txt_cpf.Visible = false;
-                    txt_nome.Text = "";
-                    txt_telefone.Text = "";
-                    txt_cpf.Text = "";
-                    txt_idCliente.Text = "";
-                    lb_desconto.Text = (0).ToString("N2");
-                    calcula();
-                    if (txt_nNota.Text != "")
-                    {
-                        upDateValor();
-                    }
-                }
-                
-            }
-        }
-        
-       
+            InformarCliente();
+        }             
 
         private void txt_valProd_KeyPress_1(object sender, KeyPressEventArgs e)
         {
@@ -736,9 +766,8 @@ namespace FerroVelho
             }
             if (e.KeyChar == 13)
             {
-                calcula();
-                clicar();
-                txt_quant.Text = "";
+                AdicionarItem();
+                Quantidade = 0;
             }
             e.Handled = true;
         }               
@@ -797,6 +826,7 @@ namespace FerroVelho
                 
             }
         }
+        
         private void txt_codProd_KeyDown(object sender, KeyEventArgs e)
             {
             if (e.KeyData == Keys.End)
@@ -830,11 +860,6 @@ namespace FerroVelho
         }
 
         private void txt_quant_Click(object sender, EventArgs e)
-        {
-            select();
-        }
-
-        private void select()
         {
             txt_quant.SelectAll();
         }
@@ -889,21 +914,7 @@ namespace FerroVelho
             
         }
 
-        private void verificaCredito()
-        {
-            if (chek_addCredito.Checked == true)
-            {
-                labelTotal.Text = 0.ToString("N2");
-                upDateValor();
-            }
-            else
-            {
-                if (guia != 1)
-                {                    
-                    upDateValor();
-                }
-            }
-        }
+        #endregion
 
         // Codigo referente a impressão do cupom fiscal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -959,14 +970,6 @@ namespace FerroVelho
             DataTable dt = DataContextFactory.Filtrar(comando);
 
             return dt;
-        }
-
-        public tb_impressora impressoraCorrente
-        {
-            get
-            {
-                return (tb_impressora)this.tb_impressoraBindingSource.Current;
-            }
         }
 
         public void Export(LocalReport report)
@@ -1056,7 +1059,8 @@ namespace FerroVelho
             m_currentPageIndex++;
             ev.HasMorePages = (m_currentPageIndex < m_streams.Count);
         }
+                
 
-        
+
     }
 }

@@ -120,6 +120,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>bd_ferroVelhoDataSet.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Classes\Caixa.cs" />
+    <Compile Include="Classes\Cliente.cs" />
+    <Compile Include="Classes\NotaCompra.cs" />
+    <Compile Include="Classes\Comum.cs" />
+    <Compile Include="Classes\Produto.cs" />
     <Compile Include="Dao.cs" />
     <Compile Include="Operaçoes\fm_adiantamentoOp.cs">
       <SubType>Form</SubType>

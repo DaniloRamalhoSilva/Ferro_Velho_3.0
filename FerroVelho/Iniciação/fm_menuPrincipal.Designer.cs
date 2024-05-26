@@ -28,17 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.Label id_vendaLabel;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(fm_menulPrincipal));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.operacaoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.comprarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,24 +79,16 @@
             this.lb_telefone = new System.Windows.Forms.Label();
             this.lb_nome = new System.Windows.Forms.Label();
             this.txt_nome = new System.Windows.Forms.TextBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.cb_info_cliente = new System.Windows.Forms.CheckBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.bt_calculadora = new System.Windows.Forms.Button();
             this.bt_fechar = new System.Windows.Forms.Button();
-            this.txt_nNota = new System.Windows.Forms.TextBox();
             this.txt_subTot = new System.Windows.Forms.TextBox();
             this.txt_quant = new System.Windows.Forms.TextBox();
             this.txt_valProd = new System.Windows.Forms.TextBox();
             this.txt_codProd = new System.Windows.Forms.TextBox();
             this.cb_desProd = new System.Windows.Forms.ComboBox();
             this.dg_compra = new System.Windows.Forms.DataGridView();
-            this.tbprodutosDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.quantitemDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.valoritemDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.subTotitemDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.iditemDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.idprodDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.tbitemcBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.label1 = new System.Windows.Forms.Label();
             this.bt_excluir = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -117,42 +103,14 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.txt_operador = new System.Windows.Forms.ToolStripStatusLabel();
-            this.compraBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.bd_ferroVelhoDataSet = new FerroVelho.bd_ferroVelhoDataSet();
-            this.compraTableAdapter = new FerroVelho.bd_ferroVelhoDataSetTableAdapters.CompraTableAdapter();
-            this.tableAdapterManager = new FerroVelho.bd_ferroVelhoDataSetTableAdapters.TableAdapterManager();
-            this.tb_compraBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.tb_produtosBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.tb_impressoraBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.tb_usuarioBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.tb_clienteBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            id_vendaLabel = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dg_compra)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbitemcBindingSource)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.compraBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.bd_ferroVelhoDataSet)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tb_compraBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tb_produtosBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tb_impressoraBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tb_usuarioBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tb_clienteBindingSource)).BeginInit();
             this.SuspendLayout();
-            // 
-            // id_vendaLabel
-            // 
-            id_vendaLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            id_vendaLabel.AutoSize = true;
-            id_vendaLabel.Location = new System.Drawing.Point(621, 458);
-            id_vendaLabel.Name = "id_vendaLabel";
-            id_vendaLabel.Size = new System.Drawing.Size(63, 13);
-            id_vendaLabel.TabIndex = 26;
-            id_vendaLabel.Text = "Nº da Nota:";
             // 
             // menuStrip1
             // 
@@ -184,35 +142,35 @@
             // comprarToolStripMenuItem
             // 
             this.comprarToolStripMenuItem.Name = "comprarToolStripMenuItem";
-            this.comprarToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.comprarToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.comprarToolStripMenuItem.Text = "Comprar";
             this.comprarToolStripMenuItem.Click += new System.EventHandler(this.comprarToolStripMenuItem_Click);
             // 
             // venderToolStripMenuItem
             // 
             this.venderToolStripMenuItem.Name = "venderToolStripMenuItem";
-            this.venderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.venderToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.venderToolStripMenuItem.Text = "Vender";
             this.venderToolStripMenuItem.Click += new System.EventHandler(this.venderToolStripMenuItem_Click);
             // 
             // outrasEntradasToolStripMenuItem
             // 
             this.outrasEntradasToolStripMenuItem.Name = "outrasEntradasToolStripMenuItem";
-            this.outrasEntradasToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.outrasEntradasToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.outrasEntradasToolStripMenuItem.Text = "Outras Entradas";
             this.outrasEntradasToolStripMenuItem.Click += new System.EventHandler(this.outrasEntradasToolStripMenuItem_Click);
             // 
             // outrasSaidasToolStripMenuItem
             // 
             this.outrasSaidasToolStripMenuItem.Name = "outrasSaidasToolStripMenuItem";
-            this.outrasSaidasToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.outrasSaidasToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.outrasSaidasToolStripMenuItem.Text = "Outras Saidas";
             this.outrasSaidasToolStripMenuItem.Click += new System.EventHandler(this.outrasSaidasToolStripMenuItem_Click);
             // 
             // addRecurçosToolStripMenuItem
             // 
             this.addRecurçosToolStripMenuItem.Name = "addRecurçosToolStripMenuItem";
-            this.addRecurçosToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addRecurçosToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.addRecurçosToolStripMenuItem.Text = "Recursos";
             this.addRecurçosToolStripMenuItem.Click += new System.EventHandler(this.addRecurçosToolStripMenuItem_Click);
             // 
@@ -223,7 +181,7 @@
             this.recebimentoToolStripMenuItem,
             this.outrasMovimentaçoesToolStripMenuItem});
             this.adiantamentoToolStripMenuItem.Name = "adiantamentoToolStripMenuItem";
-            this.adiantamentoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.adiantamentoToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.adiantamentoToolStripMenuItem.Text = "Cliente";
             // 
             // pagamentoToolStripMenuItem
@@ -434,12 +392,10 @@
             this.groupBox2.Controls.Add(this.lb_telefone);
             this.groupBox2.Controls.Add(this.lb_nome);
             this.groupBox2.Controls.Add(this.txt_nome);
-            this.groupBox2.Controls.Add(this.checkBox2);
+            this.groupBox2.Controls.Add(this.cb_info_cliente);
             this.groupBox2.Controls.Add(this.checkBox1);
             this.groupBox2.Controls.Add(this.bt_calculadora);
             this.groupBox2.Controls.Add(this.bt_fechar);
-            this.groupBox2.Controls.Add(id_vendaLabel);
-            this.groupBox2.Controls.Add(this.txt_nNota);
             this.groupBox2.Controls.Add(this.txt_subTot);
             this.groupBox2.Controls.Add(this.txt_quant);
             this.groupBox2.Controls.Add(this.txt_valProd);
@@ -462,7 +418,6 @@
             this.groupBox2.TabIndex = 19;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Comprar";
-            this.groupBox2.Layout += new System.Windows.Forms.LayoutEventHandler(this.groupBox2_Layout);
             // 
             // chek_addCredito
             // 
@@ -600,17 +555,17 @@
             this.txt_nome.TabIndex = 35;
             this.txt_nome.Visible = false;
             // 
-            // checkBox2
+            // cb_info_cliente
             // 
-            this.checkBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(186, 447);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(99, 17);
-            this.checkBox2.TabIndex = 34;
-            this.checkBox2.Text = "Informar Cliente";
-            this.checkBox2.UseVisualStyleBackColor = true;
-            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            this.cb_info_cliente.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.cb_info_cliente.AutoSize = true;
+            this.cb_info_cliente.Location = new System.Drawing.Point(186, 447);
+            this.cb_info_cliente.Name = "cb_info_cliente";
+            this.cb_info_cliente.Size = new System.Drawing.Size(99, 17);
+            this.cb_info_cliente.TabIndex = 34;
+            this.cb_info_cliente.Text = "Informar Cliente";
+            this.cb_info_cliente.UseVisualStyleBackColor = true;
+            this.cb_info_cliente.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
             // 
             // checkBox1
             // 
@@ -647,15 +602,6 @@
             this.bt_fechar.Text = "Fechar area de compra";
             this.bt_fechar.UseVisualStyleBackColor = true;
             this.bt_fechar.Click += new System.EventHandler(this.bt_fechar_Click);
-            // 
-            // txt_nNota
-            // 
-            this.txt_nNota.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.txt_nNota.Enabled = false;
-            this.txt_nNota.Location = new System.Drawing.Point(690, 455);
-            this.txt_nNota.Name = "txt_nNota";
-            this.txt_nNota.Size = new System.Drawing.Size(110, 20);
-            this.txt_nNota.TabIndex = 27;
             // 
             // txt_subTot
             // 
@@ -723,7 +669,6 @@
             this.dg_compra.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.dg_compra.AutoGenerateColumns = false;
             this.dg_compra.BackgroundColor = System.Drawing.Color.White;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.LightGray;
@@ -734,112 +679,35 @@
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dg_compra.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dg_compra.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dg_compra.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.tbprodutosDataGridViewTextBoxColumn,
-            this.quantitemDataGridViewTextBoxColumn,
-            this.valoritemDataGridViewTextBoxColumn,
-            this.subTotitemDataGridViewTextBoxColumn,
-            this.iditemDataGridViewTextBoxColumn,
-            this.idprodDataGridViewTextBoxColumn});
-            this.dg_compra.DataSource = this.tbitemcBindingSource;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dg_compra.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dg_compra.DefaultCellStyle = dataGridViewCellStyle2;
             this.dg_compra.EnableHeadersVisualStyles = false;
             this.dg_compra.Location = new System.Drawing.Point(9, 99);
             this.dg_compra.Name = "dg_compra";
             this.dg_compra.ReadOnly = true;
             this.dg_compra.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dg_compra.RowHeadersDefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dg_compra.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.dg_compra.RowHeadersWidth = 20;
             this.dg_compra.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dg_compra.RowsDefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dg_compra.RowsDefaultCellStyle = dataGridViewCellStyle4;
             this.dg_compra.RowTemplate.Height = 35;
             this.dg_compra.Size = new System.Drawing.Size(1223, 341);
             this.dg_compra.TabIndex = 20;
             this.dg_compra.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dg_compra_CellFormatting);
-            // 
-            // tbprodutosDataGridViewTextBoxColumn
-            // 
-            this.tbprodutosDataGridViewTextBoxColumn.DataPropertyName = "tb_produtos";
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.Format = "N3";
-            dataGridViewCellStyle2.NullValue = null;
-            this.tbprodutosDataGridViewTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle2;
-            this.tbprodutosDataGridViewTextBoxColumn.HeaderText = "Descrição";
-            this.tbprodutosDataGridViewTextBoxColumn.Name = "tbprodutosDataGridViewTextBoxColumn";
-            this.tbprodutosDataGridViewTextBoxColumn.ReadOnly = true;
-            this.tbprodutosDataGridViewTextBoxColumn.Width = 472;
-            // 
-            // quantitemDataGridViewTextBoxColumn
-            // 
-            this.quantitemDataGridViewTextBoxColumn.DataPropertyName = "quant_item";
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.Format = "N3";
-            dataGridViewCellStyle3.NullValue = null;
-            this.quantitemDataGridViewTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle3;
-            this.quantitemDataGridViewTextBoxColumn.HeaderText = "Quant./Peso";
-            this.quantitemDataGridViewTextBoxColumn.Name = "quantitemDataGridViewTextBoxColumn";
-            this.quantitemDataGridViewTextBoxColumn.ReadOnly = true;
-            this.quantitemDataGridViewTextBoxColumn.Width = 300;
-            // 
-            // valoritemDataGridViewTextBoxColumn
-            // 
-            this.valoritemDataGridViewTextBoxColumn.DataPropertyName = "valor_item";
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.Format = "C2";
-            dataGridViewCellStyle4.NullValue = null;
-            this.valoritemDataGridViewTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle4;
-            this.valoritemDataGridViewTextBoxColumn.HeaderText = "Valor";
-            this.valoritemDataGridViewTextBoxColumn.Name = "valoritemDataGridViewTextBoxColumn";
-            this.valoritemDataGridViewTextBoxColumn.ReadOnly = true;
-            this.valoritemDataGridViewTextBoxColumn.Width = 150;
-            // 
-            // subTotitemDataGridViewTextBoxColumn
-            // 
-            this.subTotitemDataGridViewTextBoxColumn.DataPropertyName = "subTot_item";
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.Format = "C2";
-            dataGridViewCellStyle5.NullValue = null;
-            this.subTotitemDataGridViewTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle5;
-            this.subTotitemDataGridViewTextBoxColumn.HeaderText = "Subtotal";
-            this.subTotitemDataGridViewTextBoxColumn.Name = "subTotitemDataGridViewTextBoxColumn";
-            this.subTotitemDataGridViewTextBoxColumn.ReadOnly = true;
-            this.subTotitemDataGridViewTextBoxColumn.Width = 200;
-            // 
-            // iditemDataGridViewTextBoxColumn
-            // 
-            this.iditemDataGridViewTextBoxColumn.DataPropertyName = "id_item";
-            this.iditemDataGridViewTextBoxColumn.HeaderText = "id_item";
-            this.iditemDataGridViewTextBoxColumn.Name = "iditemDataGridViewTextBoxColumn";
-            this.iditemDataGridViewTextBoxColumn.ReadOnly = true;
-            this.iditemDataGridViewTextBoxColumn.Visible = false;
-            // 
-            // idprodDataGridViewTextBoxColumn
-            // 
-            this.idprodDataGridViewTextBoxColumn.DataPropertyName = "id_prod";
-            this.idprodDataGridViewTextBoxColumn.HeaderText = "id_prod";
-            this.idprodDataGridViewTextBoxColumn.Name = "idprodDataGridViewTextBoxColumn";
-            this.idprodDataGridViewTextBoxColumn.ReadOnly = true;
-            this.idprodDataGridViewTextBoxColumn.Visible = false;
-            // 
-            // tbitemcBindingSource
-            // 
-            this.tbitemcBindingSource.DataSource = typeof(FerroVelhoDAO.tb_itemc);
             // 
             // label1
             // 
@@ -971,52 +839,6 @@
             this.txt_operador.Size = new System.Drawing.Size(118, 17);
             this.txt_operador.Text = "toolStripStatusLabel2";
             // 
-            // compraBindingSource
-            // 
-            this.compraBindingSource.DataMember = "Compra";
-            this.compraBindingSource.DataSource = this.bd_ferroVelhoDataSet;
-            // 
-            // bd_ferroVelhoDataSet
-            // 
-            this.bd_ferroVelhoDataSet.DataSetName = "bd_ferroVelhoDataSet";
-            this.bd_ferroVelhoDataSet.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
-            // 
-            // compraTableAdapter
-            // 
-            this.compraTableAdapter.ClearBeforeFill = true;
-            // 
-            // tableAdapterManager
-            // 
-            this.tableAdapterManager.BackupDataSetBeforeUpdate = false;
-            this.tableAdapterManager.Connection = null;
-            this.tableAdapterManager.tb_compraTableAdapter = null;
-            this.tableAdapterManager.tb_impressoraTableAdapter = null;
-            this.tableAdapterManager.tb_itemcTableAdapter = null;
-            this.tableAdapterManager.tb_itemvTableAdapter = null;
-            this.tableAdapterManager.tb_produtosTableAdapter = null;
-            this.tableAdapterManager.tb_vendaTableAdapter = null;
-            this.tableAdapterManager.UpdateOrder = FerroVelho.bd_ferroVelhoDataSetTableAdapters.TableAdapterManager.UpdateOrderOption.InsertUpdateDelete;
-            // 
-            // tb_compraBindingSource
-            // 
-            this.tb_compraBindingSource.DataSource = typeof(FerroVelhoDAO.tb_compra);
-            // 
-            // tb_produtosBindingSource
-            // 
-            this.tb_produtosBindingSource.DataSource = typeof(FerroVelhoDAO.tb_produtos);
-            // 
-            // tb_impressoraBindingSource
-            // 
-            this.tb_impressoraBindingSource.DataSource = typeof(FerroVelhoDAO.tb_impressora);
-            // 
-            // tb_usuarioBindingSource
-            // 
-            this.tb_usuarioBindingSource.DataSource = typeof(FerroVelhoDAO.tb_usuario);
-            // 
-            // tb_clienteBindingSource
-            // 
-            this.tb_clienteBindingSource.DataSource = typeof(FerroVelhoDAO.tb_cliente);
-            // 
             // fm_menulPrincipal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1044,18 +866,10 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dg_compra)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbitemcBindingSource)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.compraBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.bd_ferroVelhoDataSet)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tb_compraBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tb_produtosBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tb_impressoraBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tb_usuarioBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tb_clienteBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1078,12 +892,8 @@
         private System.Windows.Forms.ToolStripMenuItem movimentaçãoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem compraToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem vendaToolStripMenuItem;
-        private System.Windows.Forms.BindingSource tbitemcBindingSource;
-        private System.Windows.Forms.BindingSource tb_produtosBindingSource;
-        private System.Windows.Forms.BindingSource tb_compraBindingSource;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button bt_fechar;
-        private System.Windows.Forms.TextBox txt_nNota;
         private System.Windows.Forms.TextBox txt_subTot;
         private System.Windows.Forms.TextBox txt_quant;
         private System.Windows.Forms.TextBox txt_valProd;
@@ -1104,7 +914,6 @@
         private System.Drawing.Printing.PrintDocument document;
         private System.Windows.Forms.ToolStripMenuItem comfiguraçoesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem impressorasToolStripMenuItem;
-        private System.Windows.Forms.BindingSource tb_impressoraBindingSource;
         private System.Windows.Forms.ToolStripMenuItem estoqueToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem outrasEntradasToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem outrasSaidasToolStripMenuItem;
@@ -1115,18 +924,13 @@
         private System.Windows.Forms.ToolStripMenuItem notaFiscalToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem compraToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem vendaToolStripMenuItem1;
-        private System.Windows.Forms.BindingSource tb_usuarioBindingSource;
-        private bd_ferroVelhoDataSet bd_ferroVelhoDataSet;
-        private System.Windows.Forms.BindingSource compraBindingSource;
-        private bd_ferroVelhoDataSetTableAdapters.CompraTableAdapter compraTableAdapter;
-        private bd_ferroVelhoDataSetTableAdapters.TableAdapterManager tableAdapterManager;
         private System.Windows.Forms.Button bt_calculadora;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Label lb_cpf;
         private System.Windows.Forms.Label lb_telefone;
         private System.Windows.Forms.Label lb_nome;
         private System.Windows.Forms.TextBox txt_nome;
-        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.CheckBox cb_info_cliente;
         private System.Windows.Forms.MaskedTextBox txt_cpf;
         private System.Windows.Forms.ToolStripMenuItem cabeçalhoToolStripMenuItem;
         private System.Windows.Forms.DataGridViewTextBoxColumn tbprodutosDataGridViewTextBoxColumn;
@@ -1141,7 +945,6 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label lb_subtotal;
-        private System.Windows.Forms.BindingSource tb_clienteBindingSource;
         private System.Windows.Forms.ToolStripMenuItem clienteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem adiantamentoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem adiantamentosToolStripMenuItem;
