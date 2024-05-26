@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="bd_ferroVelho" Class="FerroVelhoDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=DANILO;Initial Catalog=bd_ferroVelho;User ID=ramalho" SettingsObjectName="FerroVelhoDAO.Properties.Settings" SettingsPropertyName="bd_ferroVelhoConnectionString1" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.tb_impressora" Member="tb_impressora">
+    <Type Name="tb_impressora">
+      <Column Name="id_impressora" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="nome_impressora" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tb_itemc" Member="tb_itemc">
+    <Type Name="tb_itemc">
+      <Column Name="id_item" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="id_prod" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="id_compra" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="quant_item" Type="System.Decimal" DbType="Decimal(18,3) NOT NULL" CanBeNull="false" />
+      <Column Name="subTot_item" Type="System.Decimal" DbType="Decimal(18,3) NOT NULL" CanBeNull="false" />
+      <Column Name="valor_item" Type="System.Decimal" DbType="Decimal(18,3) NOT NULL" CanBeNull="false" />
+      <Association Name="tb_produtos_tb_itemc" Member="tb_produtos" ThisKey="id_prod" OtherKey="id_prod" Type="tb_produtos" IsForeignKey="true" />
+      <Association Name="tb_compra_tb_itemc" Member="tb_compra" ThisKey="id_compra" OtherKey="id_compra" Type="tb_compra" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tb_itemv" Member="tb_itemv">
+    <Type Name="tb_itemv">
+      <Column Name="id_item" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="id_prod" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="id_venda" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="quant_item" Type="System.Decimal" DbType="Decimal(18,3)" CanBeNull="true" />
+      <Column Name="subTot_item" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="valr_item" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Association Name="tb_produtos_tb_itemv" Member="tb_produtos" ThisKey="id_prod" OtherKey="id_prod" Type="tb_produtos" IsForeignKey="true" />
+      <Association Name="tb_venda_tb_itemv" Member="tb_venda" ThisKey="id_venda" OtherKey="id_venda" Type="tb_venda" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tb_usuario" Member="tb_usuario">
+    <Type Name="tb_usuario">
+      <Column Name="id_usuario" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="nome_usuario" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="senha_usuario" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="permi_usuario" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="tb_usuario_tb_venda" Member="tb_venda" ThisKey="id_usuario" OtherKey="usuario" Type="tb_venda" />
+      <Association Name="tb_usuario_tb_compra" Member="tb_compra" ThisKey="id_usuario" OtherKey="usuario" Type="tb_compra" />
+      <Association Name="tb_usuario_tb_caixa" Member="tb_caixa" ThisKey="id_usuario" OtherKey="usuario" Type="tb_caixa" />
+      <Association Name="tb_usuario_tb_aCliente" Member="tb_aCliente" ThisKey="id_usuario" OtherKey="usuario" Type="tb_aCliente" />
+      <Association Name="tb_tipoUsuario_tb_usuario" Member="tb_tipoUsuario" ThisKey="permi_usuario" OtherKey="id_tipoUsuario" Type="tb_tipoUsuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tb_tipoUsuario" Member="tb_tipoUsuario">
+    <Type Name="tb_tipoUsuario">
+      <Column Name="id_tipoUsuario" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="desc_tipoUsuario" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Association Name="tb_tipoUsuario_tb_usuario" Member="tb_usuario" ThisKey="id_tipoUsuario" OtherKey="permi_usuario" Type="tb_usuario" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tb_produtos" Member="tb_produtos">
+    <Type Name="tb_produtos">
+      <Column Name="id_prod" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="desc_prod" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="val_prod" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="usuario" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="tb_produtos_tb_itemc" Member="tb_itemc" ThisKey="id_prod" OtherKey="id_prod" Type="tb_itemc" />
+      <Association Name="tb_produtos_tb_itemv" Member="tb_itemv" ThisKey="id_prod" OtherKey="id_prod" Type="tb_itemv" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tb_venda" Member="tb_venda">
+    <Type Name="tb_venda">
+      <Column Name="id_venda" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="data_venda" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="valor_nota" Type="System.Decimal" DbType="Decimal(18,2) NOT NULL" CanBeNull="false" />
+      <Column Name="usuario" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="tb_venda_tb_itemv" Member="tb_itemv" ThisKey="id_venda" OtherKey="id_venda" Type="tb_itemv" />
+      <Association Name="tb_usuario_tb_venda" Member="tb_usuario" ThisKey="usuario" OtherKey="id_usuario" Type="tb_usuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tb_compra" Member="tb_compra">
+    <Type Name="tb_compra">
+      <Column Name="id_compra" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="data_compra" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="desconto_compra" Type="System.Decimal" DbType="Decimal(18,2) NOT NULL" CanBeNull="false" />
+      <Column Name="subtot_compra" Type="System.Decimal" DbType="Decimal(18,2) NOT NULL" CanBeNull="false" />
+      <Column Name="valor_nota" Type="System.Decimal" DbType="Decimal(18,2) NOT NULL" CanBeNull="false" />
+      <Column Name="id_cliente" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="usuario" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="tb_compra_tb_itemc" Member="tb_itemc" ThisKey="id_compra" OtherKey="id_compra" Type="tb_itemc" />
+      <Association Name="tb_usuario_tb_compra" Member="tb_usuario" ThisKey="usuario" OtherKey="id_usuario" Type="tb_usuario" IsForeignKey="true" />
+      <Association Name="tb_cliente_tb_compra" Member="tb_cliente" ThisKey="id_cliente" OtherKey="id_cliente" Type="tb_cliente" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tb_cliente" Member="tb_cliente">
+    <Type Name="tb_cliente">
+      <Column Name="id_cliente" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="cpf_cliente" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
+      <Column Name="nome_cliente" Type="System.String" DbType="VarChar(100) NOT NULL" CanBeNull="false" />
+      <Column Name="tel_cliente" Type="System.String" DbType="VarChar(15)" CanBeNull="true" />
+      <Column Name="Saldo" Type="System.Decimal" CanBeNull="false" />
+      <Association Name="tb_cliente_tb_compra" Member="tb_compra" ThisKey="id_cliente" OtherKey="id_cliente" Type="tb_compra" />
+      <Association Name="tb_cliente_tb_caixa" Member="tb_caixa" ThisKey="id_cliente" OtherKey="id_cliente" Type="tb_caixa" />
+      <Association Name="tb_cliente_tb_aCliente" Member="tb_aCliente" ThisKey="id_cliente" OtherKey="id_cliente" Type="tb_aCliente" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tb_caixa" Member="tb_caixa">
+    <Type Name="tb_caixa">
+      <Column Name="Id_caixa" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="data_caixa" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="valor_caixa" Type="System.Decimal" DbType="Decimal(18,2) NOT NULL" CanBeNull="false" />
+      <Column Name="usuario" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="desc_caixa" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="id_cliente" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="tb_cliente_tb_caixa" Member="tb_cliente" ThisKey="id_cliente" OtherKey="id_cliente" Type="tb_cliente" IsForeignKey="true" />
+      <Association Name="tb_usuario_tb_caixa" Member="tb_usuario" ThisKey="usuario" OtherKey="id_usuario" Type="tb_usuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tb_aCliente" Member="tb_aCliente">
+    <Type Name="tb_aCliente">
+      <Column Name="Id_aCliente" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="data__aCliente" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="valor_aCliente" Type="System.Decimal" DbType="Decimal(18,2) NOT NULL" CanBeNull="false" />
+      <Column Name="usuario" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="desc_aCliente" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="id_cliente" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="tb_usuario_tb_aCliente" Member="tb_usuario" ThisKey="usuario" OtherKey="id_usuario" Type="tb_usuario" IsForeignKey="true" />
+      <Association Name="tb_cliente_tb_aCliente" Member="tb_cliente" ThisKey="id_cliente" OtherKey="id_cliente" Type="tb_cliente" IsForeignKey="true" />
+    </Type>
+  </Table>
+</Database>
