@@ -95,6 +95,10 @@ namespace FerroVelho
             {
                 return;
             }
+            if (e.KeyChar == 13)
+            {
+                txt_quant.Focus();
+            }
             e.Handled = true;
         }
 
@@ -103,6 +107,10 @@ namespace FerroVelho
             if (char.IsDigit(e.KeyChar) || e.KeyChar.Equals((char)Keys.Back) || char.IsPunctuation(e.KeyChar))
             {
                 return;
+            }
+            if (e.KeyChar == 13)
+            {
+                bt_finalCompra.Focus();
             }
             e.Handled = true;
         }               
@@ -165,7 +173,7 @@ namespace FerroVelho
                 txt_codProd.Text = "";
                 txt_quant.Text = (0).ToString("N3");
                 cb_desProd.SelectedIndex = -1;
-                MessageBox.Show("Entrada adicionado com sucesso!");                
+                MessageBox.Show("Saida adicionado com sucesso!");                
                 this.Close();
             }
             else
