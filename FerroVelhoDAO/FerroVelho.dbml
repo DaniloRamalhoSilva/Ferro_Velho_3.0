@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><Database Name="bd_ferroVelho" Class="FerroVelhoDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
-  <Connection Mode="ConnectionString" ConnectionString="Data Source=DANILO;Initial Catalog=bd_ferroVelho;User ID=ramalho" Provider="System.Data.SqlClient" />
+  <Connection Mode="ConnectionString" ConnectionString="Data Source=SERVIDOR;Initial Catalog=bd_ferroVelho;Persist Security Info=True;User ID=ramalho;Password=16zero51990;Encrypt=True;TrustServerCertificate=True" Provider="System.Data.SqlClient" />
   <Table Name="dbo.tb_impressora" Member="tb_impressora">
     <Type Name="tb_impressora">
       <Column Name="id_impressora" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -28,19 +28,6 @@
       <Column Name="valr_item" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
       <Association Name="tb_produtos_tb_itemv" Member="tb_produtos" ThisKey="id_prod" OtherKey="id_prod" Type="tb_produtos" IsForeignKey="true" />
       <Association Name="tb_venda_tb_itemv" Member="tb_venda" ThisKey="id_venda" OtherKey="id_venda" Type="tb_venda" IsForeignKey="true" />
-    </Type>
-  </Table>
-  <Table Name="dbo.tb_usuario" Member="tb_usuario">
-    <Type Name="tb_usuario">
-      <Column Name="id_usuario" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="nome_usuario" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
-      <Column Name="senha_usuario" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="permi_usuario" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Association Name="tb_usuario_tb_venda" Member="tb_venda" ThisKey="id_usuario" OtherKey="usuario" Type="tb_venda" />
-      <Association Name="tb_usuario_tb_compra" Member="tb_compra" ThisKey="id_usuario" OtherKey="usuario" Type="tb_compra" />
-      <Association Name="tb_usuario_tb_caixa" Member="tb_caixa" ThisKey="id_usuario" OtherKey="usuario" Type="tb_caixa" />
-      <Association Name="tb_usuario_tb_aCliente" Member="tb_aCliente" ThisKey="id_usuario" OtherKey="usuario" Type="tb_aCliente" />
-      <Association Name="tb_tipoUsuario_tb_usuario" Member="tb_tipoUsuario" ThisKey="permi_usuario" OtherKey="id_tipoUsuario" Type="tb_tipoUsuario" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.tb_tipoUsuario" Member="tb_tipoUsuario">
@@ -80,7 +67,6 @@
       <Column Name="id_cliente" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="usuario" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Association Name="tb_compra_tb_itemc" Member="tb_itemc" ThisKey="id_compra" OtherKey="id_compra" Type="tb_itemc" />
-      <Association Name="tb_usuario_tb_compra" Member="tb_usuario" ThisKey="usuario" OtherKey="id_usuario" Type="tb_usuario" IsForeignKey="true" />
       <Association Name="tb_cliente_tb_compra" Member="tb_cliente" ThisKey="id_cliente" OtherKey="id_cliente" Type="tb_cliente" IsForeignKey="true" />
     </Type>
   </Table>
@@ -116,8 +102,21 @@
       <Column Name="usuario" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="desc_aCliente" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
       <Column Name="id_cliente" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Association Name="tb_usuario_tb_aCliente" Member="tb_usuario" ThisKey="usuario" OtherKey="id_usuario" Type="tb_usuario" IsForeignKey="true" />
       <Association Name="tb_cliente_tb_aCliente" Member="tb_cliente" ThisKey="id_cliente" OtherKey="id_cliente" Type="tb_cliente" IsForeignKey="true" />
+      <Association Name="tb_usuario_tb_aCliente" Member="tb_usuario" ThisKey="usuario" OtherKey="id_usuario" Type="tb_usuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tb_usuario" Member="tb_usuario">
+    <Type Name="tb_usuario">
+      <Column Name="id_usuario" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="nome_usuario" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="senha_usuario" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="permi_usuario" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ativo" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Association Name="tb_usuario_tb_venda" Member="tb_venda" ThisKey="id_usuario" OtherKey="usuario" Type="tb_venda" />
+      <Association Name="tb_usuario_tb_caixa" Member="tb_caixa" ThisKey="id_usuario" OtherKey="usuario" Type="tb_caixa" />
+      <Association Name="tb_usuario_tb_aCliente" Member="tb_aCliente" ThisKey="id_usuario" OtherKey="usuario" Type="tb_aCliente" />
+      <Association Name="tb_tipoUsuario_tb_usuario" Member="tb_tipoUsuario" ThisKey="permi_usuario" OtherKey="id_tipoUsuario" Type="tb_tipoUsuario" IsForeignKey="true" />
     </Type>
   </Table>
 </Database>

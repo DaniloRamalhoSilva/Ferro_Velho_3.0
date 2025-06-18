@@ -39,9 +39,6 @@ namespace FerroVelhoDAO
     partial void Inserttb_itemv(tb_itemv instance);
     partial void Updatetb_itemv(tb_itemv instance);
     partial void Deletetb_itemv(tb_itemv instance);
-    partial void Inserttb_usuario(tb_usuario instance);
-    partial void Updatetb_usuario(tb_usuario instance);
-    partial void Deletetb_usuario(tb_usuario instance);
     partial void Inserttb_tipoUsuario(tb_tipoUsuario instance);
     partial void Updatetb_tipoUsuario(tb_tipoUsuario instance);
     partial void Deletetb_tipoUsuario(tb_tipoUsuario instance);
@@ -63,10 +60,14 @@ namespace FerroVelhoDAO
     partial void Inserttb_aCliente(tb_aCliente instance);
     partial void Updatetb_aCliente(tb_aCliente instance);
     partial void Deletetb_aCliente(tb_aCliente instance);
+    partial void Inserttb_usuario(tb_usuario instance);
+    partial void Updatetb_usuario(tb_usuario instance);
+    partial void Deletetb_usuario(tb_usuario instance);
     #endregion
 		
 		public FerroVelhoDataContext() : 
-				base("Data Source=DANILO;Initial Catalog=bd_ferroVelho;User ID=ramalho", mappingSource)
+				base("Data Source=SERVIDOR;Initial Catalog=bd_ferroVelho;Persist Security Info=True;Use" +
+						"r ID=ramalho;Password=16zero51990;Encrypt=True;TrustServerCertificate=True", mappingSource)
 		{
 			OnCreated();
 		}
@@ -116,14 +117,6 @@ namespace FerroVelhoDAO
 			get
 			{
 				return this.GetTable<tb_itemv>();
-			}
-		}
-		
-		public System.Data.Linq.Table<tb_usuario> tb_usuario
-		{
-			get
-			{
-				return this.GetTable<tb_usuario>();
 			}
 		}
 		
@@ -180,6 +173,14 @@ namespace FerroVelhoDAO
 			get
 			{
 				return this.GetTable<tb_aCliente>();
+			}
+		}
+		
+		public System.Data.Linq.Table<tb_usuario> tb_usuario
+		{
+			get
+			{
+				return this.GetTable<tb_usuario>();
 			}
 		}
 	}
@@ -798,293 +799,6 @@ namespace FerroVelhoDAO
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tb_usuario")]
-	public partial class tb_usuario : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _id_usuario;
-		
-		private string _nome_usuario;
-		
-		private string _senha_usuario;
-		
-		private int _permi_usuario;
-		
-		private EntitySet<tb_venda> _tb_venda;
-		
-		private EntitySet<tb_compra> _tb_compra;
-		
-		private EntitySet<tb_caixa> _tb_caixa;
-		
-		private EntitySet<tb_aCliente> _tb_aCliente;
-		
-		private EntityRef<tb_tipoUsuario> _tb_tipoUsuario;
-		
-    #region Extensibility Method Definitions
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void Onid_usuarioChanging(int value);
-    partial void Onid_usuarioChanged();
-    partial void Onnome_usuarioChanging(string value);
-    partial void Onnome_usuarioChanged();
-    partial void Onsenha_usuarioChanging(string value);
-    partial void Onsenha_usuarioChanged();
-    partial void Onpermi_usuarioChanging(int value);
-    partial void Onpermi_usuarioChanged();
-    #endregion
-		
-		public tb_usuario()
-		{
-			this._tb_venda = new EntitySet<tb_venda>(new Action<tb_venda>(this.attach_tb_venda), new Action<tb_venda>(this.detach_tb_venda));
-			this._tb_compra = new EntitySet<tb_compra>(new Action<tb_compra>(this.attach_tb_compra), new Action<tb_compra>(this.detach_tb_compra));
-			this._tb_caixa = new EntitySet<tb_caixa>(new Action<tb_caixa>(this.attach_tb_caixa), new Action<tb_caixa>(this.detach_tb_caixa));
-			this._tb_aCliente = new EntitySet<tb_aCliente>(new Action<tb_aCliente>(this.attach_tb_aCliente), new Action<tb_aCliente>(this.detach_tb_aCliente));
-			this._tb_tipoUsuario = default(EntityRef<tb_tipoUsuario>);
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_id_usuario", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int id_usuario
-		{
-			get
-			{
-				return this._id_usuario;
-			}
-			set
-			{
-				if ((this._id_usuario != value))
-				{
-					this.Onid_usuarioChanging(value);
-					this.SendPropertyChanging();
-					this._id_usuario = value;
-					this.SendPropertyChanged("id_usuario");
-					this.Onid_usuarioChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_nome_usuario", DbType="VarChar(50) NOT NULL", CanBeNull=false)]
-		public string nome_usuario
-		{
-			get
-			{
-				return this._nome_usuario;
-			}
-			set
-			{
-				if ((this._nome_usuario != value))
-				{
-					this.Onnome_usuarioChanging(value);
-					this.SendPropertyChanging();
-					this._nome_usuario = value;
-					this.SendPropertyChanged("nome_usuario");
-					this.Onnome_usuarioChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_senha_usuario", DbType="VarChar(50)")]
-		public string senha_usuario
-		{
-			get
-			{
-				return this._senha_usuario;
-			}
-			set
-			{
-				if ((this._senha_usuario != value))
-				{
-					this.Onsenha_usuarioChanging(value);
-					this.SendPropertyChanging();
-					this._senha_usuario = value;
-					this.SendPropertyChanged("senha_usuario");
-					this.Onsenha_usuarioChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_permi_usuario", DbType="Int NOT NULL")]
-		public int permi_usuario
-		{
-			get
-			{
-				return this._permi_usuario;
-			}
-			set
-			{
-				if ((this._permi_usuario != value))
-				{
-					if (this._tb_tipoUsuario.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.Onpermi_usuarioChanging(value);
-					this.SendPropertyChanging();
-					this._permi_usuario = value;
-					this.SendPropertyChanged("permi_usuario");
-					this.Onpermi_usuarioChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tb_usuario_tb_venda", Storage="_tb_venda", ThisKey="id_usuario", OtherKey="usuario")]
-		public EntitySet<tb_venda> tb_venda
-		{
-			get
-			{
-				return this._tb_venda;
-			}
-			set
-			{
-				this._tb_venda.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tb_usuario_tb_compra", Storage="_tb_compra", ThisKey="id_usuario", OtherKey="usuario")]
-		public EntitySet<tb_compra> tb_compra
-		{
-			get
-			{
-				return this._tb_compra;
-			}
-			set
-			{
-				this._tb_compra.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tb_usuario_tb_caixa", Storage="_tb_caixa", ThisKey="id_usuario", OtherKey="usuario")]
-		public EntitySet<tb_caixa> tb_caixa
-		{
-			get
-			{
-				return this._tb_caixa;
-			}
-			set
-			{
-				this._tb_caixa.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tb_usuario_tb_aCliente", Storage="_tb_aCliente", ThisKey="id_usuario", OtherKey="usuario")]
-		public EntitySet<tb_aCliente> tb_aCliente
-		{
-			get
-			{
-				return this._tb_aCliente;
-			}
-			set
-			{
-				this._tb_aCliente.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tb_tipoUsuario_tb_usuario", Storage="_tb_tipoUsuario", ThisKey="permi_usuario", OtherKey="id_tipoUsuario", IsForeignKey=true)]
-		public tb_tipoUsuario tb_tipoUsuario
-		{
-			get
-			{
-				return this._tb_tipoUsuario.Entity;
-			}
-			set
-			{
-				tb_tipoUsuario previousValue = this._tb_tipoUsuario.Entity;
-				if (((previousValue != value) 
-							|| (this._tb_tipoUsuario.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._tb_tipoUsuario.Entity = null;
-						previousValue.tb_usuario.Remove(this);
-					}
-					this._tb_tipoUsuario.Entity = value;
-					if ((value != null))
-					{
-						value.tb_usuario.Add(this);
-						this._permi_usuario = value.id_tipoUsuario;
-					}
-					else
-					{
-						this._permi_usuario = default(int);
-					}
-					this.SendPropertyChanged("tb_tipoUsuario");
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		
-		private void attach_tb_venda(tb_venda entity)
-		{
-			this.SendPropertyChanging();
-			entity.tb_usuario = this;
-		}
-		
-		private void detach_tb_venda(tb_venda entity)
-		{
-			this.SendPropertyChanging();
-			entity.tb_usuario = null;
-		}
-		
-		private void attach_tb_compra(tb_compra entity)
-		{
-			this.SendPropertyChanging();
-			entity.tb_usuario = this;
-		}
-		
-		private void detach_tb_compra(tb_compra entity)
-		{
-			this.SendPropertyChanging();
-			entity.tb_usuario = null;
-		}
-		
-		private void attach_tb_caixa(tb_caixa entity)
-		{
-			this.SendPropertyChanging();
-			entity.tb_usuario = this;
-		}
-		
-		private void detach_tb_caixa(tb_caixa entity)
-		{
-			this.SendPropertyChanging();
-			entity.tb_usuario = null;
-		}
-		
-		private void attach_tb_aCliente(tb_aCliente entity)
-		{
-			this.SendPropertyChanging();
-			entity.tb_usuario = this;
-		}
-		
-		private void detach_tb_aCliente(tb_aCliente entity)
-		{
-			this.SendPropertyChanging();
-			entity.tb_usuario = null;
-		}
-	}
-	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tb_tipoUsuario")]
 	public partial class tb_tipoUsuario : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -1614,8 +1328,6 @@ namespace FerroVelhoDAO
 		
 		private EntitySet<tb_itemc> _tb_itemc;
 		
-		private EntityRef<tb_usuario> _tb_usuario;
-		
 		private EntityRef<tb_cliente> _tb_cliente;
 		
     #region Extensibility Method Definitions
@@ -1641,7 +1353,6 @@ namespace FerroVelhoDAO
 		public tb_compra()
 		{
 			this._tb_itemc = new EntitySet<tb_itemc>(new Action<tb_itemc>(this.attach_tb_itemc), new Action<tb_itemc>(this.detach_tb_itemc));
-			this._tb_usuario = default(EntityRef<tb_usuario>);
 			this._tb_cliente = default(EntityRef<tb_cliente>);
 			OnCreated();
 		}
@@ -1781,10 +1492,6 @@ namespace FerroVelhoDAO
 			{
 				if ((this._usuario != value))
 				{
-					if (this._tb_usuario.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
 					this.OnusuarioChanging(value);
 					this.SendPropertyChanging();
 					this._usuario = value;
@@ -1804,40 +1511,6 @@ namespace FerroVelhoDAO
 			set
 			{
 				this._tb_itemc.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tb_usuario_tb_compra", Storage="_tb_usuario", ThisKey="usuario", OtherKey="id_usuario", IsForeignKey=true)]
-		public tb_usuario tb_usuario
-		{
-			get
-			{
-				return this._tb_usuario.Entity;
-			}
-			set
-			{
-				tb_usuario previousValue = this._tb_usuario.Entity;
-				if (((previousValue != value) 
-							|| (this._tb_usuario.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._tb_usuario.Entity = null;
-						previousValue.tb_compra.Remove(this);
-					}
-					this._tb_usuario.Entity = value;
-					if ((value != null))
-					{
-						value.tb_compra.Add(this);
-						this._usuario = value.id_usuario;
-					}
-					else
-					{
-						this._usuario = default(int);
-					}
-					this.SendPropertyChanged("tb_usuario");
-				}
 			}
 		}
 		
@@ -2432,9 +2105,9 @@ namespace FerroVelhoDAO
 		
 		private int _id_cliente;
 		
-		private EntityRef<tb_usuario> _tb_usuario;
-		
 		private EntityRef<tb_cliente> _tb_cliente;
+		
+		private EntityRef<tb_usuario> _tb_usuario;
 		
     #region Extensibility Method Definitions
     partial void OnLoaded();
@@ -2456,8 +2129,8 @@ namespace FerroVelhoDAO
 		
 		public tb_aCliente()
 		{
-			this._tb_usuario = default(EntityRef<tb_usuario>);
 			this._tb_cliente = default(EntityRef<tb_cliente>);
+			this._tb_usuario = default(EntityRef<tb_usuario>);
 			OnCreated();
 		}
 		
@@ -2589,40 +2262,6 @@ namespace FerroVelhoDAO
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tb_usuario_tb_aCliente", Storage="_tb_usuario", ThisKey="usuario", OtherKey="id_usuario", IsForeignKey=true)]
-		public tb_usuario tb_usuario
-		{
-			get
-			{
-				return this._tb_usuario.Entity;
-			}
-			set
-			{
-				tb_usuario previousValue = this._tb_usuario.Entity;
-				if (((previousValue != value) 
-							|| (this._tb_usuario.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._tb_usuario.Entity = null;
-						previousValue.tb_aCliente.Remove(this);
-					}
-					this._tb_usuario.Entity = value;
-					if ((value != null))
-					{
-						value.tb_aCliente.Add(this);
-						this._usuario = value.id_usuario;
-					}
-					else
-					{
-						this._usuario = default(int);
-					}
-					this.SendPropertyChanged("tb_usuario");
-				}
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tb_cliente_tb_aCliente", Storage="_tb_cliente", ThisKey="id_cliente", OtherKey="id_cliente", IsForeignKey=true)]
 		public tb_cliente tb_cliente
 		{
@@ -2657,6 +2296,40 @@ namespace FerroVelhoDAO
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tb_usuario_tb_aCliente", Storage="_tb_usuario", ThisKey="usuario", OtherKey="id_usuario", IsForeignKey=true)]
+		public tb_usuario tb_usuario
+		{
+			get
+			{
+				return this._tb_usuario.Entity;
+			}
+			set
+			{
+				tb_usuario previousValue = this._tb_usuario.Entity;
+				if (((previousValue != value) 
+							|| (this._tb_usuario.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._tb_usuario.Entity = null;
+						previousValue.tb_aCliente.Remove(this);
+					}
+					this._tb_usuario.Entity = value;
+					if ((value != null))
+					{
+						value.tb_aCliente.Add(this);
+						this._usuario = value.id_usuario;
+					}
+					else
+					{
+						this._usuario = default(int);
+					}
+					this.SendPropertyChanged("tb_usuario");
+				}
+			}
+		}
+		
 		public event PropertyChangingEventHandler PropertyChanging;
 		
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -2675,6 +2348,289 @@ namespace FerroVelhoDAO
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tb_usuario")]
+	public partial class tb_usuario : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _id_usuario;
+		
+		private string _nome_usuario;
+		
+		private string _senha_usuario;
+		
+		private int _permi_usuario;
+		
+		private bool _ativo;
+		
+		private EntitySet<tb_venda> _tb_venda;
+		
+		private EntitySet<tb_caixa> _tb_caixa;
+		
+		private EntitySet<tb_aCliente> _tb_aCliente;
+		
+		private EntityRef<tb_tipoUsuario> _tb_tipoUsuario;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void Onid_usuarioChanging(int value);
+    partial void Onid_usuarioChanged();
+    partial void Onnome_usuarioChanging(string value);
+    partial void Onnome_usuarioChanged();
+    partial void Onsenha_usuarioChanging(string value);
+    partial void Onsenha_usuarioChanged();
+    partial void Onpermi_usuarioChanging(int value);
+    partial void Onpermi_usuarioChanged();
+    partial void OnativoChanging(bool value);
+    partial void OnativoChanged();
+    #endregion
+		
+		public tb_usuario()
+		{
+			this._tb_venda = new EntitySet<tb_venda>(new Action<tb_venda>(this.attach_tb_venda), new Action<tb_venda>(this.detach_tb_venda));
+			this._tb_caixa = new EntitySet<tb_caixa>(new Action<tb_caixa>(this.attach_tb_caixa), new Action<tb_caixa>(this.detach_tb_caixa));
+			this._tb_aCliente = new EntitySet<tb_aCliente>(new Action<tb_aCliente>(this.attach_tb_aCliente), new Action<tb_aCliente>(this.detach_tb_aCliente));
+			this._tb_tipoUsuario = default(EntityRef<tb_tipoUsuario>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_id_usuario", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int id_usuario
+		{
+			get
+			{
+				return this._id_usuario;
+			}
+			set
+			{
+				if ((this._id_usuario != value))
+				{
+					this.Onid_usuarioChanging(value);
+					this.SendPropertyChanging();
+					this._id_usuario = value;
+					this.SendPropertyChanged("id_usuario");
+					this.Onid_usuarioChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_nome_usuario", DbType="VarChar(50) NOT NULL", CanBeNull=false)]
+		public string nome_usuario
+		{
+			get
+			{
+				return this._nome_usuario;
+			}
+			set
+			{
+				if ((this._nome_usuario != value))
+				{
+					this.Onnome_usuarioChanging(value);
+					this.SendPropertyChanging();
+					this._nome_usuario = value;
+					this.SendPropertyChanged("nome_usuario");
+					this.Onnome_usuarioChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_senha_usuario", DbType="VarChar(50)")]
+		public string senha_usuario
+		{
+			get
+			{
+				return this._senha_usuario;
+			}
+			set
+			{
+				if ((this._senha_usuario != value))
+				{
+					this.Onsenha_usuarioChanging(value);
+					this.SendPropertyChanging();
+					this._senha_usuario = value;
+					this.SendPropertyChanged("senha_usuario");
+					this.Onsenha_usuarioChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_permi_usuario", DbType="Int NOT NULL")]
+		public int permi_usuario
+		{
+			get
+			{
+				return this._permi_usuario;
+			}
+			set
+			{
+				if ((this._permi_usuario != value))
+				{
+					if (this._tb_tipoUsuario.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onpermi_usuarioChanging(value);
+					this.SendPropertyChanging();
+					this._permi_usuario = value;
+					this.SendPropertyChanged("permi_usuario");
+					this.Onpermi_usuarioChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ativo", DbType="Bit NOT NULL")]
+		public bool ativo
+		{
+			get
+			{
+				return this._ativo;
+			}
+			set
+			{
+				if ((this._ativo != value))
+				{
+					this.OnativoChanging(value);
+					this.SendPropertyChanging();
+					this._ativo = value;
+					this.SendPropertyChanged("ativo");
+					this.OnativoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tb_usuario_tb_venda", Storage="_tb_venda", ThisKey="id_usuario", OtherKey="usuario")]
+		public EntitySet<tb_venda> tb_venda
+		{
+			get
+			{
+				return this._tb_venda;
+			}
+			set
+			{
+				this._tb_venda.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tb_usuario_tb_caixa", Storage="_tb_caixa", ThisKey="id_usuario", OtherKey="usuario")]
+		public EntitySet<tb_caixa> tb_caixa
+		{
+			get
+			{
+				return this._tb_caixa;
+			}
+			set
+			{
+				this._tb_caixa.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tb_usuario_tb_aCliente", Storage="_tb_aCliente", ThisKey="id_usuario", OtherKey="usuario")]
+		public EntitySet<tb_aCliente> tb_aCliente
+		{
+			get
+			{
+				return this._tb_aCliente;
+			}
+			set
+			{
+				this._tb_aCliente.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tb_tipoUsuario_tb_usuario", Storage="_tb_tipoUsuario", ThisKey="permi_usuario", OtherKey="id_tipoUsuario", IsForeignKey=true)]
+		public tb_tipoUsuario tb_tipoUsuario
+		{
+			get
+			{
+				return this._tb_tipoUsuario.Entity;
+			}
+			set
+			{
+				tb_tipoUsuario previousValue = this._tb_tipoUsuario.Entity;
+				if (((previousValue != value) 
+							|| (this._tb_tipoUsuario.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._tb_tipoUsuario.Entity = null;
+						previousValue.tb_usuario.Remove(this);
+					}
+					this._tb_tipoUsuario.Entity = value;
+					if ((value != null))
+					{
+						value.tb_usuario.Add(this);
+						this._permi_usuario = value.id_tipoUsuario;
+					}
+					else
+					{
+						this._permi_usuario = default(int);
+					}
+					this.SendPropertyChanged("tb_tipoUsuario");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_tb_venda(tb_venda entity)
+		{
+			this.SendPropertyChanging();
+			entity.tb_usuario = this;
+		}
+		
+		private void detach_tb_venda(tb_venda entity)
+		{
+			this.SendPropertyChanging();
+			entity.tb_usuario = null;
+		}
+		
+		private void attach_tb_caixa(tb_caixa entity)
+		{
+			this.SendPropertyChanging();
+			entity.tb_usuario = this;
+		}
+		
+		private void detach_tb_caixa(tb_caixa entity)
+		{
+			this.SendPropertyChanging();
+			entity.tb_usuario = null;
+		}
+		
+		private void attach_tb_aCliente(tb_aCliente entity)
+		{
+			this.SendPropertyChanging();
+			entity.tb_usuario = this;
+		}
+		
+		private void detach_tb_aCliente(tb_aCliente entity)
+		{
+			this.SendPropertyChanging();
+			entity.tb_usuario = null;
 		}
 	}
 }

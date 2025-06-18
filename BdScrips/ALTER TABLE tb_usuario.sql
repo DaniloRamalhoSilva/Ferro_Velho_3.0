@@ -1,0 +1,1 @@
+ALTER TABLE tb_usuario ADD ativo BIT NOT NULL DEFAULT 1;

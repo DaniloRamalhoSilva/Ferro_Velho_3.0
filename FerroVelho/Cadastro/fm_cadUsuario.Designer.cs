@@ -48,21 +48,26 @@
             this.btn_excluir = new System.Windows.Forms.Button();
             this.btn_alterar = new System.Windows.Forms.Button();
             this.lb_idUsuario = new System.Windows.Forms.Label();
+            this.tbusuarioBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ativo = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.btn_exibirInativos = new System.Windows.Forms.LinkLabel();
+            this.btn_reativar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.tb_tipoUsuarioBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tb_usuarioBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbusuarioBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // bt_salvar
             // 
             this.bt_salvar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.bt_salvar.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bt_salvar.Location = new System.Drawing.Point(435, 188);
+            this.bt_salvar.Location = new System.Drawing.Point(434, 190);
             this.bt_salvar.Name = "bt_salvar";
             this.bt_salvar.Size = new System.Drawing.Size(124, 29);
             this.bt_salvar.TabIndex = 0;
@@ -184,13 +189,14 @@
             this.dataGridViewTextBoxColumn5,
             this.dataGridViewTextBoxColumn1,
             this.dataGridViewTextBoxColumn3,
-            this.dataGridViewTextBoxColumn4});
+            this.dataGridViewTextBoxColumn4,
+            this.ativo});
             this.DataGridView1.DataSource = this.tb_usuarioBindingSource;
-            this.DataGridView1.Location = new System.Drawing.Point(15, 235);
+            this.DataGridView1.Location = new System.Drawing.Point(14, 246);
             this.DataGridView1.Name = "DataGridView1";
             this.DataGridView1.ReadOnly = true;
             this.DataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.DataGridView1.Size = new System.Drawing.Size(543, 230);
+            this.DataGridView1.Size = new System.Drawing.Size(543, 219);
             this.DataGridView1.TabIndex = 9;
             this.DataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.DataGridView1_CellFormatting);
             this.DataGridView1.Click += new System.EventHandler(this.DataGridView1_Click_1);
@@ -199,7 +205,7 @@
             // 
             this.btn_novo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_novo.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_novo.Location = new System.Drawing.Point(435, 27);
+            this.btn_novo.Location = new System.Drawing.Point(435, 30);
             this.btn_novo.Name = "btn_novo";
             this.btn_novo.Size = new System.Drawing.Size(123, 31);
             this.btn_novo.TabIndex = 15;
@@ -211,7 +217,7 @@
             // 
             this.btn_cancelar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_cancelar.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_cancelar.Location = new System.Drawing.Point(435, 151);
+            this.btn_cancelar.Location = new System.Drawing.Point(434, 153);
             this.btn_cancelar.Name = "btn_cancelar";
             this.btn_cancelar.Size = new System.Drawing.Size(123, 31);
             this.btn_cancelar.TabIndex = 14;
@@ -224,7 +230,7 @@
             // 
             this.btn_excluir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_excluir.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_excluir.Location = new System.Drawing.Point(435, 101);
+            this.btn_excluir.Location = new System.Drawing.Point(435, 104);
             this.btn_excluir.Name = "btn_excluir";
             this.btn_excluir.Size = new System.Drawing.Size(123, 31);
             this.btn_excluir.TabIndex = 13;
@@ -236,7 +242,7 @@
             // 
             this.btn_alterar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_alterar.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_alterar.Location = new System.Drawing.Point(435, 64);
+            this.btn_alterar.Location = new System.Drawing.Point(435, 67);
             this.btn_alterar.Name = "btn_alterar";
             this.btn_alterar.Size = new System.Drawing.Size(123, 31);
             this.btn_alterar.TabIndex = 12;
@@ -247,11 +253,16 @@
             // lb_idUsuario
             // 
             this.lb_idUsuario.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.tb_usuarioBindingSource, "id_usuario", true));
-            this.lb_idUsuario.Location = new System.Drawing.Point(435, 32);
+            this.lb_idUsuario.Location = new System.Drawing.Point(435, 35);
             this.lb_idUsuario.Name = "lb_idUsuario";
             this.lb_idUsuario.Size = new System.Drawing.Size(51, 23);
             this.lb_idUsuario.TabIndex = 16;
             this.lb_idUsuario.Text = "nd";
+            // 
+            // tbusuarioBindingSource
+            // 
+            this.tbusuarioBindingSource.DataMember = "tb_usuario";
+            this.tbusuarioBindingSource.DataSource = this.tb_tipoUsuarioBindingSource;
             // 
             // dataGridViewTextBoxColumn2
             // 
@@ -259,7 +270,7 @@
             this.dataGridViewTextBoxColumn2.HeaderText = "Usuario";
             this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
             this.dataGridViewTextBoxColumn2.ReadOnly = true;
-            this.dataGridViewTextBoxColumn2.Width = 300;
+            this.dataGridViewTextBoxColumn2.Width = 280;
             // 
             // dataGridViewTextBoxColumn5
             // 
@@ -267,7 +278,7 @@
             this.dataGridViewTextBoxColumn5.HeaderText = "Tipo de Permição";
             this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
             this.dataGridViewTextBoxColumn5.ReadOnly = true;
-            this.dataGridViewTextBoxColumn5.Width = 200;
+            this.dataGridViewTextBoxColumn5.Width = 180;
             // 
             // dataGridViewTextBoxColumn1
             // 
@@ -299,11 +310,47 @@
             this.dataGridViewTextBoxColumn4.Visible = false;
             this.dataGridViewTextBoxColumn4.Width = 200;
             // 
+            // ativo
+            // 
+            this.ativo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.ativo.DataPropertyName = "ativo";
+            this.ativo.FillWeight = 20F;
+            this.ativo.HeaderText = "Ativo";
+            this.ativo.Name = "ativo";
+            this.ativo.ReadOnly = true;
+            this.ativo.Width = 37;
+            // 
+            // btn_exibirInativos
+            // 
+            this.btn_exibirInativos.AutoSize = true;
+            this.btn_exibirInativos.Location = new System.Drawing.Point(479, 230);
+            this.btn_exibirInativos.Name = "btn_exibirInativos";
+            this.btn_exibirInativos.Size = new System.Drawing.Size(79, 13);
+            this.btn_exibirInativos.TabIndex = 17;
+            this.btn_exibirInativos.TabStop = true;
+            this.btn_exibirInativos.Text = "Exibir excluidos";
+            this.btn_exibirInativos.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.btn_exibirInativos_Click);
+            // 
+            // btn_reativar
+            // 
+            this.btn_reativar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_reativar.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_reativar.Location = new System.Drawing.Point(434, 104);
+            this.btn_reativar.Name = "btn_reativar";
+            this.btn_reativar.Size = new System.Drawing.Size(123, 31);
+            this.btn_reativar.TabIndex = 18;
+            this.btn_reativar.Text = "Reativar";
+            this.btn_reativar.UseVisualStyleBackColor = true;
+            this.btn_reativar.Visible = false;
+            this.btn_reativar.Click += new System.EventHandler(this.btn_reativar_Click);
+            // 
             // fm_cadUsuario
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(564, 477);
+            this.Controls.Add(this.btn_reativar);
+            this.Controls.Add(this.btn_exibirInativos);
             this.Controls.Add(this.btn_novo);
             this.Controls.Add(this.btn_cancelar);
             this.Controls.Add(this.btn_excluir);
@@ -327,6 +374,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.tb_tipoUsuarioBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tb_usuarioBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbusuarioBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -351,10 +399,14 @@
         private System.Windows.Forms.Button btn_excluir;
         private System.Windows.Forms.Button btn_alterar;
         private System.Windows.Forms.Label lb_idUsuario;
+        private System.Windows.Forms.BindingSource tbusuarioBindingSource;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn ativo;
+        private System.Windows.Forms.LinkLabel btn_exibirInativos;
+        private System.Windows.Forms.Button btn_reativar;
     }
 }

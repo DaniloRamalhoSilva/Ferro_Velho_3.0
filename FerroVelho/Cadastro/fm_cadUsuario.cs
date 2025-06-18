@@ -13,6 +13,7 @@ namespace FerroVelho
 {
     public partial class fm_cadUsuario : Form
     {
+        private bool mostrarInativos = false;
         public fm_cadUsuario()
         {
             InitializeComponent();
@@ -21,11 +22,23 @@ namespace FerroVelho
         private void fm_cadUsuario_Load(object sender, EventArgs e)
         {
             this.tb_tipoUsuarioBindingSource.DataSource = DataContextFactory.DataContext.tb_tipoUsuario;
-            this.tb_usuarioBindingSource.DataSource = DataContextFactory.DataContext.tb_usuario;
-            if(this.usuarioCorrente != null)
+            CarregaUsuarios();
+            if (this.usuarioCorrente != null)
             {
                 clik();
             }                        
+        }
+
+        private void CarregaUsuarios()
+        {
+            if (mostrarInativos)
+            {
+                this.tb_usuarioBindingSource.DataSource = DataContextFactory.DataContext.tb_usuario;
+            }
+            else
+            {
+                this.tb_usuarioBindingSource.DataSource = DataContextFactory.DataContext.tb_usuario.Where(u => u.ativo);
+            }
         }
 
         private void bt_salvar_Click(object sender, EventArgs e)
@@ -61,8 +74,11 @@ namespace FerroVelho
                             this.usuarioCorrente.senha_usuario = txt_senha.Text;
                             this.usuarioCorrente.permi_usuario = tipoCorrente.id_tipoUsuario;
 
+                            this.usuarioCorrente.ativo = true;
+
                             this.tb_usuarioBindingSource.EndEdit();
                             DataContextFactory.DataContext.SubmitChanges();
+                            CarregaUsuarios();
                             MessageBox.Show("Usuario cadastrado com sucesso!");
                         }
                         
@@ -87,10 +103,11 @@ namespace FerroVelho
                                 this.tb_usuarioBindingSource.DataSource = DataContextFactory.DataContext.tb_usuario;
                                 this.usuarioCorrente.nome_usuario = txt_nome.Text;
                                 this.usuarioCorrente.senha_usuario = txt_senha.Text;
-                                this.usuarioCorrente.permi_usuario = tipoCorrente.id_tipoUsuario;
+                                this.usuarioCorrente.permi_usuario = tipoCorrente.id_tipoUsuario; 
 
                                 this.tb_usuarioBindingSource.EndEdit();
                                 DataContextFactory.DataContext.SubmitChanges();
+                                CarregaUsuarios();
                                 MessageBox.Show("Usuario alterado com sucesso!");
                             }
                             else
@@ -107,6 +124,7 @@ namespace FerroVelho
 
                             this.tb_usuarioBindingSource.EndEdit();
                             DataContextFactory.DataContext.SubmitChanges();
+                            CarregaUsuarios();
                             MessageBox.Show("Usuario alterado com sucesso!");
                         }
 
@@ -119,7 +137,7 @@ namespace FerroVelho
 
                     bt_salvar.Visible = false;
                     btn_cancelar.Visible = false;
-                    btn_alterar.Visible = true;
+                    btn_alterar.Visible = true;                    
                     btn_excluir.Visible = true;
                     btn_novo.Visible = true;
                     DataGridView1.Enabled = true;
@@ -150,8 +168,11 @@ namespace FerroVelho
         {
             txt_nome.Text = this.usuarioCorrente.nome_usuario;
             txt_senha.Text =this.usuarioCorrente.senha_usuario;
-            txt_confSenha.Text = "";            
+            txt_confSenha.Text = "";
             cb_tipo.SelectedValue = this.usuarioCorrente.permi_usuario;
+            btn_reativar.Visible = !this.usuarioCorrente.ativo;
+            btn_alterar.Enabled = this.usuarioCorrente.ativo;
+            btn_excluir.Enabled = this.usuarioCorrente.ativo;
         }
 
         private void btn_novo_Click(object sender, EventArgs e)
@@ -171,11 +192,12 @@ namespace FerroVelho
 
             btn_cancelar.Visible = true;
             bt_salvar.Visible = true;
-            btn_alterar.Visible = false;
+            btn_alterar.Visible = false;            
             btn_excluir.Visible = false;
             btn_novo.Visible = false;
 
             DataGridView1.Enabled = false;
+            btn_reativar.Visible = false;
         }
 
         private void DataGridView1_Click_1(object sender, EventArgs e)
@@ -204,8 +226,7 @@ namespace FerroVelho
             btn_excluir.Visible = true;
             btn_novo.Visible = true;
 
-            DataGridView1.Enabled = true;
-            
+            DataGridView1.Enabled = true;            
         }
 
         private void btn_alterar_Click(object sender, EventArgs e)
@@ -230,6 +251,7 @@ namespace FerroVelho
                 btn_novo.Visible = false;
 
                 DataGridView1.Enabled = false;
+                btn_reativar.Visible = false;
             }
             
         }
@@ -238,14 +260,16 @@ namespace FerroVelho
         {
             if (lb_idUsuario.Text == "")
             {
-                MessageBox.Show("Selecione um produto valido!");
+                MessageBox.Show("Não e permitido excluir o master!");
             }
             else
             {
                 if (MessageBox.Show("Realmente deseja excuir", "Confirmação", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    this.tb_usuarioBindingSource.RemoveCurrent();
+                    this.usuarioCorrente.ativo = false;
+                    this.tb_usuarioBindingSource.EndEdit();
                     DataContextFactory.DataContext.SubmitChanges();
+                    CarregaUsuarios();
                     if (this.usuarioCorrente != null)
                     {
                         clik();
@@ -255,11 +279,42 @@ namespace FerroVelho
             }
         }
 
+        private void btn_reativar_Click(object sender, EventArgs e)
+        {
+            if (lb_idUsuario.Text == "")
+            {
+                MessageBox.Show("Selecione um produto valido!");
+            }
+            else
+            {
+                this.usuarioCorrente.ativo = true;
+                this.tb_usuarioBindingSource.EndEdit();
+                DataContextFactory.DataContext.SubmitChanges();
+                CarregaUsuarios();
+                if (this.usuarioCorrente != null)
+                {
+                    clik();
+                }
+                MessageBox.Show("Usuario reativado com sucesso!");
+            }
+        }
+
         private void DataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.Value != null && e.ColumnIndex == 1)
             {
                 e.Value = ((tb_tipoUsuario)e.Value).desc_tipoUsuario;
+            }
+        }
+
+        private void btn_exibirInativos_Click(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            mostrarInativos = !mostrarInativos;
+            btn_exibirInativos.Text = mostrarInativos ? "Ocultar Inativos" : "Exibir Inativos";
+            CarregaUsuarios();
+            if (this.usuarioCorrente != null)
+            {
+                clik();
             }
         }
     }

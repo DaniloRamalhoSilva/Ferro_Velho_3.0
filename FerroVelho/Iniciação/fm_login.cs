@@ -53,12 +53,11 @@ namespace FerroVelho
         {
             try
             {
-                var cont = DataContextFactory.DataContext.tb_usuario.Count(x => x.nome_usuario == txt_nome.Text && x.senha_usuario == txt_senha.Text);
+                var cont = DataContextFactory.DataContext.tb_usuario.Count(x => x.nome_usuario == txt_nome.Text && x.senha_usuario == txt_senha.Text && x.ativo);
 
                 if (cont > 0)
                 {
-                    this.tb_usuarioBindingSource.DataSource = DataContextFactory.DataContext.tb_usuario.Where(x => x.nome_usuario == txt_nome.Text && x.senha_usuario == txt_senha.Text);
-
+                    this.tb_usuarioBindingSource.DataSource = DataContextFactory.DataContext.tb_usuario.Where(x => x.nome_usuario == txt_nome.Text && x.senha_usuario == txt_senha.Text && x.ativo);
                     logar = true;
 
                     DataContextFactory.usu = usuarioCorrente;

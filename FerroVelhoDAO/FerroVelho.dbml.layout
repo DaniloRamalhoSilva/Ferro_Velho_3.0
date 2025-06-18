@@ -20,25 +20,12 @@
         <elementListCompartment Id="8765a413-bddb-4a90-bb9f-eb3c650866fd" absoluteBounds="0.51499999999999968, 0.96, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <classShape Id="83cdd819-f3d5-44b4-bc59-67e71bd80fff" absoluteBounds="2.75, 4.875, 2, 1.5785953776041666">
-      <DataClassMoniker Name="/FerroVelhoDataContext/tb_usuario" />
-      <nestedChildShapes>
-        <elementListCompartment Id="a8b93081-17c2-467f-a7d7-bc283678f882" absoluteBounds="2.765, 5.335, 1.9700000000000002, 1.0185953776041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
-      </nestedChildShapes>
-    </classShape>
     <classShape Id="8876674f-e6d1-4f8b-8257-7fe1f6d83853" absoluteBounds="2.75, 6.875, 2, 1.1939925130208326">
       <DataClassMoniker Name="/FerroVelhoDataContext/tb_tipoUsuario" />
       <nestedChildShapes>
         <elementListCompartment Id="ba6ab27c-5d37-4299-b41f-901976369d4c" absoluteBounds="2.7649999999999997, 7.3350000000000009, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(3.75 : 6.875); (3.75 : 6.45359537760417)]" fixedFrom="NotFixed" fixedTo="NotFixed">
-      <AssociationMoniker Name="/FerroVelhoDataContext/tb_tipoUsuario/tb_tipoUsuario_tb_usuario" />
-      <nodes>
-        <classShapeMoniker Id="8876674f-e6d1-4f8b-8257-7fe1f6d83853" />
-        <classShapeMoniker Id="83cdd819-f3d5-44b4-bc59-67e71bd80fff" />
-      </nodes>
-    </associationConnector>
     <classShape Id="1b2adc06-2a82-44fd-b076-9431853b798f" absoluteBounds="2.75, 0.5, 2, 1.5785953776041666">
       <DataClassMoniker Name="/FerroVelhoDataContext/tb_produtos" />
       <nestedChildShapes>
@@ -52,7 +39,7 @@
         <classShapeMoniker Id="c7380112-0899-4095-89d8-35f12636e208" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(2.75 : 1.28929768880208); (2.5 : 1.28929768880208)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(2.75 : 1.28929768880208); (2.5 : 1.28929768880208)]" fixedFrom="Algorithm" fixedTo="Algorithm">
       <AssociationMoniker Name="/FerroVelhoDataContext/tb_produtos/tb_produtos_tb_itemv" />
       <nodes>
         <classShapeMoniker Id="1b2adc06-2a82-44fd-b076-9431853b798f" />
@@ -65,18 +52,11 @@
         <elementListCompartment Id="6f42ad25-7210-454f-9851-a8371053dd5f" absoluteBounds="0.51499999999999968, 3.0850000000000009, 1.9700000000000002, 1.0185953776041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(1.5 : 2.625); (1.5 : 2.4631982421875)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(1.5 : 2.625); (1.5 : 2.4631982421875)]" fixedFrom="Algorithm" fixedTo="Algorithm">
       <AssociationMoniker Name="/FerroVelhoDataContext/tb_venda/tb_venda_tb_itemv" />
       <nodes>
         <classShapeMoniker Id="eeb9c47b-9d0e-4743-ab06-70fbf310cba5" />
         <classShapeMoniker Id="883da228-7b5f-49df-a914-780a682bbed6" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(2.75 : 4.875); (2.5 : 4.20359537760417)]" fixedFrom="NotFixed" fixedTo="NotFixed">
-      <AssociationMoniker Name="/FerroVelhoDataContext/tb_usuario/tb_usuario_tb_venda" />
-      <nodes>
-        <classShapeMoniker Id="83cdd819-f3d5-44b4-bc59-67e71bd80fff" />
-        <classShapeMoniker Id="eeb9c47b-9d0e-4743-ab06-70fbf310cba5" />
       </nodes>
     </associationConnector>
     <classShape Id="34f4cfe7-82db-4a18-b5ca-9c564e29c924" absoluteBounds="5, 2.625, 2, 2.1554996744791666">
@@ -90,13 +70,6 @@
       <nodes>
         <classShapeMoniker Id="34f4cfe7-82db-4a18-b5ca-9c564e29c924" />
         <classShapeMoniker Id="c7380112-0899-4095-89d8-35f12636e208" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(4.75 : 4.875); (5 : 4.78049967447917)]" fixedFrom="NotFixed" fixedTo="NotFixed">
-      <AssociationMoniker Name="/FerroVelhoDataContext/tb_usuario/tb_usuario_tb_compra" />
-      <nodes>
-        <classShapeMoniker Id="83cdd819-f3d5-44b4-bc59-67e71bd80fff" />
-        <classShapeMoniker Id="34f4cfe7-82db-4a18-b5ca-9c564e29c924" />
       </nodes>
     </associationConnector>
     <classShape Id="63d86d20-3d99-4851-94b6-a0ba22723e59" absoluteBounds="8.25, 3.125, 2, 1.7708968098958326">
@@ -125,31 +98,51 @@
         <classShapeMoniker Id="3fab8dcb-6552-47ef-a9da-0694108d7269" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(2.75 : 6.45359537760417); (2.5 : 6.75)]" fixedFrom="NotFixed" fixedTo="NotFixed">
-      <AssociationMoniker Name="/FerroVelhoDataContext/tb_usuario/tb_usuario_tb_caixa" />
-      <nodes>
-        <classShapeMoniker Id="83cdd819-f3d5-44b4-bc59-67e71bd80fff" />
-        <classShapeMoniker Id="3fab8dcb-6552-47ef-a9da-0694108d7269" />
-      </nodes>
-    </associationConnector>
     <classShape Id="f291036b-0932-413e-9317-b687c38d6087" absoluteBounds="5.25, 5.375, 2, 1.9631982421875">
       <DataClassMoniker Name="/FerroVelhoDataContext/tb_aCliente" />
       <nestedChildShapes>
         <elementListCompartment Id="adc60d3d-bafb-4944-a8e5-911aa11d9cbf" absoluteBounds="5.2650000000000006, 5.8350000000000009, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(4.75 : 5.91429768880208); (5.25 : 5.91429768880208)]" fixedFrom="NotFixed" fixedTo="NotFixed">
-      <AssociationMoniker Name="/FerroVelhoDataContext/tb_usuario/tb_usuario_tb_aCliente" />
-      <nodes>
-        <classShapeMoniker Id="83cdd819-f3d5-44b4-bc59-67e71bd80fff" />
-        <classShapeMoniker Id="f291036b-0932-413e-9317-b687c38d6087" />
-      </nodes>
-    </associationConnector>
-    <associationConnector edgePoints="[(8.25 : 4.8694482421875); (7.15625 : 4.8694482421875); (7.15625 : 5.375)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(8.25 : 4.8694482421875); (6.25 : 4.8694482421875); (6.25 : 5.375)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/FerroVelhoDataContext/tb_cliente/tb_cliente_tb_aCliente" />
       <nodes>
         <classShapeMoniker Id="63d86d20-3d99-4851-94b6-a0ba22723e59" />
         <classShapeMoniker Id="f291036b-0932-413e-9317-b687c38d6087" />
+      </nodes>
+    </associationConnector>
+    <classShape Id="97c42e04-cdc2-458d-b4b2-aa18d5ace534" absoluteBounds="2.875, 4.75, 2, 1.7708968098958331">
+      <DataClassMoniker Name="/FerroVelhoDataContext/tb_usuario" />
+      <nestedChildShapes>
+        <elementListCompartment Id="dd2c631c-d4bb-4d1d-962e-b62f44800755" absoluteBounds="2.89, 5.21, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(2.875 : 4.75); (2.5 : 4.20359537760417)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+      <AssociationMoniker Name="/FerroVelhoDataContext/tb_usuario/tb_usuario_tb_venda" />
+      <nodes>
+        <classShapeMoniker Id="97c42e04-cdc2-458d-b4b2-aa18d5ace534" />
+        <classShapeMoniker Id="eeb9c47b-9d0e-4743-ab06-70fbf310cba5" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(2.875 : 6.52089680989583); (2.5 : 6.75)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+      <AssociationMoniker Name="/FerroVelhoDataContext/tb_usuario/tb_usuario_tb_caixa" />
+      <nodes>
+        <classShapeMoniker Id="97c42e04-cdc2-458d-b4b2-aa18d5ace534" />
+        <classShapeMoniker Id="3fab8dcb-6552-47ef-a9da-0694108d7269" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(4.875 : 5.94794840494792); (5.25 : 5.94794840494792)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/FerroVelhoDataContext/tb_usuario/tb_usuario_tb_aCliente" />
+      <nodes>
+        <classShapeMoniker Id="97c42e04-cdc2-458d-b4b2-aa18d5ace534" />
+        <classShapeMoniker Id="f291036b-0932-413e-9317-b687c38d6087" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(3.8437525 : 6.875); (3.8437525 : 6.52089680989583)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/FerroVelhoDataContext/tb_tipoUsuario/tb_tipoUsuario_tb_usuario" />
+      <nodes>
+        <classShapeMoniker Id="8876674f-e6d1-4f8b-8257-7fe1f6d83853" />
+        <classShapeMoniker Id="97c42e04-cdc2-458d-b4b2-aa18d5ace534" />
       </nodes>
     </associationConnector>
   </nestedChildShapes>
