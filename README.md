@@ -3,12 +3,11 @@
 Bem-vindo ao **Ferro Velho 3.0**, um sistema de gerenciamento para ferros-velhos e cooperativas de reciclagem. Este projeto foi desenvolvido em **C# / Windows Forms** e utiliza banco de dados SQL Server via **LINQ to SQL**.
 
 ## 📚 Índice
-- [Funcionalidades](##funcionalidades)
+- [Funcionalidades](#funcionalidades)
 - [Requisitos](#requisitos)
 - [Instalação](#instalação)
 - [Uso](#uso)
 - [Scripts de Banco](#scripts-de-banco)
-- [Contribuindo](#contribuindo)
 
 ## ✅ Funcionalidades
 - Cadastro de usuários, clientes e produtos
