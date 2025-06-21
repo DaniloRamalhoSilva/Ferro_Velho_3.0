@@ -333,7 +333,6 @@
             // 
             this.lb_usuario.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lb_usuario.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.tb_compraBindingSource, "tb_usuario.nome_usuario", true));
             this.lb_usuario.Location = new System.Drawing.Point(59, 544);
             this.lb_usuario.Name = "lb_usuario";
             this.lb_usuario.Size = new System.Drawing.Size(250, 15);
@@ -375,7 +374,6 @@
             // 
             this.lb_cliente.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lb_cliente.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.tb_compraBindingSource, "tb_usuario.nome_usuario", true));
             this.lb_cliente.Location = new System.Drawing.Point(438, 546);
             this.lb_cliente.Name = "lb_cliente";
             this.lb_cliente.Size = new System.Drawing.Size(250, 15);
