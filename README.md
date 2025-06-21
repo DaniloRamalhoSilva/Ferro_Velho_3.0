@@ -1,4 +1,4 @@
-# ♻️ Ferro Velho 3.0
+ # ♻️ Ferro Velho 3.0
 
 Bem-vindo ao **Ferro Velho 3.0**, um sistema de gerenciamento para ferros-velhos e cooperativas de reciclagem. Este projeto foi desenvolvido em **C# / Windows Forms** e utiliza banco de dados SQL Server via **LINQ to SQL**.
 
@@ -21,6 +21,8 @@ Bem-vindo ao **Ferro Velho 3.0**, um sistema de gerenciamento para ferros-velhos
 - Windows com **.NET Framework 4.5** ou superior
 - **SQL Server** para o banco de dados
 - **Visual Studio 2017** ou mais recente
+- **SQL Server Data Tools** instalado no Visual Studio (necessário para criação e execução de projetos de banco de dados)
+- **LINQ to SQL Tools** instalado no Visual Studio (habilita o designer e o runtime de `.dbml`)
 
 ## 🛠️ Instalação
 1. Clone este repositório
@@ -39,3 +41,4 @@ Ao iniciar o aplicativo, será apresentada a tela de login. No menu principal es
 
 ## 📁 Scripts de Banco
 A pasta [`BdScrips`](BdScrips/) contém os scripts de criação de tabelas, procedures e atualizações. Importante executar `u_tb_usuario_add_ativo.sql` para adicionar a coluna `ativo` na tabela `tb_usuario`.
+
