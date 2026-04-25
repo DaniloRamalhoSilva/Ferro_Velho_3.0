@@ -128,6 +128,46 @@ namespace FerroVelhoDAO
             PostgresConnectionService.ExcluirCompra(conexaoImp, idCompra);
         }
 
+        public static decimal CalcularSaldoProdutoPostgres(int idProduto)
+        {
+            return PostgresConnectionService.CalcularSaldoProduto(conexaoImp, idProduto);
+        }
+
+        public static tb_venda CriarVendaPostgres(DateTime dataVenda, int usuario, decimal valorNota)
+        {
+            return PostgresConnectionService.CriarVenda(conexaoImp, dataVenda, usuario, valorNota);
+        }
+
+        public static void AtualizarVendaPostgres(int idVenda, decimal valorNota, int usuario)
+        {
+            PostgresConnectionService.AtualizarVenda(conexaoImp, idVenda, valorNota, usuario);
+        }
+
+        public static void InserirItemVendaPostgres(int idProd, int idVenda, decimal quantItem, decimal subTotItem, decimal valrItem)
+        {
+            PostgresConnectionService.InserirItemVenda(conexaoImp, idProd, idVenda, quantItem, subTotItem, valrItem);
+        }
+
+        public static List<tb_itemv> ListarItensVendaPostgres(int idVenda)
+        {
+            return PostgresConnectionService.ListarItensVenda(conexaoImp, idVenda);
+        }
+
+        public static void ExcluirItemVendaPostgres(int idItem)
+        {
+            PostgresConnectionService.ExcluirItemVenda(conexaoImp, idItem);
+        }
+
+        public static void ExcluirVendaPostgres(int idVenda)
+        {
+            PostgresConnectionService.ExcluirVenda(conexaoImp, idVenda);
+        }
+
+        public static DataTable CarregarRelatorioVendaPostgres(int idVenda)
+        {
+            return PostgresConnectionService.CarregarDadosRelatorioVenda(conexaoImp, idVenda);
+        }
+
         public static FerroVelhoDataContext DataContext
         {
             get

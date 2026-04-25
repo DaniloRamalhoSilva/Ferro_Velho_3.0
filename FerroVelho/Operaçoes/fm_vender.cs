@@ -25,8 +25,15 @@ namespace FerroVelho
 
         private void fm_vender_Load(object sender, EventArgs e)
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser))
+            {
+                this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosPostgres();
+            }
+            else
+            {
+                this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos;
+            }
 
-            this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos;
             cb_desProd.DataSource = tb_produtosBindingSource;
             cb_desProd.DisplayMember = "desc_prod";
             cb_desProd.ValueMember = "id_prod";
@@ -123,8 +130,17 @@ namespace FerroVelho
 
             if (txt_codProd.Text != "")
             {
-                fm_estoque fm = new fm_estoque();
-                decimal saldo = fm.calcular(Convert.ToInt32(txt_codProd.Text));
+                decimal saldo;
+                if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+                {
+                    saldo = DataContextFactory.CalcularSaldoProdutoPostgres(Convert.ToInt32(txt_codProd.Text));
+                }
+                else
+                {
+                    fm_estoque fm = new fm_estoque();
+                    saldo = fm.calcular(Convert.ToInt32(txt_codProd.Text));
+                }
+
                 lb_saldo.Text = saldo.ToString("N3");
             }
             else
@@ -195,7 +211,14 @@ namespace FerroVelho
                         novoItem();
                     }
                     bt_finalCompra.Enabled = true;
-                    this.tb_itemvBindingSource.DataSource = DataContextFactory.DataContext.tb_itemv.Where(x => x.id_venda == this.vendaCorrente.id_venda);
+                    if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+                    {
+                        this.tb_itemvBindingSource.DataSource = DataContextFactory.ListarItensVendaPostgres(this.vendaCorrente.id_venda);
+                    }
+                    else
+                    {
+                        this.tb_itemvBindingSource.DataSource = DataContextFactory.DataContext.tb_itemv.Where(x => x.id_venda == this.vendaCorrente.id_venda);
+                    }
 
                     calcula();
                     txt_codProd.Text = "";
@@ -221,6 +244,15 @@ namespace FerroVelho
 
         private void novaNota()
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                var venda = DataContextFactory.CriarVendaPostgres(DateTime.Now, DataContextFactory.usu.id_usuario, 0m);
+                this.tb_vendaBindingSource.DataSource = venda;
+                txt_nNota.Text = Convert.ToString(venda.id_venda);
+                bt_finalCompra.Enabled = true;
+                return;
+            }
+
             this.tb_vendaBindingSource.DataSource = DataContextFactory.DataContext.tb_venda;
             this.tb_vendaBindingSource.AddNew();
             this.vendaCorrente.data_venda = DateTime.Now;
@@ -233,6 +265,17 @@ namespace FerroVelho
 
         private void novoItem()
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                DataContextFactory.InserirItemVendaPostgres(
+                    this.produtoCorrente.id_prod,
+                    this.vendaCorrente.id_venda,
+                    Convert.ToDecimal(txt_quant.Text),
+                    Convert.ToDecimal(txt_subTot.Text),
+                    Convert.ToDecimal(txt_valProd.Text));
+                return;
+            }
+
             this.tb_itemvBindingSource.DataSource = DataContextFactory.DataContext.tb_itemv;
 
             this.tb_itemvBindingSource.AddNew();
@@ -258,10 +301,19 @@ namespace FerroVelho
 
         private void bt_finalCompra_Click(object sender, EventArgs e)
         {
-            this.tb_vendaBindingSource.EndEdit();
-            this.vendaCorrente.valor_nota = Convert.ToDecimal(labelTotal.Text);
-            this.vendaCorrente.usuario = DataContextFactory.usu.id_usuario;
-            DataContextFactory.DataContext.SubmitChanges();
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                this.vendaCorrente.valor_nota = Convert.ToDecimal(labelTotal.Text);
+                this.vendaCorrente.usuario = DataContextFactory.usu.id_usuario;
+                DataContextFactory.AtualizarVendaPostgres(this.vendaCorrente.id_venda, this.vendaCorrente.valor_nota, this.vendaCorrente.usuario ?? 0);
+            }
+            else
+            {
+                this.tb_vendaBindingSource.EndEdit();
+                this.vendaCorrente.valor_nota = Convert.ToDecimal(labelTotal.Text);
+                this.vendaCorrente.usuario = DataContextFactory.usu.id_usuario;
+                DataContextFactory.DataContext.SubmitChanges();
+            }
 
             if (checkBox1.Checked == true)
             {
@@ -270,7 +322,14 @@ namespace FerroVelho
             imprimirNF(vendaCorrente.id_venda);
 
             limpar();
-            this.tb_itemvBindingSource.DataSource = DataContextFactory.DataContext.tb_itemv.Where(x => x.id_venda == this.vendaCorrente.id_venda + 1);
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                this.tb_itemvBindingSource.DataSource = new List<tb_itemv>();
+            }
+            else
+            {
+                this.tb_itemvBindingSource.DataSource = DataContextFactory.DataContext.tb_itemv.Where(x => x.id_venda == this.vendaCorrente.id_venda + 1);
+            }
 
 
             txt_quant.Focus();
@@ -293,19 +352,46 @@ namespace FerroVelho
         {
             try
             {
-                string aki = ((tb_produtos)dg_venda[0, dg_venda.CurrentRow.Index].Value).desc_prod;
+                string aki;
+                if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+                {
+                    aki = itemCorrente.tb_produtos != null ? itemCorrente.tb_produtos.desc_prod : Convert.ToString(itemCorrente.id_prod);
+                }
+                else
+                {
+                    aki = ((tb_produtos)dg_venda[0, dg_venda.CurrentRow.Index].Value).desc_prod;
+                }
+
                 if (MessageBox.Show("Realmente deseja excuir: " + aki, "Confirmação", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    this.tb_itemvBindingSource.RemoveCurrent();
-                    DataContextFactory.DataContext.SubmitChanges();
+                    if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+                    {
+                        DataContextFactory.ExcluirItemVendaPostgres(itemCorrente.id_item);
+                        this.tb_itemvBindingSource.DataSource = DataContextFactory.ListarItensVendaPostgres(this.vendaCorrente.id_venda);
+                    }
+                    else
+                    {
+                        this.tb_itemvBindingSource.RemoveCurrent();
+                        DataContextFactory.DataContext.SubmitChanges();
+                    }
+
                     MessageBox.Show("Produto excluido com sucesso!");
                     calcula();
                     txt_quant.Focus();
                 }
                 if (dg_venda.RowCount == 0)
                 {
-                    this.tb_vendaBindingSource.RemoveCurrent();
-                    DataContextFactory.DataContext.SubmitChanges();
+                    if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+                    {
+                        DataContextFactory.ExcluirVendaPostgres(this.vendaCorrente.id_venda);
+                        this.tb_vendaBindingSource.DataSource = null;
+                    }
+                    else
+                    {
+                        this.tb_vendaBindingSource.RemoveCurrent();
+                        DataContextFactory.DataContext.SubmitChanges();
+                    }
+
                     limpar();
                     txt_quant.Focus();
                     bt_finalCompra.Enabled = false;
@@ -334,7 +420,18 @@ namespace FerroVelho
 
         public void imprimirNF(int nf)
         {
-            this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                var imp = DataContextFactory.BuscarImpressoraPostgres(1);
+                if (imp != null)
+                {
+                    this.tb_impressoraBindingSource.DataSource = new List<tb_impressora> { imp };
+                }
+            }
+            else
+            {
+                this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
+            }
             
 
             LocalReport report = new LocalReport();
@@ -349,6 +446,11 @@ namespace FerroVelho
 
         private DataTable LoadSalesData(int nf)
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                return DataContextFactory.CarregarRelatorioVendaPostgres(nf);
+            }
+
             string comando = "SELECT tb_itemv.quant_item, tb_itemv.subTot_item, tb_itemv.valr_item, tb_produtos.desc_prod, tb_venda.data_venda, tb_itemv.id_prod, tb_itemv.id_venda, tb_usuario.nome_usuario, tb_venda.usuario FROM tb_itemv INNER JOIN tb_venda ON tb_itemv.id_venda = tb_venda.id_venda INNER JOIN tb_produtos ON tb_itemv.id_prod = tb_produtos.id_prod INNER JOIN tb_usuario ON tb_venda.usuario = tb_usuario.id_usuario WHERE tb_itemv.id_venda =" + nf;
             DataTable dt = DataContextFactory.Filtrar(comando);
 

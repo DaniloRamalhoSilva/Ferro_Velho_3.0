@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using Npgsql;
 
 namespace FerroVelhoDAO
@@ -391,6 +392,221 @@ ORDER BY i.id_item;";
                 conn.Open();
                 cmd.ExecuteNonQuery();
             }
+        }
+
+        public static decimal CalcularSaldoProduto(string connectionString, int idProd)
+        {
+            const string sqlEntrada = "SELECT COALESCE(SUM(quant_item), 0) FROM dbo.tb_itemc WHERE id_prod = @id_prod;";
+            const string sqlSaida = "SELECT COALESCE(SUM(quant_item), 0) FROM dbo.tb_itemv WHERE id_prod = @id_prod;";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+
+                decimal entrada;
+                using (var cmd = new NpgsqlCommand(sqlEntrada, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id_prod", idProd);
+                    entrada = Convert.ToDecimal(cmd.ExecuteScalar() ?? 0m);
+                }
+
+                decimal saida;
+                using (var cmd = new NpgsqlCommand(sqlSaida, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id_prod", idProd);
+                    saida = Convert.ToDecimal(cmd.ExecuteScalar() ?? 0m);
+                }
+
+                return entrada - saida;
+            }
+        }
+
+        public static tb_venda CriarVenda(string connectionString, DateTime dataVenda, int usuario, decimal valorNota)
+        {
+            const string sql = @"
+INSERT INTO dbo.tb_venda (data_venda, valor_nota, usuario)
+VALUES (@data_venda, @valor_nota, @usuario)
+RETURNING id_venda, data_venda, valor_nota, usuario;";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@data_venda", dataVenda);
+                cmd.Parameters.AddWithValue("@valor_nota", valorNota);
+                cmd.Parameters.AddWithValue("@usuario", usuario);
+
+                conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (!reader.Read())
+                    {
+                        return null;
+                    }
+
+                    return new tb_venda
+                    {
+                        id_venda = reader.GetInt32(reader.GetOrdinal("id_venda")),
+                        data_venda = reader.GetDateTime(reader.GetOrdinal("data_venda")),
+                        valor_nota = reader.GetDecimal(reader.GetOrdinal("valor_nota")),
+                        usuario = reader.IsDBNull(reader.GetOrdinal("usuario")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("usuario"))
+                    };
+                }
+            }
+        }
+
+        public static void AtualizarVenda(string connectionString, int idVenda, decimal valorNota, int usuario)
+        {
+            const string sql = @"
+UPDATE dbo.tb_venda
+SET valor_nota = @valor_nota,
+    usuario = @usuario
+WHERE id_venda = @id_venda;";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@id_venda", idVenda);
+                cmd.Parameters.AddWithValue("@valor_nota", valorNota);
+                cmd.Parameters.AddWithValue("@usuario", usuario);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public static void InserirItemVenda(string connectionString, int idProd, int idVenda, decimal quantItem, decimal subTotItem, decimal valrItem)
+        {
+            const string sql = @"
+INSERT INTO dbo.tb_itemv (id_prod, id_venda, quant_item, subtot_item, valr_item)
+VALUES (@id_prod, @id_venda, @quant_item, @subtot_item, @valr_item);";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@id_prod", idProd);
+                cmd.Parameters.AddWithValue("@id_venda", idVenda);
+                cmd.Parameters.AddWithValue("@quant_item", quantItem);
+                cmd.Parameters.AddWithValue("@subtot_item", subTotItem);
+                cmd.Parameters.AddWithValue("@valr_item", valrItem);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public static List<tb_itemv> ListarItensVenda(string connectionString, int idVenda)
+        {
+            const string sql = @"
+SELECT
+  i.id_item,
+  i.id_prod,
+  i.id_venda,
+  i.quant_item,
+  i.subtot_item,
+  i.valr_item,
+  p.desc_prod,
+  p.val_prod,
+  p.usuario
+FROM dbo.tb_itemv i
+INNER JOIN dbo.tb_produtos p ON p.id_prod = i.id_prod
+WHERE i.id_venda = @id_venda
+ORDER BY i.id_item;";
+
+            var itens = new List<tb_itemv>();
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@id_venda", idVenda);
+                conn.Open();
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var prod = new tb_produtos
+                        {
+                            id_prod = reader.GetInt32(reader.GetOrdinal("id_prod")),
+                            desc_prod = reader.IsDBNull(reader.GetOrdinal("desc_prod")) ? string.Empty : reader.GetString(reader.GetOrdinal("desc_prod")),
+                            val_prod = reader.IsDBNull(reader.GetOrdinal("val_prod")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("val_prod")),
+                            usuario = reader.IsDBNull(reader.GetOrdinal("usuario")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("usuario"))
+                        };
+
+                        var item = new tb_itemv
+                        {
+                            id_item = reader.GetInt32(reader.GetOrdinal("id_item")),
+                            id_prod = reader.IsDBNull(reader.GetOrdinal("id_prod")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("id_prod")),
+                            id_venda = reader.IsDBNull(reader.GetOrdinal("id_venda")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("id_venda")),
+                            quant_item = reader.IsDBNull(reader.GetOrdinal("quant_item")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("quant_item")),
+                            subTot_item = reader.IsDBNull(reader.GetOrdinal("subtot_item")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("subtot_item")),
+                            valr_item = reader.IsDBNull(reader.GetOrdinal("valr_item")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("valr_item"))
+                        };
+
+                        item.tb_produtos = prod;
+                        itens.Add(item);
+                    }
+                }
+            }
+
+            return itens;
+        }
+
+        public static void ExcluirItemVenda(string connectionString, int idItem)
+        {
+            const string sql = "DELETE FROM dbo.tb_itemv WHERE id_item = @id_item;";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@id_item", idItem);
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public static void ExcluirVenda(string connectionString, int idVenda)
+        {
+            const string sql = "DELETE FROM dbo.tb_venda WHERE id_venda = @id_venda;";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@id_venda", idVenda);
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public static DataTable CarregarDadosRelatorioVenda(string connectionString, int idVenda)
+        {
+            const string sql = @"
+SELECT
+  iv.quant_item,
+  iv.subtot_item,
+  iv.valr_item,
+  p.desc_prod,
+  v.data_venda,
+  iv.id_prod,
+  iv.id_venda,
+  u.nome_usuario,
+  v.usuario
+FROM dbo.tb_itemv iv
+INNER JOIN dbo.tb_venda v ON iv.id_venda = v.id_venda
+INNER JOIN dbo.tb_produtos p ON iv.id_prod = p.id_prod
+INNER JOIN dbo.tb_usuario u ON v.usuario = u.id_usuario
+WHERE iv.id_venda = @id_venda;";
+
+            var dt = new DataTable();
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            using (var da = new NpgsqlDataAdapter(cmd))
+            {
+                cmd.Parameters.AddWithValue("@id_venda", idVenda);
+                conn.Open();
+                da.Fill(dt);
+            }
+
+            return dt;
         }
     }
 }
