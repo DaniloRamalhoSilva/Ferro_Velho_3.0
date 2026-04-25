@@ -43,12 +43,30 @@ namespace FerroVelho.Relatorios
             imprimirNF();
         }
 
+        private bool IsPostgresMode
+        {
+            get { return DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp); }
+        }
+
         string comando;
 
         private void pesquisa()
         {
             inicio = dt_inicio.Value;
             fim = dt_fim.Value;
+
+            if (IsPostgresMode)
+            {
+                DataTable dtPostgres = DataContextFactory.CarregarResumoVendaProdutosPostgres(
+                    inicio.Date.Add(new TimeSpan(00, 00, 00)),
+                    fim.Date.Add(new TimeSpan(23, 59, 59)));
+                dataGridView1.DataSource = dtPostgres;
+                dataGridView1.DataMember = dtPostgres.TableName;
+                lb_total.Text = DataContextFactory.CalcularTotalVendaProdutosPostgres(
+                    inicio.Date.Add(new TimeSpan(00, 00, 00)),
+                    fim.Date.Add(new TimeSpan(23, 59, 59))).ToString("C2");
+                return;
+            }
 
             comando = "SELECT tb_itemv.id_prod, tb_produtos.desc_prod, sum(tb_itemv.quant_item) As Peso, sum(tb_itemv.subTot_item) As Total " +
                 "FROM tb_itemv " +
@@ -76,7 +94,18 @@ namespace FerroVelho.Relatorios
 
         public void imprimirNF()
         {
-            this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
+            if (IsPostgresMode)
+            {
+                var imp = DataContextFactory.BuscarImpressoraPostgres(1);
+                if (imp != null)
+                {
+                    this.tb_impressoraBindingSource.DataSource = new List<tb_impressora> { imp };
+                }
+            }
+            else
+            {
+                this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
+            }
 
             LocalReport report = new LocalReport();
             report.ReportPath = @"..\..\rel_venda.rdlc";
@@ -91,7 +120,14 @@ namespace FerroVelho.Relatorios
         }
 
         private DataTable LoadSalesData()
-        {            
+        {
+            if (IsPostgresMode)
+            {
+                return DataContextFactory.CarregarResumoVendaProdutosPostgres(
+                    dt_inicio.Value.Date.Add(new TimeSpan(00, 00, 00)),
+                    dt_fim.Value.Date.Add(new TimeSpan(23, 59, 59)));
+            }
+
             DataTable dt = DataContextFactory.Filtrar(comando);
             return dt;
         }

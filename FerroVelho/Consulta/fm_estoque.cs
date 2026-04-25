@@ -27,9 +27,23 @@ namespace FerroVelho
         {
             load();
         }
+
+        private bool IsPostgresMode
+        {
+            get { return DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp); }
+        }
+
         private void load()
         {
-            this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos;
+            if (IsPostgresMode)
+            {
+                this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosPostgres();
+            }
+            else
+            {
+                this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos;
+            }
+
             caregarEstoque();
             bt_corrigir.Enabled = true;
             lb_texto.Visible = false;
@@ -78,6 +92,11 @@ namespace FerroVelho
 
         public decimal calcular(int id )
         {
+            if (IsPostgresMode)
+            {
+                return DataContextFactory.CalcularSaldoProdutoPostgres(id);
+            }
+
             List<tb_itemc> itensC = new List<tb_itemc>();
             itensC = DataContextFactory.DataContext.tb_itemc.Where(x => x.id_prod == id).ToList();
             decimal totalC = 0;
@@ -168,7 +187,17 @@ namespace FerroVelho
 
         private void txt_desc_KeyUp(object sender, KeyEventArgs e)
         {
-            this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos.Where(x => x.desc_prod.StartsWith(txt_desc.Text));
+            if (IsPostgresMode)
+            {
+                this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosPostgres()
+                    .Where(x => (x.desc_prod ?? string.Empty).StartsWith(txt_desc.Text, StringComparison.CurrentCultureIgnoreCase))
+                    .ToList();
+            }
+            else
+            {
+                this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos.Where(x => x.desc_prod.StartsWith(txt_desc.Text));
+            }
+
             txt_codProd.Text = "";
             caregarEstoque();
         }
@@ -177,13 +206,31 @@ namespace FerroVelho
             {
             if (txt_codProd.Text == "")
             {
-                this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos;
+                if (IsPostgresMode)
+                {
+                    this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosPostgres();
+                }
+                else
+                {
+                    this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos;
+                }
+
                 txt_desc.Text = "";
                 caregarEstoque();
             }
             else
             {
-                this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos.Where(x => x.id_prod == (Convert.ToInt32(txt_codProd.Text)));
+                if (IsPostgresMode)
+                {
+                    this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosPostgres()
+                        .Where(x => x.id_prod == Convert.ToInt32(txt_codProd.Text))
+                        .ToList();
+                }
+                else
+                {
+                    this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos.Where(x => x.id_prod == (Convert.ToInt32(txt_codProd.Text)));
+                }
+
                 txt_desc.Text = "";
                 caregarEstoque();
             }
@@ -217,7 +264,18 @@ namespace FerroVelho
 
         public void imprimir()
         {
-            this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
+            if (IsPostgresMode)
+            {
+                var imp = DataContextFactory.BuscarImpressoraPostgres(1);
+                if (imp != null)
+                {
+                    this.tb_impressoraBindingSource.DataSource = new List<tb_impressora> { imp };
+                }
+            }
+            else
+            {
+                this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
+            }
 
             LocalReport report = new LocalReport();
             report.ReportPath = @"..\..\rel_estoque2.rdlc";
@@ -231,6 +289,11 @@ namespace FerroVelho
 
         private DataTable LoadSalesData()
         {
+            if (IsPostgresMode)
+            {
+                return DataContextFactory.CarregarEstoqueAtualPostgres();
+            }
+
             DataTable dt = DataContextFactory.Filtrar(comando);
             return dt;
         }

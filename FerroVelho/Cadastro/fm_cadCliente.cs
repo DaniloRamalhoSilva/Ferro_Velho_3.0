@@ -33,6 +33,11 @@ namespace FerroVelho
             }
         }
 
+        private bool IsPostgresMode
+        {
+            get { return DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp); }
+        }
+
         private void fm_cadCliente_Load(object sender, EventArgs e)
         {
             tipo();
@@ -501,6 +506,13 @@ namespace FerroVelho
 
         private void carregaItem(int id)
         {
+            if (IsPostgresMode)
+            {
+                dg_adPg.DataSource = DataContextFactory.CarregarMovimentacaoClientePostgres(id, checkBox_AdPg.Checked);
+                formatarDatagrid();
+                return;
+            }
+
             string comando;
             if (checkBox_AdPg.Checked == true)
             {
@@ -558,6 +570,11 @@ namespace FerroVelho
 
         public IList<tb_cliente> BuscarTudo()
         {
+            if (IsPostgresMode)
+            {
+                return DataContextFactory.ListarClientesPostgres();
+            }
+
             comando = new SqlCommand();
             comando.CommandType = CommandType.Text;
             comando.CommandText = "select a.id_cliente, tb_cliente.cpf_cliente, tb_cliente.nome_cliente, tb_cliente.tel_cliente,  sum(a.Valor) as Saldo " +
@@ -620,6 +637,12 @@ namespace FerroVelho
 
         public void Deletar(tb_cliente cliente)
         {
+            if (IsPostgresMode)
+            {
+                DataContextFactory.ExcluirClientePostgres(cliente.id_cliente);
+                return;
+            }
+
             comando = new SqlCommand();
             comando.CommandType = CommandType.Text;
             comando.CommandText = "Delete from tb_cliente where id_cliente=@id_cliente";
@@ -630,6 +653,12 @@ namespace FerroVelho
 
         public void Inserir(tb_cliente cliente)
         {
+            if (IsPostgresMode)
+            {
+                DataContextFactory.InserirClientePostgres(cliente.nome_cliente, cliente.cpf_cliente, cliente.tel_cliente);
+                return;
+            }
+
             comando = new SqlCommand();
             comando.CommandType = CommandType.Text;
             comando.CommandText = "Insert into tb_cliente(nome_cliente, cpf_cliente, tel_cliente) values(@nome_cliente, @cpf_cliente, @tel_cliente)";
@@ -642,6 +671,12 @@ namespace FerroVelho
 
         public void Alterar(tb_cliente cliente)
         {
+            if (IsPostgresMode)
+            {
+                DataContextFactory.AtualizarClientePostgres(cliente.id_cliente, cliente.nome_cliente, cliente.cpf_cliente, cliente.tel_cliente);
+                return;
+            }
+
             comando = new SqlCommand();
             comando.CommandType = CommandType.Text;
             comando.CommandText = "UPDATE  tb_cliente SET nome_cliente=@nome_cliente, cpf_cliente=@cpf_cliente, tel_cliente=@tel_cliente WHERE id_cliente=@id_cliente";
@@ -654,7 +689,12 @@ namespace FerroVelho
         }
 
         public IList<tb_cliente> BuscaDesc(string desc)
-        {            
+        {
+            if (IsPostgresMode)
+            {
+                return DataContextFactory.ListarClientesPostgres("nome", desc);
+            }
+
             comando = new SqlCommand();
             comando.CommandType = CommandType.Text;
             comando.CommandText = "select a.id_cliente, tb_cliente.cpf_cliente, tb_cliente.nome_cliente, tb_cliente.tel_cliente,  sum(a.Valor) as Saldo " +
@@ -719,6 +759,11 @@ namespace FerroVelho
 
         public IList<tb_cliente> BuscaCPF(string desc)
         {
+            if (IsPostgresMode)
+            {
+                return DataContextFactory.ListarClientesPostgres("cpf", desc);
+            }
+
             comando = new SqlCommand();
             comando.CommandType = CommandType.Text;
             comando.CommandText = "select a.id_cliente, tb_cliente.cpf_cliente, tb_cliente.nome_cliente, tb_cliente.tel_cliente,  sum(a.Valor) as Saldo " +
@@ -783,6 +828,11 @@ namespace FerroVelho
 
         public IList<tb_cliente> BuscaTel(string desc)
         {
+            if (IsPostgresMode)
+            {
+                return DataContextFactory.ListarClientesPostgres("tel", desc);
+            }
+
             comando = new SqlCommand();
             comando.CommandType = CommandType.Text;
             comando.CommandText = "select a.id_cliente, tb_cliente.cpf_cliente, tb_cliente.nome_cliente, tb_cliente.tel_cliente,  sum(a.Valor) as Saldo " +

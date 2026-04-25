@@ -222,6 +222,878 @@ LIMIT 1;";
             }
         }
 
+        public static void SalvarImpressora(string connectionString, int idImpressora, string nomeImpressora)
+        {
+            const string sql = @"
+INSERT INTO dbo.tb_impressora (id_impressora, nome_impressora)
+VALUES (@id_impressora, @nome_impressora)
+ON CONFLICT (id_impressora)
+DO UPDATE SET nome_impressora = EXCLUDED.nome_impressora;";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@id_impressora", idImpressora);
+                cmd.Parameters.AddWithValue("@nome_impressora", (object)nomeImpressora ?? DBNull.Value);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public static List<tb_tipoUsuario> ListarTiposUsuario(string connectionString)
+        {
+            const string sql = @"
+SELECT id_tipousuario, desc_tipousuario
+FROM dbo.tb_tipousuario
+ORDER BY id_tipousuario;";
+
+            var tipos = new List<tb_tipoUsuario>();
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        tipos.Add(new tb_tipoUsuario
+                        {
+                            id_tipoUsuario = reader.GetInt32(reader.GetOrdinal("id_tipousuario")),
+                            desc_tipoUsuario = reader.IsDBNull(reader.GetOrdinal("desc_tipousuario"))
+                                ? string.Empty
+                                : reader.GetString(reader.GetOrdinal("desc_tipousuario"))
+                        });
+                    }
+                }
+            }
+
+            return tipos;
+        }
+
+        public static List<tb_usuario> ListarUsuarios(string connectionString, bool incluirInativos)
+        {
+            const string sql = @"
+SELECT
+  u.id_usuario,
+  u.nome_usuario,
+  u.senha_usuario,
+  u.permi_usuario,
+  u.ativo,
+  t.desc_tipousuario
+FROM dbo.tb_usuario u
+LEFT JOIN dbo.tb_tipousuario t ON t.id_tipousuario = u.permi_usuario
+WHERE @incluir_inativos OR u.ativo = TRUE
+ORDER BY u.nome_usuario;";
+
+            var usuarios = new List<tb_usuario>();
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@incluir_inativos", incluirInativos);
+
+                conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var tipo = new tb_tipoUsuario
+                        {
+                            id_tipoUsuario = reader.GetInt32(reader.GetOrdinal("permi_usuario")),
+                            desc_tipoUsuario = reader.IsDBNull(reader.GetOrdinal("desc_tipousuario"))
+                                ? string.Empty
+                                : reader.GetString(reader.GetOrdinal("desc_tipousuario"))
+                        };
+
+                        var usuario = new tb_usuario
+                        {
+                            id_usuario = reader.GetInt32(reader.GetOrdinal("id_usuario")),
+                            nome_usuario = reader.IsDBNull(reader.GetOrdinal("nome_usuario"))
+                                ? string.Empty
+                                : reader.GetString(reader.GetOrdinal("nome_usuario")),
+                            senha_usuario = reader.IsDBNull(reader.GetOrdinal("senha_usuario"))
+                                ? string.Empty
+                                : reader.GetString(reader.GetOrdinal("senha_usuario")),
+                            permi_usuario = reader.GetInt32(reader.GetOrdinal("permi_usuario")),
+                            ativo = reader.GetBoolean(reader.GetOrdinal("ativo"))
+                        };
+
+                        usuario.tb_tipoUsuario = tipo;
+                        usuarios.Add(usuario);
+                    }
+                }
+            }
+
+            return usuarios;
+        }
+
+        public static bool ExisteUsuarioPorNome(string connectionString, string nomeUsuario, int? excetoIdUsuario)
+        {
+            const string sql = @"
+SELECT COUNT(1)
+FROM dbo.tb_usuario
+WHERE UPPER(nome_usuario) = UPPER(@nome_usuario)
+  AND (@exceto_id IS NULL OR id_usuario <> @exceto_id);";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@nome_usuario", (object)(nomeUsuario ?? string.Empty));
+                cmd.Parameters.AddWithValue("@exceto_id", (object)excetoIdUsuario ?? DBNull.Value);
+
+                conn.Open();
+                return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+            }
+        }
+
+        public static void CriarUsuario(string connectionString, string nomeUsuario, string senhaUsuario, int permissaoUsuario)
+        {
+            const string sql = @"
+INSERT INTO dbo.tb_usuario (nome_usuario, senha_usuario, permi_usuario, ativo)
+VALUES (@nome_usuario, @senha_usuario, @permi_usuario, TRUE);";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@nome_usuario", (object)(nomeUsuario ?? string.Empty));
+                cmd.Parameters.AddWithValue("@senha_usuario", (object)senhaUsuario ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@permi_usuario", permissaoUsuario);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public static void AtualizarUsuario(string connectionString, int idUsuario, string nomeUsuario, string senhaUsuario, int permissaoUsuario)
+        {
+            const string sql = @"
+UPDATE dbo.tb_usuario
+SET nome_usuario = @nome_usuario,
+    senha_usuario = @senha_usuario,
+    permi_usuario = @permi_usuario
+WHERE id_usuario = @id_usuario;";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@id_usuario", idUsuario);
+                cmd.Parameters.AddWithValue("@nome_usuario", (object)(nomeUsuario ?? string.Empty));
+                cmd.Parameters.AddWithValue("@senha_usuario", (object)senhaUsuario ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@permi_usuario", permissaoUsuario);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public static void DefinirUsuarioAtivo(string connectionString, int idUsuario, bool ativo)
+        {
+            const string sql = "UPDATE dbo.tb_usuario SET ativo = @ativo WHERE id_usuario = @id_usuario;";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@id_usuario", idUsuario);
+                cmd.Parameters.AddWithValue("@ativo", ativo);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public static List<tb_cliente> ListarClientes(string connectionString, string filtroCampo, string filtroValor)
+        {
+            var filtroSql = string.Empty;
+            if (!string.IsNullOrWhiteSpace(filtroValor))
+            {
+                if (string.Equals(filtroCampo, "nome", StringComparison.OrdinalIgnoreCase))
+                {
+                    filtroSql = "WHERE c.nome_cliente ILIKE @filtro";
+                }
+                else if (string.Equals(filtroCampo, "cpf", StringComparison.OrdinalIgnoreCase))
+                {
+                    filtroSql = "WHERE c.cpf_cliente LIKE @filtro";
+                }
+                else if (string.Equals(filtroCampo, "tel", StringComparison.OrdinalIgnoreCase))
+                {
+                    filtroSql = "WHERE c.tel_cliente LIKE @filtro";
+                }
+            }
+
+            var sql = @"
+SELECT
+  c.id_cliente,
+  c.cpf_cliente,
+  c.nome_cliente,
+  c.tel_cliente,
+  COALESCE(SUM(a.valor), 0) AS saldo
+FROM dbo.tb_cliente c
+LEFT JOIN (
+  SELECT valor_caixa AS valor, id_cliente
+  FROM dbo.tb_caixa
+  WHERE valor_caixa <> 0 AND id_cliente IS NOT NULL
+
+  UNION ALL
+
+  SELECT valor_acliente AS valor, id_cliente
+  FROM dbo.tb_acliente
+  WHERE valor_acliente <> 0
+
+  UNION ALL
+
+  SELECT desconto_compra AS valor, id_cliente
+  FROM dbo.tb_compra
+  WHERE desconto_compra <> 0 AND id_cliente IS NOT NULL
+
+  UNION ALL
+
+  SELECT subtot_compra - desconto_compra - valor_nota AS valor, id_cliente
+  FROM dbo.tb_compra
+  WHERE subtot_compra - desconto_compra - valor_nota <> 0 AND id_cliente IS NOT NULL
+) a ON a.id_cliente = c.id_cliente
+" + filtroSql + @"
+GROUP BY c.id_cliente, c.cpf_cliente, c.nome_cliente, c.tel_cliente
+ORDER BY c.nome_cliente;";
+
+            var clientes = new List<tb_cliente>();
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                if (!string.IsNullOrWhiteSpace(filtroValor))
+                {
+                    cmd.Parameters.AddWithValue("@filtro", filtroValor + "%");
+                }
+
+                conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        clientes.Add(new tb_cliente
+                        {
+                            id_cliente = reader.GetInt32(reader.GetOrdinal("id_cliente")),
+                            cpf_cliente = reader.IsDBNull(reader.GetOrdinal("cpf_cliente"))
+                                ? string.Empty
+                                : reader.GetString(reader.GetOrdinal("cpf_cliente")),
+                            nome_cliente = reader.IsDBNull(reader.GetOrdinal("nome_cliente"))
+                                ? string.Empty
+                                : reader.GetString(reader.GetOrdinal("nome_cliente")),
+                            tel_cliente = reader.IsDBNull(reader.GetOrdinal("tel_cliente"))
+                                ? string.Empty
+                                : reader.GetString(reader.GetOrdinal("tel_cliente")),
+                            Saldo = reader.IsDBNull(reader.GetOrdinal("saldo"))
+                                ? 0m
+                                : reader.GetDecimal(reader.GetOrdinal("saldo"))
+                        });
+                    }
+                }
+            }
+
+            return clientes;
+        }
+
+        public static void InserirCliente(string connectionString, string nomeCliente, string cpfCliente, string telCliente)
+        {
+            const string sql = @"
+INSERT INTO dbo.tb_cliente (nome_cliente, cpf_cliente, tel_cliente)
+VALUES (@nome_cliente, @cpf_cliente, @tel_cliente);";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@nome_cliente", (object)(nomeCliente ?? string.Empty));
+                cmd.Parameters.AddWithValue("@cpf_cliente", (object)cpfCliente ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@tel_cliente", (object)telCliente ?? DBNull.Value);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public static void AtualizarCliente(string connectionString, int idCliente, string nomeCliente, string cpfCliente, string telCliente)
+        {
+            const string sql = @"
+UPDATE dbo.tb_cliente
+SET nome_cliente = @nome_cliente,
+    cpf_cliente = @cpf_cliente,
+    tel_cliente = @tel_cliente
+WHERE id_cliente = @id_cliente;";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@id_cliente", idCliente);
+                cmd.Parameters.AddWithValue("@nome_cliente", (object)(nomeCliente ?? string.Empty));
+                cmd.Parameters.AddWithValue("@cpf_cliente", (object)cpfCliente ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@tel_cliente", (object)telCliente ?? DBNull.Value);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public static void ExcluirCliente(string connectionString, int idCliente)
+        {
+            const string sql = "DELETE FROM dbo.tb_cliente WHERE id_cliente = @id_cliente;";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@id_cliente", idCliente);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public static DataTable CarregarMovimentacaoCliente(string connectionString, int idCliente, bool resumido)
+        {
+            var sql = resumido
+                ? @"
+SELECT a.data AS ""Data"", a.valor AS ""Valor"", a.obs AS ""Obs""
+FROM (
+  SELECT data_caixa AS data, valor_caixa AS valor, desc_caixa AS obs
+  FROM dbo.tb_caixa
+  WHERE id_cliente = @id_cliente AND valor_caixa <> 0
+
+  UNION ALL
+
+  SELECT data_acliente AS data, valor_acliente AS valor, desc_acliente AS obs
+  FROM dbo.tb_acliente
+  WHERE id_cliente = @id_cliente AND valor_acliente <> 0
+
+  UNION ALL
+
+  SELECT data_compra AS data, desconto_compra AS valor, 'Pg na Nota: ' || id_compra::text AS obs
+  FROM dbo.tb_compra
+  WHERE id_cliente = @id_cliente AND desconto_compra <> 0
+
+  UNION ALL
+
+  SELECT data_compra AS data, subtot_compra - desconto_compra - valor_nota AS valor, 'Credito na Nota: ' || id_compra::text AS obs
+  FROM dbo.tb_compra
+  WHERE id_cliente = @id_cliente AND subtot_compra - desconto_compra - valor_nota <> 0
+) a
+ORDER BY a.data;"
+                : @"
+SELECT
+  a.data AS ""Data"",
+  a.valor_nota AS ""Valor Nota"",
+  a.pagamento AS ""Recebido do cliente"",
+  a.valor_pago AS ""Pago ao cliente"",
+  a.credito AS ""credito"",
+  a.obs AS ""Observacao""
+FROM (
+  SELECT data_caixa AS data, 0.00 AS valor_nota, 0.00 AS pagamento, valor_caixa * -1 AS valor_pago, 0.00 AS credito, desc_caixa AS obs
+  FROM dbo.tb_caixa
+  WHERE id_cliente = @id_cliente AND valor_caixa <= 0
+
+  UNION ALL
+
+  SELECT data_caixa AS data, 0.00 AS valor_nota, valor_caixa AS pagamento, 0.00 AS valor_pago, 0.00 AS credito, desc_caixa AS obs
+  FROM dbo.tb_caixa
+  WHERE id_cliente = @id_cliente AND valor_caixa > 0
+
+  UNION ALL
+
+  SELECT data_acliente AS data, 0.00 AS valor_nota, 0.00 AS pagamento, valor_acliente * -1 AS valor_pago, 0.00 AS credito, desc_acliente AS obs
+  FROM dbo.tb_acliente
+  WHERE id_cliente = @id_cliente AND valor_acliente <= 0
+
+  UNION ALL
+
+  SELECT data_acliente AS data, 0.00 AS valor_nota, valor_acliente AS pagamento, 0.00 AS valor_pago, 0.00 AS credito, desc_acliente AS obs
+  FROM dbo.tb_acliente
+  WHERE id_cliente = @id_cliente AND valor_acliente > 0
+
+  UNION ALL
+
+  SELECT data_compra AS data, subtot_compra AS valor_nota, desconto_compra AS pagamento, valor_nota AS valor_pago, subtot_compra - desconto_compra - valor_nota AS credito, 'Nota: ' || id_compra::text AS obs
+  FROM dbo.tb_compra
+  WHERE id_cliente = @id_cliente
+) a
+ORDER BY a.data;";
+
+            var dt = new DataTable();
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            using (var da = new NpgsqlDataAdapter(cmd))
+            {
+                cmd.Parameters.AddWithValue("@id_cliente", idCliente);
+                conn.Open();
+                da.Fill(dt);
+            }
+
+            return dt;
+        }
+
+        public static string BuscarNomeUsuario(string connectionString, int idUsuario)
+        {
+            const string sql = "SELECT nome_usuario FROM dbo.tb_usuario WHERE id_usuario = @id_usuario;";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@id_usuario", idUsuario);
+                conn.Open();
+
+                var result = cmd.ExecuteScalar();
+                return result == null || result == DBNull.Value ? string.Empty : Convert.ToString(result);
+            }
+        }
+
+        public static string BuscarNomeCliente(string connectionString, int idCliente)
+        {
+            const string sql = "SELECT nome_cliente FROM dbo.tb_cliente WHERE id_cliente = @id_cliente;";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@id_cliente", idCliente);
+                conn.Open();
+
+                var result = cmd.ExecuteScalar();
+                return result == null || result == DBNull.Value ? string.Empty : Convert.ToString(result);
+            }
+        }
+
+        public static DataTable ListarCompras(string connectionString, DateTime? inicio, DateTime? fim, int? idCompra)
+        {
+            const string sql = @"
+SELECT id_compra, data_compra, subtot_compra, desconto_compra, valor_nota, usuario, id_cliente
+FROM dbo.tb_compra
+WHERE (@id_compra IS NULL OR id_compra = @id_compra)
+  AND (@inicio IS NULL OR data_compra >= @inicio)
+  AND (@fim IS NULL OR data_compra <= @fim)
+ORDER BY id_compra;";
+
+            return PreencherNotas(connectionString, sql, inicio, fim, idCompra, "@id_compra");
+        }
+
+        public static DataTable ListarVendas(string connectionString, DateTime? inicio, DateTime? fim, int? idVenda)
+        {
+            const string sql = @"
+SELECT id_venda, data_venda, valor_nota, usuario
+FROM dbo.tb_venda
+WHERE (@id_venda IS NULL OR id_venda = @id_venda)
+  AND (@inicio IS NULL OR data_venda >= @inicio)
+  AND (@fim IS NULL OR data_venda <= @fim)
+ORDER BY id_venda;";
+
+            return PreencherNotas(connectionString, sql, inicio, fim, idVenda, "@id_venda");
+        }
+
+        private static DataTable PreencherNotas(string connectionString, string sql, DateTime? inicio, DateTime? fim, int? idNota, string idParametro)
+        {
+            var dt = new DataTable();
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            using (var da = new NpgsqlDataAdapter(cmd))
+            {
+                cmd.Parameters.Add(new NpgsqlParameter(idParametro, NpgsqlTypes.NpgsqlDbType.Integer)
+                {
+                    Value = (object)idNota ?? DBNull.Value
+                });
+                cmd.Parameters.Add(new NpgsqlParameter("@inicio", NpgsqlTypes.NpgsqlDbType.Timestamp)
+                {
+                    Value = (object)inicio ?? DBNull.Value
+                });
+                cmd.Parameters.Add(new NpgsqlParameter("@fim", NpgsqlTypes.NpgsqlDbType.Timestamp)
+                {
+                    Value = (object)fim ?? DBNull.Value
+                });
+
+                conn.Open();
+                da.Fill(dt);
+            }
+
+            return dt;
+        }
+
+        public static DataTable CarregarEstoqueAtual(string connectionString)
+        {
+            const string sql = @"
+SELECT
+  e.id_prod,
+  p.desc_prod,
+  SUM(e.entrada) - SUM(e.saida) AS qunt_est
+FROM (
+  SELECT id_prod, SUM(quant_item) AS entrada, 0::numeric AS saida
+  FROM dbo.tb_itemc
+  GROUP BY id_prod
+
+  UNION ALL
+
+  SELECT id_prod, 0::numeric AS entrada, SUM(quant_item) AS saida
+  FROM dbo.tb_itemv
+  GROUP BY id_prod
+) e
+INNER JOIN dbo.tb_produtos p ON e.id_prod = p.id_prod
+GROUP BY p.desc_prod, e.id_prod
+ORDER BY e.id_prod;";
+
+            var dt = new DataTable();
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            using (var da = new NpgsqlDataAdapter(cmd))
+            {
+                conn.Open();
+                da.Fill(dt);
+            }
+
+            return dt;
+        }
+
+        public static DataTable CarregarResumoCompraProdutos(string connectionString, DateTime inicio, DateTime fim)
+        {
+            const string sql = @"
+SELECT
+  i.id_prod,
+  p.desc_prod,
+  SUM(i.quant_item) AS ""Peso"",
+  SUM(i.subtot_item) AS ""Total""
+FROM dbo.tb_itemc i
+INNER JOIN dbo.tb_produtos p ON i.id_prod = p.id_prod
+INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra
+WHERE c.data_compra BETWEEN @inicio AND @fim
+GROUP BY i.id_prod, p.desc_prod
+ORDER BY i.id_prod;";
+
+            return PreencherPeriodo(connectionString, sql, inicio, fim);
+        }
+
+        public static DataTable CarregarRelatorioCompraItens(string connectionString, int idCompra)
+        {
+            const string sql = @"
+SELECT
+  i.id_prod,
+  i.quant_item,
+  i.subtot_item AS ""subTot_item"",
+  i.valor_item,
+  p.desc_prod
+FROM dbo.tb_itemc i
+INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra
+INNER JOIN dbo.tb_produtos p ON i.id_prod = p.id_prod
+WHERE i.id_compra = @id_compra
+ORDER BY i.id_item;";
+
+            var dt = new DataTable();
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            using (var da = new NpgsqlDataAdapter(cmd))
+            {
+                cmd.Parameters.AddWithValue("@id_compra", idCompra);
+                conn.Open();
+                da.Fill(dt);
+            }
+
+            return dt;
+        }
+
+        public static DataTable CarregarRelatorioCompraCabecalho(string connectionString, int idCompra)
+        {
+            const string sql = @"
+SELECT
+  c.id_compra,
+  c.data_compra,
+  c.desconto_compra,
+  c.subtot_compra,
+  c.valor_nota,
+  c.id_cliente,
+  c.usuario,
+  u.nome_usuario
+FROM dbo.tb_compra c
+INNER JOIN dbo.tb_usuario u ON c.usuario = u.id_usuario
+WHERE c.id_compra = @id_compra;";
+
+            var dt = new DataTable();
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            using (var da = new NpgsqlDataAdapter(cmd))
+            {
+                cmd.Parameters.AddWithValue("@id_compra", idCompra);
+                conn.Open();
+                da.Fill(dt);
+            }
+
+            return dt;
+        }
+
+        public static DataTable CarregarRelatorioCompraCliente(string connectionString, int idCompra)
+        {
+            const string sql = @"
+SELECT
+  cl.id_cliente,
+  cl.nome_cliente,
+  cl.tel_cliente,
+  cl.cpf_cliente
+FROM dbo.tb_compra c
+LEFT JOIN dbo.tb_cliente cl ON c.id_cliente = cl.id_cliente
+WHERE c.id_compra = @id_compra;";
+
+            var dt = new DataTable();
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            using (var da = new NpgsqlDataAdapter(cmd))
+            {
+                cmd.Parameters.AddWithValue("@id_compra", idCompra);
+                conn.Open();
+                da.Fill(dt);
+            }
+
+            return dt;
+        }
+
+        public static DataTable CalcularResumoCompraCaixa(string connectionString, DateTime inicio, DateTime fim)
+        {
+            const string sql = @"
+SELECT
+  COALESCE((SELECT SUM(valor_caixa) * -1 FROM dbo.tb_caixa WHERE data_caixa < @inicio AND valor_caixa < 0), 0) AS saida_antes,
+  COALESCE((SELECT SUM(valor_caixa) FROM dbo.tb_caixa WHERE data_caixa < @inicio AND valor_caixa > 0), 0) AS entrada_antes,
+  COALESCE((SELECT SUM(i.subtot_item) FROM dbo.tb_itemc i INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra WHERE c.data_compra < @inicio), 0) AS compra_antes,
+  COALESCE((SELECT SUM(desconto_compra) FROM dbo.tb_compra WHERE data_compra < @inicio), 0) AS desconto_antes,
+  COALESCE((SELECT SUM(subtot_compra - desconto_compra - valor_nota) FROM dbo.tb_compra WHERE data_compra < @inicio), 0) AS credito_antes,
+  COALESCE((SELECT SUM(valor_caixa) * -1 FROM dbo.tb_caixa WHERE data_caixa BETWEEN @inicio AND @fim AND valor_caixa < 0), 0) AS saida_periodo,
+  COALESCE((SELECT SUM(valor_caixa) FROM dbo.tb_caixa WHERE data_caixa BETWEEN @inicio AND @fim AND valor_caixa > 0), 0) AS entrada_periodo,
+  COALESCE((SELECT SUM(i.subtot_item) FROM dbo.tb_itemc i INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra WHERE c.data_compra BETWEEN @inicio AND @fim), 0) AS compra_periodo,
+  COALESCE((SELECT SUM(desconto_compra) FROM dbo.tb_compra WHERE data_compra BETWEEN @inicio AND @fim), 0) AS desconto_periodo,
+  COALESCE((SELECT SUM(subtot_compra - desconto_compra - valor_nota) FROM dbo.tb_compra WHERE data_compra BETWEEN @inicio AND @fim), 0) AS credito_periodo;";
+
+            return PreencherPeriodo(connectionString, sql, inicio, fim);
+        }
+
+        public static DataTable CarregarResumoVendaProdutos(string connectionString, DateTime inicio, DateTime fim)
+        {
+            const string sql = @"
+SELECT
+  i.id_prod,
+  p.desc_prod,
+  SUM(i.quant_item) AS ""Peso"",
+  SUM(i.subtot_item) AS ""Total""
+FROM dbo.tb_itemv i
+INNER JOIN dbo.tb_produtos p ON i.id_prod = p.id_prod
+INNER JOIN dbo.tb_venda v ON i.id_venda = v.id_venda
+WHERE v.data_venda BETWEEN @inicio AND @fim
+GROUP BY i.id_prod, p.desc_prod
+ORDER BY i.id_prod;";
+
+            return PreencherPeriodo(connectionString, sql, inicio, fim);
+        }
+
+        public static decimal CalcularTotalVendaProdutos(string connectionString, DateTime inicio, DateTime fim)
+        {
+            const string sql = @"
+SELECT COALESCE(SUM(i.subtot_item), 0)
+FROM dbo.tb_itemv i
+INNER JOIN dbo.tb_venda v ON i.id_venda = v.id_venda
+WHERE v.data_venda BETWEEN @inicio AND @fim;";
+
+            return ExecutarDecimalPeriodo(connectionString, sql, inicio, fim);
+        }
+
+        public static DataTable CarregarLucroDetalhado(string connectionString, DateTime inicio, DateTime fim)
+        {
+            const string sql = @"
+SELECT
+  a.id_prod AS codigo,
+  p.desc_prod AS descricao,
+  SUM(a.pesoc) AS ""pesoC"",
+  SUM(a.totalc) AS ""Compra"",
+  SUM(a.pesov) AS ""pesoV"",
+  SUM(a.totalv) AS ""Venda"",
+  SUM(a.totalv) - SUM(a.totalc) AS lucro,
+  SUM(a.pesoc) - SUM(a.pesov) AS peso
+FROM (
+  SELECT i.id_prod, SUM(i.quant_item) AS pesoc, SUM(i.subtot_item) AS totalc, 0::numeric AS pesov, 0::numeric AS totalv
+  FROM dbo.tb_itemc i
+  INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra
+  WHERE c.data_compra BETWEEN @inicio AND @fim
+  GROUP BY i.id_prod
+
+  UNION ALL
+
+  SELECT i.id_prod, 0::numeric AS pesoc, 0::numeric AS totalc, SUM(i.quant_item) AS pesov, SUM(i.subtot_item) AS totalv
+  FROM dbo.tb_itemv i
+  INNER JOIN dbo.tb_venda v ON i.id_venda = v.id_venda
+  WHERE v.data_venda BETWEEN @inicio AND @fim
+  GROUP BY i.id_prod
+) a
+INNER JOIN dbo.tb_produtos p ON a.id_prod = p.id_prod
+GROUP BY a.id_prod, p.desc_prod
+ORDER BY a.id_prod;";
+
+            return PreencherPeriodo(connectionString, sql, inicio, fim);
+        }
+
+        public static DataTable CarregarLucroTotal(string connectionString, DateTime inicio, DateTime fim)
+        {
+            const string sql = @"
+SELECT
+  SUM(e.""pesoC"") AS ""pesoCT"",
+  SUM(e.""Compra"") AS ""compraT"",
+  SUM(e.""pesoV"") AS ""pesoVT"",
+  SUM(e.""Venda"") AS ""vendaT"",
+  SUM(e.""pesoC"") - SUM(e.""pesoV"") AS ""pesoT"",
+  SUM(e.""Venda"") - SUM(e.""Compra"") AS ""lucroT""
+FROM (
+  SELECT
+    a.id_prod AS codigo,
+    p.desc_prod AS descricao,
+    SUM(a.pesoc) AS ""pesoC"",
+    SUM(a.totalc) AS ""Compra"",
+    SUM(a.pesov) AS ""pesoV"",
+    SUM(a.totalv) AS ""Venda""
+  FROM (
+    SELECT i.id_prod, SUM(i.quant_item) AS pesoc, SUM(i.subtot_item) AS totalc, 0::numeric AS pesov, 0::numeric AS totalv
+    FROM dbo.tb_itemc i
+    INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra
+    WHERE c.data_compra BETWEEN @inicio AND @fim
+    GROUP BY i.id_prod
+
+    UNION ALL
+
+    SELECT i.id_prod, 0::numeric AS pesoc, 0::numeric AS totalc, SUM(i.quant_item) AS pesov, SUM(i.subtot_item) AS totalv
+    FROM dbo.tb_itemv i
+    INNER JOIN dbo.tb_venda v ON i.id_venda = v.id_venda
+    WHERE v.data_venda BETWEEN @inicio AND @fim
+    GROUP BY i.id_prod
+  ) a
+  INNER JOIN dbo.tb_produtos p ON a.id_prod = p.id_prod
+  GROUP BY a.id_prod, p.desc_prod
+) e;";
+
+            return PreencherPeriodo(connectionString, sql, inicio, fim);
+        }
+
+        public static DataTable CarregarFluxoCaixa(string connectionString, DateTime inicio, DateTime fim)
+        {
+            const string sql = @"
+SELECT
+  e.data::date AS ""Data"",
+  SUM(e.entrada) AS ""Entrada"",
+  SUM(e.saida) AS ""Saida""
+FROM (
+  SELECT data_caixa AS data, SUM(valor_caixa) AS entrada, 0::numeric AS saida
+  FROM dbo.tb_caixa
+  WHERE valor_caixa > 0
+  GROUP BY data_caixa
+
+  UNION ALL
+
+  SELECT data_caixa AS data, 0::numeric AS entrada, SUM(valor_caixa) * -1 AS saida
+  FROM dbo.tb_caixa
+  WHERE valor_caixa < 0
+  GROUP BY data_caixa
+
+  UNION ALL
+
+  SELECT data_compra AS data, 0::numeric AS entrada, SUM(valor_nota) AS saida
+  FROM dbo.tb_compra
+  GROUP BY data_compra
+) e
+WHERE e.data::date BETWEEN @inicio::date AND @fim::date
+GROUP BY e.data::date
+ORDER BY e.data::date;";
+
+            return PreencherPeriodo(connectionString, sql, inicio.Date, fim.Date);
+        }
+
+        public static decimal CalcularSaldoInicialFluxoCaixa(string connectionString, DateTime inicio)
+        {
+            const string sql = @"
+SELECT
+  COALESCE((SELECT SUM(valor_caixa) FROM dbo.tb_caixa WHERE data_caixa < @inicio), 0)
+  - COALESCE((SELECT SUM(valor_nota) FROM dbo.tb_compra WHERE data_compra < @inicio), 0);";
+
+            return ExecutarDecimalAte(connectionString, sql, inicio.Date);
+        }
+
+        public static DataTable CarregarEstoquePeriodo(string connectionString, DateTime inicio, DateTime fim, int? idProduto)
+        {
+            const string sql = "SELECT codigo, descricao, inicio, entrada, saida, saldo FROM dbo.s_tb_estoque(@inicio, @fim, @id_prod);";
+
+            var dt = new DataTable();
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            using (var da = new NpgsqlDataAdapter(cmd))
+            {
+                cmd.Parameters.AddWithValue("@inicio", inicio);
+                cmd.Parameters.AddWithValue("@fim", fim);
+                cmd.Parameters.Add(new NpgsqlParameter("@id_prod", NpgsqlTypes.NpgsqlDbType.Integer)
+                {
+                    Value = (object)idProduto ?? DBNull.Value
+                });
+
+                conn.Open();
+                da.Fill(dt);
+            }
+
+            return dt;
+        }
+
+        public static DataTable CarregarProdutosDataTable(string connectionString)
+        {
+            const string sql = "SELECT id_prod, desc_prod, val_prod, usuario FROM dbo.tb_produtos ORDER BY desc_prod;";
+
+            var dt = new DataTable();
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            using (var da = new NpgsqlDataAdapter(cmd))
+            {
+                conn.Open();
+                da.Fill(dt);
+            }
+
+            return dt;
+        }
+
+        private static DataTable PreencherPeriodo(string connectionString, string sql, DateTime inicio, DateTime fim)
+        {
+            var dt = new DataTable();
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            using (var da = new NpgsqlDataAdapter(cmd))
+            {
+                cmd.Parameters.AddWithValue("@inicio", inicio);
+                cmd.Parameters.AddWithValue("@fim", fim);
+
+                conn.Open();
+                da.Fill(dt);
+            }
+
+            return dt;
+        }
+
+        private static decimal ExecutarDecimalPeriodo(string connectionString, string sql, DateTime inicio, DateTime fim)
+        {
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@inicio", inicio);
+                cmd.Parameters.AddWithValue("@fim", fim);
+
+                conn.Open();
+                var result = cmd.ExecuteScalar();
+                return result == null || result == DBNull.Value ? 0m : Convert.ToDecimal(result);
+            }
+        }
+
+        private static decimal ExecutarDecimalAte(string connectionString, string sql, DateTime inicio)
+        {
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@inicio", inicio);
+
+                conn.Open();
+                var result = cmd.ExecuteScalar();
+                return result == null || result == DBNull.Value ? 0m : Convert.ToDecimal(result);
+            }
+        }
+
         private static decimal ObterSomaPorCliente(string connectionString, string sql, int idCliente)
         {
             using (var conn = new NpgsqlConnection(connectionString))
@@ -493,6 +1365,119 @@ ORDER BY i.id_item;";
             }
         }
 
+        public static decimal CalcularSaldoCaixa(string connectionString)
+        {
+            const string sql = @"
+SELECT
+  COALESCE((SELECT SUM(subtot_item) FROM dbo.tb_itemc), 0) AS total_saida,
+  COALESCE((SELECT SUM(valor_caixa) FROM dbo.tb_caixa), 0) AS total_entrada,
+  COALESCE((SELECT SUM(desconto_compra) FROM dbo.tb_compra), 0) AS desconto,
+  COALESCE((SELECT SUM(subtot_compra - desconto_compra - valor_nota) FROM dbo.tb_compra), 0) AS credito;";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (!reader.Read())
+                    {
+                        return 0m;
+                    }
+
+                    var totalSaida = reader.GetDecimal(reader.GetOrdinal("total_saida"));
+                    var totalEntrada = reader.GetDecimal(reader.GetOrdinal("total_entrada"));
+                    var desconto = reader.GetDecimal(reader.GetOrdinal("desconto"));
+                    var credito = reader.GetDecimal(reader.GetOrdinal("credito"));
+
+                    return totalEntrada - totalSaida + desconto + credito;
+                }
+            }
+        }
+
+        public static void InserirCaixa(string connectionString, DateTime dataCaixa, string descricao, int usuario, decimal valorCaixa, int? idCliente)
+        {
+            const string sql = @"
+INSERT INTO dbo.tb_caixa (data_caixa, desc_caixa, usuario, valor_caixa, id_cliente)
+VALUES (@data_caixa, @desc_caixa, @usuario, @valor_caixa, @id_cliente);";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@data_caixa", dataCaixa);
+                cmd.Parameters.AddWithValue("@desc_caixa", (object)descricao ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@usuario", usuario);
+                cmd.Parameters.AddWithValue("@valor_caixa", valorCaixa);
+                cmd.Parameters.AddWithValue("@id_cliente", (object)idCliente ?? DBNull.Value);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public static void InserirAcertoCliente(string connectionString, DateTime dataAcerto, string descricao, int usuario, decimal valorAcerto, int idCliente)
+        {
+            const string sql = @"
+INSERT INTO dbo.tb_acliente (data_acliente, desc_acliente, usuario, valor_acliente, id_cliente)
+VALUES (@data_acliente, @desc_acliente, @usuario, @valor_acliente, @id_cliente);";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@data_acliente", dataAcerto);
+                cmd.Parameters.AddWithValue("@desc_acliente", (object)descricao ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@usuario", usuario);
+                cmd.Parameters.AddWithValue("@valor_acliente", valorAcerto);
+                cmd.Parameters.AddWithValue("@id_cliente", idCliente);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public static DataTable CarregarMovimentacaoRecursos(string connectionString, DateTime inicio, DateTime fim)
+        {
+            const string sql = @"
+SELECT
+  a.data AS ""Data"",
+  SUM(a.valor) AS ""Valor"",
+  a.descricao AS ""Descricao"",
+  u.nome_usuario AS ""Usuario""
+FROM (
+  SELECT c.data_caixa::date AS data, c.valor_caixa AS valor, c.desc_caixa AS descricao, c.usuario
+  FROM dbo.tb_caixa c
+  WHERE c.id_cliente IS NOT NULL
+
+  UNION ALL
+
+  SELECT c.data_caixa::date AS data, c.valor_caixa AS valor, c.desc_caixa AS descricao, c.usuario
+  FROM dbo.tb_caixa c
+  WHERE c.id_cliente IS NULL
+
+  UNION ALL
+
+  SELECT co.data_compra::date AS data, co.valor_nota * -1 AS valor, 'Compras' AS descricao, co.usuario
+  FROM dbo.tb_compra co
+) a
+INNER JOIN dbo.tb_usuario u ON a.usuario = u.id_usuario
+WHERE a.data BETWEEN @inicio AND @fim
+GROUP BY a.data, a.descricao, u.nome_usuario
+ORDER BY a.data;";
+
+            var dt = new DataTable();
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            using (var da = new NpgsqlDataAdapter(cmd))
+            {
+                cmd.Parameters.AddWithValue("@inicio", inicio.Date);
+                cmd.Parameters.AddWithValue("@fim", fim.Date);
+                conn.Open();
+                da.Fill(dt);
+            }
+
+            return dt;
+        }
+
         public static tb_venda CriarVenda(string connectionString, DateTime dataVenda, int usuario, decimal valorNota)
         {
             const string sql = @"
@@ -654,7 +1639,7 @@ ORDER BY i.id_item;";
             const string sql = @"
 SELECT
   iv.quant_item,
-  iv.subtot_item,
+  iv.subtot_item AS ""subTot_item"",
   iv.valr_item,
   p.desc_prod,
   v.data_venda,

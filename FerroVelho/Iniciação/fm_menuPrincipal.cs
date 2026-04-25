@@ -1025,6 +1025,11 @@ namespace FerroVelho
 
         private DataTable LoadSalesData1(int nf)
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                return DataContextFactory.CarregarRelatorioCompraItensPostgres(nf);
+            }
+
             string comando = "SELECT tb_itemc.quant_item, tb_itemc.subTot_item, tb_itemc.valor_item, tb_produtos.desc_prod " +
                 "FROM tb_itemc " +
                 "INNER JOIN tb_compra ON tb_itemc.id_compra = tb_compra.id_compra " +
@@ -1037,6 +1042,11 @@ namespace FerroVelho
 
         private DataTable LoadSalesData2(int nf)
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                return DataContextFactory.CarregarRelatorioCompraCabecalhoPostgres(nf);
+            }
+
             string comando = "select tb_compra.id_compra, tb_compra.data_compra, tb_compra.desconto_compra, tb_compra.subtot_compra, tb_compra.valor_nota, tb_usuario.nome_usuario " +
                 "from tb_compra " +
                 "INNER JOIN tb_usuario ON tb_compra.usuario = tb_usuario.id_usuario " +
@@ -1048,6 +1058,11 @@ namespace FerroVelho
 
         private DataTable LoadSalesData3(int nf)
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                return DataContextFactory.CarregarRelatorioCompraClientePostgres(nf);
+            }
+
             string comando = "select tb_cliente.nome_cliente, tb_cliente.tel_cliente , tb_cliente.cpf_cliente " +
                 "from tb_compra " +
                 "INNER JOIN tb_cliente ON tb_compra.id_cliente = tb_cliente.id_cliente " +

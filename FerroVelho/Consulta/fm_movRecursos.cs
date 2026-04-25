@@ -47,6 +47,12 @@ namespace FerroVelho
             inicio = dt_inicio.Value;
             fim = dt_fim.Value;
 
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                dg_recurso.DataSource = DataContextFactory.CarregarMovimentacaoRecursosPostgres(inicio, fim);
+                return;
+            }
+
             comand = "Select a.Data, Sum(a.Valor) as Valor, a.Descricao, tb_usuario.nome_usuario as Usuario " +
                 "from(Select CONVERT(DATE, tb_caixa.data_caixa) as Data, tb_caixa.valor_caixa as Valor, tb_caixa.desc_caixa as Descricao, tb_caixa.usuario " +
                 "From tb_caixa " +

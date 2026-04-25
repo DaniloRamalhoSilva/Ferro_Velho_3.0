@@ -42,11 +42,26 @@ namespace FerroVelho.Relatorios
         string comand;
         decimal sInicio;
 
+        private bool IsPostgresMode
+        {
+            get { return DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp); }
+        }
+
         private void pesquisa()
         {
             comeco = dt_inicio.MinDate;
             inicio = dt_inicio.Value;
             fim = dt_fim.Value;
+
+            if (IsPostgresMode)
+            {
+                sInicio = DataContextFactory.CalcularSaldoInicialFluxoCaixaPostgres(inicio.Date);
+                DataTable dtPostgres = DataContextFactory.CarregarFluxoCaixaPostgres(inicio.Date, fim.Date);
+                dataGridView1.DataSource = dtPostgres;
+                dataGridView1.DataMember = dtPostgres.TableName;
+                calcular();
+                return;
+            }
 
             SqlCommand comando = new SqlCommand();
             comando.CommandType = CommandType.Text;

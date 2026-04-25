@@ -107,6 +107,17 @@ namespace FerroVelho.Operaçoes
 
         public void Inserir(tb_caixa caixa)
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                DataContextFactory.InserirCaixaPostgres(
+                    caixa.data_caixa,
+                    caixa.desc_caixa,
+                    caixa.usuario ?? DataContextFactory.usu.id_usuario,
+                    caixa.valor_caixa,
+                    caixa.id_cliente);
+                return;
+            }
+
             comando = new SqlCommand();
             comando.CommandType = CommandType.Text;
             comando.CommandText = "Insert into tb_caixa(data_caixa, desc_caixa, usuario, valor_caixa, id_cliente) values(@data_caixa, @desc_caixa, @usuario, @valor_caixa, @id_cliente)";

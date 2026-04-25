@@ -26,6 +26,11 @@ namespace FerroVelho
             consulta();
         }
 
+        private bool IsPostgresMode
+        {
+            get { return DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp); }
+        }
+
         private void bt_pesquisa_Click(object sender, EventArgs e)
         {
             consulta();
@@ -36,9 +41,18 @@ namespace FerroVelho
             DateTime dataI = dt_inicio.Value;
             DateTime dataF = dt_fim.Value;
 
-            string comando = "SELECT * FROM tb_venda " +
-                "WHERE tb_venda.data_venda between '" + dataI.Date + "' AND '" + dataF.Date.Add(new TimeSpan(23, 59, 59)) + "'";
-            DataTable dt = DataContextFactory.Filtrar(comando);
+            DataTable dt;
+            if (IsPostgresMode)
+            {
+                dt = DataContextFactory.ListarVendasPostgres(dataI.Date, dataF.Date.Add(new TimeSpan(23, 59, 59)), null);
+            }
+            else
+            {
+                string comando = "SELECT * FROM tb_venda " +
+                    "WHERE tb_venda.data_venda between '" + dataI.Date + "' AND '" + dataF.Date.Add(new TimeSpan(23, 59, 59)) + "'";
+                dt = DataContextFactory.Filtrar(comando);
+            }
+
             tb_vendaDataGridView.DataSource = dt;
             tb_vendaDataGridView.DataMember = dt.TableName;
             if (tb_vendaDataGridView.Rows.Count >= 1)
@@ -53,7 +67,14 @@ namespace FerroVelho
             try
             {
                 int id = Convert.ToInt32(tb_vendaDataGridView.CurrentRow.Cells[0].Value);
-                this.tb_itemvBindingSource.DataSource = DataContextFactory.DataContext.tb_itemv.Where(x => x.id_venda == id);
+                if (IsPostgresMode)
+                {
+                    this.tb_itemvBindingSource.DataSource = DataContextFactory.ListarItensVendaPostgres(id);
+                }
+                else
+                {
+                    this.tb_itemvBindingSource.DataSource = DataContextFactory.DataContext.tb_itemv.Where(x => x.id_venda == id);
+                }
             }
             catch
             {
@@ -65,9 +86,18 @@ namespace FerroVelho
         {
             try
             {
-                string comando = "SELECT * FROM tb_venda " +
-                "WHERE tb_venda.id_venda = " + Convert.ToInt32(txt_notaFiscal.Text);
-                DataTable dt = DataContextFactory.Filtrar(comando);
+                DataTable dt;
+                if (IsPostgresMode)
+                {
+                    dt = DataContextFactory.ListarVendasPostgres(null, null, Convert.ToInt32(txt_notaFiscal.Text));
+                }
+                else
+                {
+                    string comando = "SELECT * FROM tb_venda " +
+                    "WHERE tb_venda.id_venda = " + Convert.ToInt32(txt_notaFiscal.Text);
+                    dt = DataContextFactory.Filtrar(comando);
+                }
+
                 tb_vendaDataGridView.DataSource = dt;
                 tb_vendaDataGridView.DataMember = dt.TableName;
 
@@ -81,8 +111,17 @@ namespace FerroVelho
             }
             catch
             {
-                string comando = "SELECT * FROM tb_venda ";
-                DataTable dt = DataContextFactory.Filtrar(comando);
+                DataTable dt;
+                if (IsPostgresMode)
+                {
+                    dt = DataContextFactory.ListarVendasPostgres(null, null, null);
+                }
+                else
+                {
+                    string comando = "SELECT * FROM tb_venda ";
+                    dt = DataContextFactory.Filtrar(comando);
+                }
+
                 tb_vendaDataGridView.DataSource = dt;
                 tb_vendaDataGridView.DataMember = dt.TableName;
                 if (tb_vendaDataGridView.Rows.Count >= 1)
@@ -100,11 +139,18 @@ namespace FerroVelho
             try
             {
                 int id = Convert.ToInt32(tb_vendaDataGridView.CurrentRow.Cells[0].Value);
-                comando = new SqlCommand();
-                comando.CommandType = CommandType.Text;
-                comando.CommandText = "Delete from tb_venda WHERE id_venda=@id_venda";
-                comando.Parameters.AddWithValue("@id_venda", id);
-                DataContextFactory.CRUD(comando);
+                if (IsPostgresMode)
+                {
+                    DataContextFactory.ExcluirVendaPostgres(id);
+                }
+                else
+                {
+                    comando = new SqlCommand();
+                    comando.CommandType = CommandType.Text;
+                    comando.CommandText = "Delete from tb_venda WHERE id_venda=@id_venda";
+                    comando.Parameters.AddWithValue("@id_venda", id);
+                    DataContextFactory.CRUD(comando);
+                }
 
                 consulta();
                 MessageBox.Show("Excluido com sucesso!");

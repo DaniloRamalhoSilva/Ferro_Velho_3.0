@@ -40,11 +40,26 @@ namespace FerroVelho.Relatorios
             pesquisa();
             caixa();
         }
+
+        private bool IsPostgresMode
+        {
+            get { return DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp); }
+        }
                     
         private void pesquisa()
         {
             inicio = dt_inicio.Value;
             fim = dt_fim.Value;
+
+            if (IsPostgresMode)
+            {
+                DataTable dtPostgres = DataContextFactory.CarregarResumoCompraProdutosPostgres(
+                    inicio.Date.Add(new TimeSpan(00, 00, 00)),
+                    fim.Date.Add(new TimeSpan(23, 59, 59)));
+                dataGridView1.DataSource = dtPostgres;
+                dataGridView1.DataMember = dtPostgres.TableName;
+                return;
+            }
 
             string comando = " SELECT tb_itemc.id_prod, tb_produtos.desc_prod, sum(tb_itemc.quant_item) As Peso, sum(tb_itemc.subTot_item) As Total " +
                 "FROM tb_itemc " +
@@ -62,6 +77,44 @@ namespace FerroVelho.Relatorios
             comeco = dt_inicio.MinDate;
             inicio = dt_inicio.Value;
             fim = dt_fim.Value;
+
+            if (IsPostgresMode)
+            {
+                DataTable resumo = DataContextFactory.CalcularResumoCompraCaixaPostgres(
+                    inicio.Date.Add(new TimeSpan(00, 00, 00)),
+                    fim.Date.Add(new TimeSpan(23, 59, 59)));
+                if (resumo.Rows.Count == 0)
+                {
+                    return;
+                }
+
+                DataRow row = resumo.Rows[0];
+                decimal saidaAntesPg = Convert.ToDecimal(row["saida_antes"]);
+                decimal entradaAntesPg = Convert.ToDecimal(row["entrada_antes"]);
+                decimal compraAntesPg = Convert.ToDecimal(row["compra_antes"]);
+                decimal descontoAntesPg = Convert.ToDecimal(row["desconto_antes"]);
+                decimal creditoAntesPg = Convert.ToDecimal(row["credito_antes"]);
+                decimal totalInicioPg = entradaAntesPg - saidaAntesPg - compraAntesPg + descontoAntesPg + creditoAntesPg;
+
+                decimal saidaPeriodoPg = Convert.ToDecimal(row["saida_periodo"]);
+                decimal entradaPeriodoPg = Convert.ToDecimal(row["entrada_periodo"]);
+                decimal compraPeriodoPg = Convert.ToDecimal(row["compra_periodo"]);
+                decimal descontoPeriodoPg = Convert.ToDecimal(row["desconto_periodo"]);
+                decimal creditoPeriodoPg = Convert.ToDecimal(row["credito_periodo"]);
+
+                decimal saldoPg = totalInicioPg + entradaPeriodoPg - saidaPeriodoPg - compraPeriodoPg + descontoPeriodoPg + creditoPeriodoPg;
+
+                lb_total.Text = compraPeriodoPg.ToString("C2");
+                lb_inicial.Text = totalInicioPg.ToString("C2");
+                lb_entrada.Text = entradaPeriodoPg.ToString("C2");
+                lb_saida.Text = saidaPeriodoPg.ToString("C2");
+                lb_gastoCompra.Text = (compraPeriodoPg - descontoPeriodoPg - creditoPeriodoPg).ToString("C2");
+                lb_saldo.Text = saldoPg.ToString("C2");
+                lb_adiantamento.Text = descontoPeriodoPg.ToString("C2");
+                lb_credito.Text = creditoPeriodoPg.ToString("C2");
+                lb_TgastoCompra.Text = (compraPeriodoPg - descontoPeriodoPg - creditoPeriodoPg).ToString("C2");
+                return;
+            }
 
             SqlCommand comando = new SqlCommand();
             comando.CommandType = CommandType.Text;
@@ -153,7 +206,18 @@ namespace FerroVelho.Relatorios
 
         public void imprimirNF()
         {
-            this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
+            if (IsPostgresMode)
+            {
+                var imp = DataContextFactory.BuscarImpressoraPostgres(1);
+                if (imp != null)
+                {
+                    this.tb_impressoraBindingSource.DataSource = new List<tb_impressora> { imp };
+                }
+            }
+            else
+            {
+                this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
+            }
 
             LocalReport report = new LocalReport();
             report.ReportPath = @"..\..\rel_compra.rdlc";
@@ -176,6 +240,13 @@ namespace FerroVelho.Relatorios
         {
             inicio = dt_inicio.Value;
             fim = dt_fim.Value;
+
+            if (IsPostgresMode)
+            {
+                return DataContextFactory.CarregarResumoCompraProdutosPostgres(
+                    inicio.Date.Add(new TimeSpan(00, 00, 00)),
+                    fim.Date.Add(new TimeSpan(23, 59, 59)));
+            }
 
             string comando = " SELECT tb_itemc.id_prod, tb_produtos.desc_prod, sum(tb_itemc.quant_item) As Peso, sum(tb_itemc.subTot_item) As Total " +
                 "FROM tb_itemc " +

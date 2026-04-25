@@ -25,7 +25,14 @@ namespace FerroVelho.Relatorios
         private void fm_relProduto_Load(object sender, EventArgs e)
         {
 
-            this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos;
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser))
+            {
+                this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosPostgres();
+            }
+            else
+            {
+                this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos;
+            }
 
             this.reportViewer1.RefreshReport();
             
@@ -43,7 +50,18 @@ namespace FerroVelho.Relatorios
 
         public void imprimirNF()
         {
-            this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                var imp = DataContextFactory.BuscarImpressoraPostgres(1);
+                if (imp != null)
+                {
+                    this.tb_impressoraBindingSource.DataSource = new List<tb_impressora> { imp };
+                }
+            }
+            else
+            {
+                this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
+            }
 
             LocalReport report = new LocalReport();
             report.ReportPath = @"..\..\rel_produtos.rdlc";
@@ -54,6 +72,11 @@ namespace FerroVelho.Relatorios
 
         private DataTable LoadSalesData()
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser))
+            {
+                return DataContextFactory.CarregarProdutosDataTablePostgres();
+            }
+
             string comando = "SELECT * FROM tb_produtos";
             DataTable dt = DataContextFactory.Filtrar(comando);
             return dt;

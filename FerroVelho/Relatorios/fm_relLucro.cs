@@ -26,6 +26,11 @@ namespace FerroVelho.Relatorios
         private DateTime inicio, fim;
         private int tipoR;
 
+        private bool IsPostgresMode
+        {
+            get { return DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp); }
+        }
+
         private void fm_relLucro_Load(object sender, EventArgs e)
         {
             dt_fim.Value = DateTime.Now;
@@ -42,6 +47,13 @@ namespace FerroVelho.Relatorios
 
         private DataTable pesquisa1()
         {
+            if (IsPostgresMode)
+            {
+                return DataContextFactory.CarregarLucroDetalhadoPostgres(
+                    inicio.Date.Add(new TimeSpan(00, 00, 00)),
+                    fim.Date.Add(new TimeSpan(23, 59, 59)));
+            }
+
            comando1 = "SELECT a.id_prod as codigo, tb_produtos.desc_prod as descricao, sum(a.PesoC) as pesoC, sum(a.TotalC) as Compra, sum(a.PesoV) as pesoV, sum(a.TotalV) as Venda, sum(a.TotalV) - sum(a.TotalC) as lucro, sum(a.PesoC) - sum(a.PesoV) as peso " +
                 "from(SELECT tb_itemc.id_prod, sum(tb_itemc.quant_item) As PesoC, sum(tb_itemc.subTot_item) As TotalC, 0 as pesoV, 0 as totalV " +
                 "FROM tb_itemc " +
@@ -62,7 +74,14 @@ namespace FerroVelho.Relatorios
         }
 
         private DataTable pesquisa2()
-        {            
+        {
+            if (IsPostgresMode)
+            {
+                return DataContextFactory.CarregarLucroTotalPostgres(
+                    inicio.Date.Add(new TimeSpan(00, 00, 00)),
+                    fim.Date.Add(new TimeSpan(23, 59, 59)));
+            }
+
             comando2 = "SELECT sum(e.pesoC) as pesoCT, sum(e.Compra) as compraT, sum(e.pesoV) as pesoVT, sum(e.Venda) as vendaT, sum(e.pesoC) - sum(e.pesoV) as pesoT, sum(e.Venda) - sum(e.Compra) as lucroT " +
                 "from(SELECT a.id_prod as codigo, tb_produtos.desc_prod as descricao, sum(a.PesoC) as pesoC, sum(a.TotalC) as Compra, sum(a.PesoV) as pesoV, sum(a.TotalV) as Venda, sum(a.TotalV) - sum(a.TotalC) as lucro, sum(a.PesoC) - sum(a.PesoV) as peso " +
                 "from(SELECT tb_itemc.id_prod, sum(tb_itemc.quant_item) As PesoC, sum(tb_itemc.subTot_item) As TotalC, 0 as pesoV, 0 as totalV " +
@@ -152,7 +171,18 @@ namespace FerroVelho.Relatorios
 
         public void imprimirNF()
         {
-            this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
+            if (IsPostgresMode)
+            {
+                var imp = DataContextFactory.BuscarImpressoraPostgres(1);
+                if (imp != null)
+                {
+                    this.tb_impressoraBindingSource.DataSource = new List<tb_impressora> { imp };
+                }
+            }
+            else
+            {
+                this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
+            }
 
             LocalReport report = new LocalReport();
             report.ReportPath = @"..\..\rel_financeiroSimp.rdlc";
@@ -173,7 +203,14 @@ namespace FerroVelho.Relatorios
         }
 
         private DataTable LoadSalesData1()
-        {           
+        {
+            if (IsPostgresMode)
+            {
+                return DataContextFactory.CarregarLucroDetalhadoPostgres(
+                    dt_inicio.Value.Date.Add(new TimeSpan(00, 00, 00)),
+                    dt_fim.Value.Date.Add(new TimeSpan(23, 59, 59)));
+            }
+
             DataTable dt = DataContextFactory.Filtrar(comando1);
 
             return dt;
@@ -181,6 +218,13 @@ namespace FerroVelho.Relatorios
 
         private DataTable LoadSalesData2()
         {
+            if (IsPostgresMode)
+            {
+                return DataContextFactory.CarregarLucroTotalPostgres(
+                    dt_inicio.Value.Date.Add(new TimeSpan(00, 00, 00)),
+                    dt_fim.Value.Date.Add(new TimeSpan(23, 59, 59)));
+            }
+
             DataTable dt = DataContextFactory.Filtrar(comando2);
 
             return dt;

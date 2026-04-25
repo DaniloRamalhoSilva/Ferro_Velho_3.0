@@ -19,9 +19,22 @@ namespace FerroVelho
             InitializeComponent();
         }
 
+        private bool IsPostgresMode
+        {
+            get { return DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser); }
+        }
+
         private void fm_cadUsuario_Load(object sender, EventArgs e)
         {
-            this.tb_tipoUsuarioBindingSource.DataSource = DataContextFactory.DataContext.tb_tipoUsuario;
+            if (IsPostgresMode)
+            {
+                this.tb_tipoUsuarioBindingSource.DataSource = DataContextFactory.ListarTiposUsuarioPostgres();
+            }
+            else
+            {
+                this.tb_tipoUsuarioBindingSource.DataSource = DataContextFactory.DataContext.tb_tipoUsuario;
+            }
+
             CarregaUsuarios();
             if (this.usuarioCorrente != null)
             {
@@ -31,6 +44,12 @@ namespace FerroVelho
 
         private void CarregaUsuarios()
         {
+            if (IsPostgresMode)
+            {
+                this.tb_usuarioBindingSource.DataSource = DataContextFactory.ListarUsuariosPostgres(mostrarInativos);
+                return;
+            }
+
             if (mostrarInativos)
             {
                 this.tb_usuarioBindingSource.DataSource = DataContextFactory.DataContext.tb_usuario;
@@ -59,7 +78,9 @@ namespace FerroVelho
                 {
                     if (lb_idUsuario.Text == "")
                     {
-                        var cont = DataContextFactory.DataContext.tb_usuario.Count(x => x.nome_usuario == txt_nome.Text);
+                        var cont = IsPostgresMode
+                            ? (DataContextFactory.ExisteUsuarioPostgres(txt_nome.Text, null) ? 1 : 0)
+                            : DataContextFactory.DataContext.tb_usuario.Count(x => x.nome_usuario == txt_nome.Text);
 
                         if (cont > 0)
                         {
@@ -68,16 +89,24 @@ namespace FerroVelho
                         }
                         else
                         {
-                            this.tb_usuarioBindingSource.DataSource = DataContextFactory.DataContext.tb_usuario;
-                            this.tb_usuarioBindingSource.AddNew();
-                            this.usuarioCorrente.nome_usuario = txt_nome.Text;
-                            this.usuarioCorrente.senha_usuario = txt_senha.Text;
-                            this.usuarioCorrente.permi_usuario = tipoCorrente.id_tipoUsuario;
+                            if (IsPostgresMode)
+                            {
+                                DataContextFactory.CriarUsuarioPostgres(txt_nome.Text, txt_senha.Text, tipoCorrente.id_tipoUsuario);
+                            }
+                            else
+                            {
+                                this.tb_usuarioBindingSource.DataSource = DataContextFactory.DataContext.tb_usuario;
+                                this.tb_usuarioBindingSource.AddNew();
+                                this.usuarioCorrente.nome_usuario = txt_nome.Text;
+                                this.usuarioCorrente.senha_usuario = txt_senha.Text;
+                                this.usuarioCorrente.permi_usuario = tipoCorrente.id_tipoUsuario;
 
-                            this.usuarioCorrente.ativo = true;
+                                this.usuarioCorrente.ativo = true;
 
-                            this.tb_usuarioBindingSource.EndEdit();
-                            DataContextFactory.DataContext.SubmitChanges();
+                                this.tb_usuarioBindingSource.EndEdit();
+                                DataContextFactory.DataContext.SubmitChanges();
+                            }
+
                             CarregaUsuarios();
                             MessageBox.Show("Usuario cadastrado com sucesso!");
                         }
@@ -85,47 +114,67 @@ namespace FerroVelho
                     }
                     else
                     {
-                        int cont = 0;
-                        int idu = 0;
-                        foreach (DataGridViewRow dg in DataGridView1.Rows)
-                        {                            
-                            if (Convert.ToString(dg.Cells[1].Value).ToUpper() == txt_nome.Text.ToUpper())
-                            {
-                                cont = cont + 1;
-                                idu = Convert.ToInt32(dg.Cells[0].Value);
-                            }                           
-                        }
-
-                        if (cont > 0)
+                        if (IsPostgresMode)
                         {
-                            if (idu == usuarioCorrente.id_usuario)
+                            if (DataContextFactory.ExisteUsuarioPostgres(txt_nome.Text, this.usuarioCorrente.id_usuario))
+                            {
+                                MessageBox.Show("Usuario " + txt_nome.Text + " ja exite, tente novamente!");
+                            }
+                            else
+                            {
+                                DataContextFactory.AtualizarUsuarioPostgres(
+                                    this.usuarioCorrente.id_usuario,
+                                    txt_nome.Text,
+                                    txt_senha.Text,
+                                    tipoCorrente.id_tipoUsuario);
+                                CarregaUsuarios();
+                                MessageBox.Show("Usuario alterado com sucesso!");
+                            }
+                        }
+                        else
+                        {
+                            int cont = 0;
+                            int idu = 0;
+                            foreach (DataGridViewRow dg in DataGridView1.Rows)
+                            {
+                                if (Convert.ToString(dg.Cells[1].Value).ToUpper() == txt_nome.Text.ToUpper())
+                                {
+                                    cont = cont + 1;
+                                    idu = Convert.ToInt32(dg.Cells[0].Value);
+                                }
+                            }
+
+                            if (cont > 0)
+                            {
+                                if (idu == usuarioCorrente.id_usuario)
+                                {
+                                    this.tb_usuarioBindingSource.DataSource = DataContextFactory.DataContext.tb_usuario;
+                                    this.usuarioCorrente.nome_usuario = txt_nome.Text;
+                                    this.usuarioCorrente.senha_usuario = txt_senha.Text;
+                                    this.usuarioCorrente.permi_usuario = tipoCorrente.id_tipoUsuario;
+
+                                    this.tb_usuarioBindingSource.EndEdit();
+                                    DataContextFactory.DataContext.SubmitChanges();
+                                    CarregaUsuarios();
+                                    MessageBox.Show("Usuario alterado com sucesso!");
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Usuario " + txt_nome.Text + " ja exite, tente novamente!");
+                                }
+                            }
+                            else
                             {
                                 this.tb_usuarioBindingSource.DataSource = DataContextFactory.DataContext.tb_usuario;
                                 this.usuarioCorrente.nome_usuario = txt_nome.Text;
                                 this.usuarioCorrente.senha_usuario = txt_senha.Text;
-                                this.usuarioCorrente.permi_usuario = tipoCorrente.id_tipoUsuario; 
+                                this.usuarioCorrente.permi_usuario = tipoCorrente.id_tipoUsuario;
 
                                 this.tb_usuarioBindingSource.EndEdit();
                                 DataContextFactory.DataContext.SubmitChanges();
                                 CarregaUsuarios();
                                 MessageBox.Show("Usuario alterado com sucesso!");
                             }
-                            else
-                            {
-                                MessageBox.Show("Usuario " + txt_nome.Text + " ja exite, tente novamente!");
-                            }
-                        }
-                        else
-                        {
-                            this.tb_usuarioBindingSource.DataSource = DataContextFactory.DataContext.tb_usuario;
-                            this.usuarioCorrente.nome_usuario = txt_nome.Text;
-                            this.usuarioCorrente.senha_usuario = txt_senha.Text;
-                            this.usuarioCorrente.permi_usuario = tipoCorrente.id_tipoUsuario;
-
-                            this.tb_usuarioBindingSource.EndEdit();
-                            DataContextFactory.DataContext.SubmitChanges();
-                            CarregaUsuarios();
-                            MessageBox.Show("Usuario alterado com sucesso!");
                         }
 
                     }
@@ -267,8 +316,16 @@ namespace FerroVelho
                 if (MessageBox.Show("Realmente deseja excuir", "Confirmação", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     this.usuarioCorrente.ativo = false;
-                    this.tb_usuarioBindingSource.EndEdit();
-                    DataContextFactory.DataContext.SubmitChanges();
+                    if (IsPostgresMode)
+                    {
+                        DataContextFactory.DefinirUsuarioAtivoPostgres(this.usuarioCorrente.id_usuario, false);
+                    }
+                    else
+                    {
+                        this.tb_usuarioBindingSource.EndEdit();
+                        DataContextFactory.DataContext.SubmitChanges();
+                    }
+
                     CarregaUsuarios();
                     if (this.usuarioCorrente != null)
                     {
@@ -288,8 +345,16 @@ namespace FerroVelho
             else
             {
                 this.usuarioCorrente.ativo = true;
-                this.tb_usuarioBindingSource.EndEdit();
-                DataContextFactory.DataContext.SubmitChanges();
+                if (IsPostgresMode)
+                {
+                    DataContextFactory.DefinirUsuarioAtivoPostgres(this.usuarioCorrente.id_usuario, true);
+                }
+                else
+                {
+                    this.tb_usuarioBindingSource.EndEdit();
+                    DataContextFactory.DataContext.SubmitChanges();
+                }
+
                 CarregaUsuarios();
                 if (this.usuarioCorrente != null)
                 {

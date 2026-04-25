@@ -20,7 +20,15 @@ namespace FerroVelho
 
         private void fm_outrasEntradas_Load(object sender, EventArgs e)
         {
-            this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos;
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser))
+            {
+                this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosPostgres();
+            }
+            else
+            {
+                this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos;
+            }
+
             cb_desProd.DataSource = tb_produtosBindingSource;
             cb_desProd.DisplayMember = "desc_prod";
             cb_desProd.ValueMember = "id_prod";
@@ -45,8 +53,16 @@ namespace FerroVelho
             if (txt_codProd.Text != "")
             {
                 cb_desProd.SelectedValue = Convert.ToInt32(txt_codProd.Text);
-                fm_estoque fm = new fm_estoque();
-                decimal saldo = fm.calcular(Convert.ToInt32(txt_codProd.Text));
+                decimal saldo;
+                if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+                {
+                    saldo = DataContextFactory.CalcularSaldoProdutoPostgres(Convert.ToInt32(txt_codProd.Text));
+                }
+                else
+                {
+                    fm_estoque fm = new fm_estoque();
+                    saldo = fm.calcular(Convert.ToInt32(txt_codProd.Text));
+                }
                 lb_saldo.Text = saldo.ToString("N3");
             }
             else
@@ -59,8 +75,16 @@ namespace FerroVelho
         private void cb_desProd_Leave(object sender, EventArgs e)
         {
             txt_codProd.Text = Convert.ToString(this.produtoCorrente.id_prod);
-            fm_estoque fm = new fm_estoque();
-            decimal saldo = fm.calcular(Convert.ToInt32(txt_codProd.Text));
+            decimal saldo;
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                saldo = DataContextFactory.CalcularSaldoProdutoPostgres(Convert.ToInt32(txt_codProd.Text));
+            }
+            else
+            {
+                fm_estoque fm = new fm_estoque();
+                saldo = fm.calcular(Convert.ToInt32(txt_codProd.Text));
+            }
             lb_saldo.Text = saldo.ToString("N3");
 
         }
@@ -117,6 +141,18 @@ namespace FerroVelho
 
         private void novaNota()
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                var compra = DataContextFactory.CriarCompraPostgres(
+                    DateTime.Now,
+                    DataContextFactory.usu.id_usuario,
+                    0m,
+                    0m,
+                    0m);
+                this.tb_entradaBindingSource.DataSource = compra;
+                return;
+            }
+
             this.tb_entradaBindingSource.DataSource = DataContextFactory.DataContext.tb_compra;
             this.tb_entradaBindingSource.AddNew();
             this.entradaCorrente.valor_nota = Convert.ToDecimal("0,00");
@@ -129,6 +165,17 @@ namespace FerroVelho
 
         private void novoItem()
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                DataContextFactory.InserirItemCompraPostgres(
+                    this.produtoCorrente.id_prod,
+                    this.entradaCorrente.id_compra,
+                    Convert.ToDecimal(txt_quant.Text),
+                    0m,
+                    0m);
+                return;
+            }
+
             this.tb_itemeBindingSource.DataSource = DataContextFactory.DataContext.tb_itemc;
 
             this.tb_itemeBindingSource.AddNew();

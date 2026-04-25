@@ -69,6 +69,26 @@ private int m_currentPageIndex;
 
         public void Imprimir()
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                var imp = DataContextFactory.BuscarImpressoraPostgres(1);
+                if (imp != null)
+                {
+                    this.tb_impressoraBindingSource.DataSource = new List<tb_impressora> { imp };
+                }
+
+                DataTable estoque = Pesquisa();
+                LocalReport reportPostgres = new LocalReport();
+                reportPostgres.ReportPath = @"..\..\rel_estoque.rdlc";
+                reportPostgres.DataSources.Add(new ReportDataSource("DataSet1", estoque));
+                reportPostgres.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("empressa", DataContextFactory.nome));
+                reportPostgres.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("tel", DataContextFactory.tel));
+                reportPostgres.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("end", DataContextFactory.endereco));
+                Export(reportPostgres);
+                Print();
+                return;
+            }
+
             string[] arrPar = new string[] { "@id_impressora" };
             string[] arrVal = new string[] { "1" };
             DataTable dt = DataContextFactory.GetDataTableBySP("s_tb_impressora", arrPar, arrVal);
@@ -90,9 +110,21 @@ private int m_currentPageIndex;
             DateTime dataInicio = dt_inicio.Value;
             DateTime dataFim = dt_fim.Value;
 
-            string[] arrPar = new string[] { "@dataInicial", "@dataFinal", "@id_prod" };
-            string[] arrVal = new string[] { dataInicio.ToString("dd/MM/yyyy 00:00:00.00"), dataFim.ToString("dd/MM/yyyy 23:59:59.99"), string.IsNullOrEmpty(txt_codProd.Text)? null :  txt_codProd.Text.Trim() };
-            DataTable dt = DataContextFactory.GetDataTableBySP("s_tb_estoque", arrPar, arrVal);
+            DataTable dt;
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                int? idProduto = string.IsNullOrEmpty(txt_codProd.Text) ? (int?)null : Convert.ToInt32(txt_codProd.Text.Trim());
+                dt = DataContextFactory.CarregarEstoquePeriodoPostgres(
+                    dataInicio.Date.Add(new TimeSpan(00, 00, 00)),
+                    dataFim.Date.Add(new TimeSpan(23, 59, 59)),
+                    idProduto);
+            }
+            else
+            {
+                string[] arrPar = new string[] { "@dataInicial", "@dataFinal", "@id_prod" };
+                string[] arrVal = new string[] { dataInicio.ToString("dd/MM/yyyy 00:00:00.00"), dataFim.ToString("dd/MM/yyyy 23:59:59.99"), string.IsNullOrEmpty(txt_codProd.Text)? null :  txt_codProd.Text.Trim() };
+                dt = DataContextFactory.GetDataTableBySP("s_tb_estoque", arrPar, arrVal);
+            }
 
             dataGridView1.DataSource = dt;
             dataGridView1.DataMember = dt.TableName;

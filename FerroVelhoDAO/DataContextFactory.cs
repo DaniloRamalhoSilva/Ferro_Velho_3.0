@@ -103,6 +103,76 @@ namespace FerroVelhoDAO
             return PostgresConnectionService.BuscarImpressoraPorId(conexaoImp, idImpressora);
         }
 
+        public static void SalvarImpressoraPostgres(int idImpressora, string nomeImpressora)
+        {
+            PostgresConnectionService.SalvarImpressora(conexaoImp, idImpressora, nomeImpressora);
+        }
+
+        public static List<tb_tipoUsuario> ListarTiposUsuarioPostgres()
+        {
+            return PostgresConnectionService.ListarTiposUsuario(conexaoUser);
+        }
+
+        public static List<tb_usuario> ListarUsuariosPostgres(bool incluirInativos)
+        {
+            return PostgresConnectionService.ListarUsuarios(conexaoUser, incluirInativos);
+        }
+
+        public static bool ExisteUsuarioPostgres(string nomeUsuario, int? excetoIdUsuario)
+        {
+            return PostgresConnectionService.ExisteUsuarioPorNome(conexaoUser, nomeUsuario, excetoIdUsuario);
+        }
+
+        public static void CriarUsuarioPostgres(string nomeUsuario, string senhaUsuario, int permissaoUsuario)
+        {
+            PostgresConnectionService.CriarUsuario(conexaoUser, nomeUsuario, senhaUsuario, permissaoUsuario);
+        }
+
+        public static void AtualizarUsuarioPostgres(int idUsuario, string nomeUsuario, string senhaUsuario, int permissaoUsuario)
+        {
+            PostgresConnectionService.AtualizarUsuario(conexaoUser, idUsuario, nomeUsuario, senhaUsuario, permissaoUsuario);
+        }
+
+        public static void DefinirUsuarioAtivoPostgres(int idUsuario, bool ativo)
+        {
+            PostgresConnectionService.DefinirUsuarioAtivo(conexaoUser, idUsuario, ativo);
+        }
+
+        public static List<tb_cliente> ListarClientesPostgres(string filtroCampo = null, string filtroValor = null)
+        {
+            return PostgresConnectionService.ListarClientes(conexaoImp, filtroCampo, filtroValor);
+        }
+
+        public static void InserirClientePostgres(string nomeCliente, string cpfCliente, string telCliente)
+        {
+            PostgresConnectionService.InserirCliente(conexaoImp, nomeCliente, cpfCliente, telCliente);
+        }
+
+        public static void AtualizarClientePostgres(int idCliente, string nomeCliente, string cpfCliente, string telCliente)
+        {
+            PostgresConnectionService.AtualizarCliente(conexaoImp, idCliente, nomeCliente, cpfCliente, telCliente);
+        }
+
+        public static void ExcluirClientePostgres(int idCliente)
+        {
+            PostgresConnectionService.ExcluirCliente(conexaoImp, idCliente);
+        }
+
+        public static DataTable CarregarMovimentacaoClientePostgres(int idCliente, bool resumido)
+        {
+            return PostgresConnectionService.CarregarMovimentacaoCliente(conexaoImp, idCliente, resumido);
+        }
+
+        public static string BuscarNomeUsuarioPostgres(int idUsuario)
+        {
+            return PostgresConnectionService.BuscarNomeUsuario(conexaoImp, idUsuario);
+        }
+
+        public static string BuscarNomeClientePostgres(int idCliente)
+        {
+            return PostgresConnectionService.BuscarNomeCliente(conexaoImp, idCliente);
+        }
+
         public static decimal CalcularValorDevedorPostgres(int idCliente)
         {
             return PostgresConnectionService.CalcularValorDevedor(conexaoImp, idCliente);
@@ -146,6 +216,106 @@ namespace FerroVelhoDAO
         public static decimal CalcularSaldoProdutoPostgres(int idProduto)
         {
             return PostgresConnectionService.CalcularSaldoProduto(conexaoImp, idProduto);
+        }
+
+        public static decimal CalcularSaldoCaixaPostgres()
+        {
+            return PostgresConnectionService.CalcularSaldoCaixa(conexaoImp);
+        }
+
+        public static void InserirCaixaPostgres(DateTime dataCaixa, string descricao, int usuario, decimal valorCaixa, int? idCliente)
+        {
+            PostgresConnectionService.InserirCaixa(conexaoImp, dataCaixa, descricao, usuario, valorCaixa, idCliente);
+        }
+
+        public static void InserirAcertoClientePostgres(DateTime dataAcerto, string descricao, int usuario, decimal valorAcerto, int idCliente)
+        {
+            PostgresConnectionService.InserirAcertoCliente(conexaoImp, dataAcerto, descricao, usuario, valorAcerto, idCliente);
+        }
+
+        public static DataTable CarregarMovimentacaoRecursosPostgres(DateTime inicio, DateTime fim)
+        {
+            return PostgresConnectionService.CarregarMovimentacaoRecursos(conexaoImp, inicio, fim);
+        }
+
+        public static DataTable ListarComprasPostgres(DateTime? inicio, DateTime? fim, int? idCompra)
+        {
+            return PostgresConnectionService.ListarCompras(conexaoImp, inicio, fim, idCompra);
+        }
+
+        public static DataTable ListarVendasPostgres(DateTime? inicio, DateTime? fim, int? idVenda)
+        {
+            return PostgresConnectionService.ListarVendas(conexaoImp, inicio, fim, idVenda);
+        }
+
+        public static DataTable CarregarEstoqueAtualPostgres()
+        {
+            return PostgresConnectionService.CarregarEstoqueAtual(conexaoImp);
+        }
+
+        public static DataTable CarregarResumoCompraProdutosPostgres(DateTime inicio, DateTime fim)
+        {
+            return PostgresConnectionService.CarregarResumoCompraProdutos(conexaoImp, inicio, fim);
+        }
+
+        public static DataTable CarregarRelatorioCompraItensPostgres(int idCompra)
+        {
+            return PostgresConnectionService.CarregarRelatorioCompraItens(conexaoImp, idCompra);
+        }
+
+        public static DataTable CarregarRelatorioCompraCabecalhoPostgres(int idCompra)
+        {
+            return PostgresConnectionService.CarregarRelatorioCompraCabecalho(conexaoImp, idCompra);
+        }
+
+        public static DataTable CarregarRelatorioCompraClientePostgres(int idCompra)
+        {
+            return PostgresConnectionService.CarregarRelatorioCompraCliente(conexaoImp, idCompra);
+        }
+
+        public static DataTable CalcularResumoCompraCaixaPostgres(DateTime inicio, DateTime fim)
+        {
+            return PostgresConnectionService.CalcularResumoCompraCaixa(conexaoImp, inicio, fim);
+        }
+
+        public static DataTable CarregarResumoVendaProdutosPostgres(DateTime inicio, DateTime fim)
+        {
+            return PostgresConnectionService.CarregarResumoVendaProdutos(conexaoImp, inicio, fim);
+        }
+
+        public static decimal CalcularTotalVendaProdutosPostgres(DateTime inicio, DateTime fim)
+        {
+            return PostgresConnectionService.CalcularTotalVendaProdutos(conexaoImp, inicio, fim);
+        }
+
+        public static DataTable CarregarLucroDetalhadoPostgres(DateTime inicio, DateTime fim)
+        {
+            return PostgresConnectionService.CarregarLucroDetalhado(conexaoImp, inicio, fim);
+        }
+
+        public static DataTable CarregarLucroTotalPostgres(DateTime inicio, DateTime fim)
+        {
+            return PostgresConnectionService.CarregarLucroTotal(conexaoImp, inicio, fim);
+        }
+
+        public static DataTable CarregarFluxoCaixaPostgres(DateTime inicio, DateTime fim)
+        {
+            return PostgresConnectionService.CarregarFluxoCaixa(conexaoImp, inicio, fim);
+        }
+
+        public static decimal CalcularSaldoInicialFluxoCaixaPostgres(DateTime inicio)
+        {
+            return PostgresConnectionService.CalcularSaldoInicialFluxoCaixa(conexaoImp, inicio);
+        }
+
+        public static DataTable CarregarEstoquePeriodoPostgres(DateTime inicio, DateTime fim, int? idProduto)
+        {
+            return PostgresConnectionService.CarregarEstoquePeriodo(conexaoImp, inicio, fim, idProduto);
+        }
+
+        public static DataTable CarregarProdutosDataTablePostgres()
+        {
+            return PostgresConnectionService.CarregarProdutosDataTable(conexaoUser);
         }
 
         public static tb_venda CriarVendaPostgres(DateTime dataVenda, int usuario, decimal valorNota)

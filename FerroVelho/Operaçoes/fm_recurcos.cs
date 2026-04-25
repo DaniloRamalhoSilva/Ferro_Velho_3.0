@@ -43,6 +43,11 @@ namespace FerroVelho
 
         public decimal calcular()
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                return DataContextFactory.CalcularSaldoCaixaPostgres();
+            }
+
             decimal totalSaida, totalEntrada, desconto, saldo, credito;            
 
             try { totalSaida = Convert.ToDecimal(DataContextFactory.DataContext.tb_itemc.Sum(x => x.subTot_item)); }
@@ -163,6 +168,19 @@ namespace FerroVelho
 
         private void apontar(decimal valor, string texto)
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                DataContextFactory.InserirCaixaPostgres(
+                    DateTime.Now,
+                    txt_desc.Text,
+                    DataContextFactory.usu.id_usuario,
+                    valor,
+                    null);
+
+                MessageBox.Show(texto);
+                return;
+            }
+
             this.tb_caixaBindingSource.DataSource = DataContextFactory.DataContext.tb_caixa;
 
             this.tb_caixaBindingSource.AddNew();

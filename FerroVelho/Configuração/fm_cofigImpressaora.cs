@@ -36,8 +36,16 @@ namespace FerroVelho
         {
             try
             {
-                this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
-                lb_impCupomFiscal.Text = this.impressoraCorrente.nome_impressora;
+                if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+                {
+                    var impressora = DataContextFactory.BuscarImpressoraPostgres(1);
+                    lb_impCupomFiscal.Text = impressora == null ? "Nenhuma Selecionada" : impressora.nome_impressora;
+                }
+                else
+                {
+                    this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
+                    lb_impCupomFiscal.Text = this.impressoraCorrente.nome_impressora;
+                }
             }
             catch
             {
@@ -46,8 +54,16 @@ namespace FerroVelho
 
             try
             {
-                this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 2);
-                lb_impRelatorio.Text = this.impressoraCorrente.nome_impressora;
+                if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+                {
+                    var impressora = DataContextFactory.BuscarImpressoraPostgres(2);
+                    lb_impRelatorio.Text = impressora == null ? "Nenhuma Selecionada" : impressora.nome_impressora;
+                }
+                else
+                {
+                    this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 2);
+                    lb_impRelatorio.Text = this.impressoraCorrente.nome_impressora;
+                }
             }
             catch
             {
@@ -66,6 +82,14 @@ namespace FerroVelho
 
         private void btn_impCupomFiscal_Click(object sender, EventArgs e)
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                DataContextFactory.SalvarImpressoraPostgres(1, cb_ImpCupomFiscal.Text);
+                MessageBox.Show("Alterado com sucesso!");
+                caregarImpressora();
+                return;
+            }
+
             if (lb_impCupomFiscal.Text == "Nenhuma Selecionada")
             {
                 this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora;
@@ -86,6 +110,14 @@ namespace FerroVelho
 
         private void btn_impRelatorio_Click(object sender, EventArgs e)
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                DataContextFactory.SalvarImpressoraPostgres(2, cb_ImpRelatorio.Text);
+                MessageBox.Show("Alterado com sucesso!");
+                caregarImpressora();
+                return;
+            }
+
             if (lb_impRelatorio.Text == "Nenhuma Selecionada")
             {
                 this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora;

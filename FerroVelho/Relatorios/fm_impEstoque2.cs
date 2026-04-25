@@ -37,6 +37,11 @@ namespace FerroVelho.Relatorios
 
         private DataTable LoadSalesData()
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                return DataContextFactory.CarregarEstoqueAtualPostgres();
+            }
+
             string comando = "SELECT e.IdProduto as id_prod, tb_produtos.desc_prod, sum(e.Entrada) - sum(e.Saida) as qunt_est " +
                 "FROM (SELECT tb_itemc.id_prod as IdProduto, sum(tb_itemc.quant_item) as Entrada, 0 As Saida " +
                 "FROM tb_itemc " +

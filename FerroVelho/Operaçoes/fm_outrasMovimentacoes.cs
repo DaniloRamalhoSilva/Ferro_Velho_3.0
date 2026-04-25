@@ -137,6 +137,17 @@ namespace FerroVelho.Operaçoes
 
         public void Inserir(tb_aCliente aCliente)
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                DataContextFactory.InserirAcertoClientePostgres(
+                    aCliente.data__aCliente,
+                    aCliente.desc_aCliente,
+                    aCliente.usuario,
+                    aCliente.valor_aCliente,
+                    aCliente.id_cliente);
+                return;
+            }
+
             comando = new SqlCommand();
             comando.CommandType = CommandType.Text;
             comando.CommandText = "Insert into tb_aCliente(data__aCliente, desc_aCliente, usuario, valor_aCliente, id_cliente) values(@data__aCliente, @desc_aCliente, @usuario, @valor_aCliente, @id_cliente)";
