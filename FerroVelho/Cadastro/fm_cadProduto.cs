@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,10 +19,26 @@ namespace FerroVelho
             InitializeComponent();
         }
 
+        private bool IsPostgresMode
+        {
+            get { return DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser); }
+        }
+
+        private void CarregarProdutos()
+        {
+            if (IsPostgresMode)
+            {
+                this.tbprodutosBindingSource.DataSource = DataContextFactory.ListarProdutosPostgres();
+            }
+            else
+            {
+                this.tbprodutosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos;
+            }
+        }
+
         private void fm_cadastroProduto_Load(object sender, EventArgs e)
         {
-            
-            this.tbprodutosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos;
+            CarregarProdutos();
             clik();
         }
 
@@ -85,32 +102,69 @@ namespace FerroVelho
 
         private void btn_salvar_Click(object sender, EventArgs e)
         {
-            if (txt_descrição.Text == "" && txt_valor.Text == "")
+            if (string.IsNullOrWhiteSpace(txt_descrição.Text) || string.IsNullOrWhiteSpace(txt_valor.Text))
             {
                 MessageBox.Show("Descrição e Valor são obrigatorios!");
             }
             else
             {
-                if (txt_codPro.Text == "")
+                decimal valorProduto;
+                if (!decimal.TryParse(txt_valor.Text, NumberStyles.Number, CultureInfo.CurrentCulture, out valorProduto))
                 {
+                    MessageBox.Show("Valor do produto inválido!");
+                    txt_valor.Focus();
+                    return;
+                }
 
-                    this.tbprodutosBindingSource.AddNew();
+                if (IsPostgresMode)
+                {
+                    if (txt_codPro.Text == "")
+                    {
+                        int? usuarioLogado = DataContextFactory.usu != null ? (int?)DataContextFactory.usu.id_usuario : null;
+                        DataContextFactory.CriarProdutoPostgres(txt_descrição.Text.Trim(), valorProduto, usuarioLogado);
+                        MessageBox.Show("Salvo com sucesso!");
+                    }
+                    else
+                    {
+                        DataContextFactory.AtualizarProdutoPostgres(Convert.ToInt32(txt_codPro.Text), txt_descrição.Text.Trim(), valorProduto);
+                        MessageBox.Show("Alterado com sucesso!");
+                    }
 
-                    this.produtoCorrente.desc_prod = txt_descrição.Text;
-                    this.produtoCorrente.val_prod = Convert.ToDecimal(txt_valor.Text);
-                    this.produtoCorrente.usuario = DataContextFactory.usu.id_usuario;
-                    this.tbprodutosBindingSource.EndEdit();
-                    DataContextFactory.DataContext.SubmitChanges();
-                    MessageBox.Show("Salvo com sucesso!");
+                    CarregarProdutos();
                 }
                 else
                 {
-                    this.produtoCorrente.desc_prod = txt_descrição.Text;
-                    this.produtoCorrente.val_prod = Convert.ToDecimal(txt_valor.Text);
+                    if (txt_codPro.Text == "")
+                    {
+                        this.tbprodutosBindingSource.AddNew();
+                        if (this.produtoCorrente == null)
+                        {
+                            MessageBox.Show("Não foi possível iniciar um novo produto.");
+                            return;
+                        }
 
-                    this.tbprodutosBindingSource.EndEdit();
-                    DataContextFactory.DataContext.SubmitChanges();
-                    MessageBox.Show("Alterado com sucesso!");
+                        this.produtoCorrente.desc_prod = txt_descrição.Text;
+                        this.produtoCorrente.val_prod = valorProduto;
+                        this.produtoCorrente.usuario = DataContextFactory.usu.id_usuario;
+                        this.tbprodutosBindingSource.EndEdit();
+                        DataContextFactory.DataContext.SubmitChanges();
+                        MessageBox.Show("Salvo com sucesso!");
+                    }
+                    else
+                    {
+                        if (this.produtoCorrente == null)
+                        {
+                            MessageBox.Show("Selecione um produto valido!");
+                            return;
+                        }
+
+                        this.produtoCorrente.desc_prod = txt_descrição.Text;
+                        this.produtoCorrente.val_prod = valorProduto;
+
+                        this.tbprodutosBindingSource.EndEdit();
+                        DataContextFactory.DataContext.SubmitChanges();
+                        MessageBox.Show("Alterado com sucesso!");
+                    }
                 }
 
                 txt_descrição.Enabled = false;
@@ -130,20 +184,33 @@ namespace FerroVelho
         {
             if(MessageBox.Show ("Realmente deseja excuir", "Confirmação", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
+                if (string.IsNullOrWhiteSpace(txt_codPro.Text))
+                {
+                    MessageBox.Show("Selecione um produto valido!");
+                    return;
+                }
+
                 try
                 {
-                    this.tbprodutosBindingSource.RemoveCurrent();
-                    DataContextFactory.DataContext.SubmitChanges();
+                    if (IsPostgresMode)
+                    {
+                        DataContextFactory.ExcluirProdutoPostgres(Convert.ToInt32(txt_codPro.Text));
+                    }
+                    else
+                    {
+                        this.tbprodutosBindingSource.RemoveCurrent();
+                        DataContextFactory.DataContext.SubmitChanges();
+                    }
+
+                    CarregarProdutos();
                     clik();
                     MessageBox.Show("Produto excluido com sucesso!");
                 }
-                catch
+                catch (Exception ex)
                 {
-                    MessageBox.Show("Impesivel excluir, o item esta atribuido a uma nota de venda/compra! Erro:" + e);
+                    MessageBox.Show("Impesivel excluir, o item esta atribuido a uma nota de venda/compra! Erro: " + ex.Message);
                 }
-                
             }
-            
         }
 
         private void dataGridView1_Click(object sender, EventArgs e)
@@ -153,25 +220,25 @@ namespace FerroVelho
 
         private void clik()
         {
-            try
+            var atual = this.produtoCorrente;
+            if (atual == null)
             {
-                txt_descrição.Text = this.produtoCorrente.desc_prod;
-                txt_valor.Text = Convert.ToString(this.produtoCorrente.val_prod);
-                txt_codPro.Text = Convert.ToString(this.produtoCorrente.id_prod);
+                txt_descrição.Text = string.Empty;
+                txt_valor.Text = string.Empty;
+                txt_codPro.Text = string.Empty;
+                return;
             }
-            catch
-            {
-                txt_valor.Text = "";
-                txt_codPro.Text = "";
-            }
-            
+
+            txt_descrição.Text = atual.desc_prod;
+            txt_valor.Text = Convert.ToString(atual.val_prod);
+            txt_codPro.Text = Convert.ToString(atual.id_prod);
         }
 
         public tb_produtos produtoCorrente
         {
             get
             {
-                return (tb_produtos)this.tbprodutosBindingSource.Current;
+                return this.tbprodutosBindingSource.Current as tb_produtos;
             }
         }
 

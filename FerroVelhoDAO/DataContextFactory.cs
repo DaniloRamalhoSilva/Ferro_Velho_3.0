@@ -83,6 +83,21 @@ namespace FerroVelhoDAO
             return PostgresConnectionService.ListarProdutos(conexaoUser);
         }
 
+        public static tb_produtos CriarProdutoPostgres(string descricao, decimal valor, int? usuario)
+        {
+            return PostgresConnectionService.CriarProduto(conexaoUser, descricao, valor, usuario);
+        }
+
+        public static void AtualizarProdutoPostgres(int idProd, string descricao, decimal valor)
+        {
+            PostgresConnectionService.AtualizarProduto(conexaoUser, idProd, descricao, valor);
+        }
+
+        public static void ExcluirProdutoPostgres(int idProd)
+        {
+            PostgresConnectionService.ExcluirProduto(conexaoUser, idProd);
+        }
+
         public static tb_impressora BuscarImpressoraPostgres(int idImpressora)
         {
             return PostgresConnectionService.BuscarImpressoraPorId(conexaoImp, idImpressora);

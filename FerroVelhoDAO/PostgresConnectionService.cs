@@ -118,6 +118,78 @@ ORDER BY desc_prod;";
             return itens;
         }
 
+        public static tb_produtos CriarProduto(string connectionString, string descricao, decimal valor, int? usuario)
+        {
+            const string sql = @"
+INSERT INTO dbo.tb_produtos (desc_prod, val_prod, usuario)
+VALUES (@desc_prod, @val_prod, @usuario)
+RETURNING id_prod, desc_prod, val_prod, usuario;";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@desc_prod", (object)(descricao ?? string.Empty));
+                cmd.Parameters.AddWithValue("@val_prod", valor);
+                cmd.Parameters.AddWithValue("@usuario", (object)usuario ?? DBNull.Value);
+
+                conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (!reader.Read())
+                    {
+                        return null;
+                    }
+
+                    return new tb_produtos
+                    {
+                        id_prod = reader.GetInt32(reader.GetOrdinal("id_prod")),
+                        desc_prod = reader.IsDBNull(reader.GetOrdinal("desc_prod"))
+                            ? string.Empty
+                            : reader.GetString(reader.GetOrdinal("desc_prod")),
+                        val_prod = reader.IsDBNull(reader.GetOrdinal("val_prod"))
+                            ? (decimal?)null
+                            : reader.GetDecimal(reader.GetOrdinal("val_prod")),
+                        usuario = reader.IsDBNull(reader.GetOrdinal("usuario"))
+                            ? (int?)null
+                            : reader.GetInt32(reader.GetOrdinal("usuario"))
+                    };
+                }
+            }
+        }
+
+        public static void AtualizarProduto(string connectionString, int idProd, string descricao, decimal valor)
+        {
+            const string sql = @"
+UPDATE dbo.tb_produtos
+SET desc_prod = @desc_prod,
+    val_prod = @val_prod
+WHERE id_prod = @id_prod;";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@id_prod", idProd);
+                cmd.Parameters.AddWithValue("@desc_prod", (object)(descricao ?? string.Empty));
+                cmd.Parameters.AddWithValue("@val_prod", valor);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public static void ExcluirProduto(string connectionString, int idProd)
+        {
+            const string sql = "DELETE FROM dbo.tb_produtos WHERE id_prod = @id_prod;";
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@id_prod", idProd);
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
         public static tb_impressora BuscarImpressoraPorId(string connectionString, int idImpressora)
         {
             const string sql = @"
