@@ -113,11 +113,11 @@ private int m_currentPageIndex;
             DataTable dt;
             if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
             {
-                int? idProduto = string.IsNullOrEmpty(txt_codProd.Text) ? (int?)null : Convert.ToInt32(txt_codProd.Text.Trim());
+                string codigoProduto = string.IsNullOrWhiteSpace(txt_codProd.Text) ? null : txt_codProd.Text.Trim();
                 dt = DataContextFactory.CarregarEstoquePeriodoPostgres(
                     dataInicio.Date.Add(new TimeSpan(00, 00, 00)),
                     dataFim.Date.Add(new TimeSpan(23, 59, 59)),
-                    idProduto);
+                    codigoProduto);
             }
             else
             {
@@ -202,6 +202,17 @@ private int m_currentPageIndex;
 
         private void txt_codProd_KeyPress(object sender, KeyPressEventArgs e)
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            {
+                if (e.KeyChar == 13)
+                {
+                    Pesquisa();
+                    e.Handled = true;
+                }
+
+                return;
+            }
+
             if (char.IsDigit(e.KeyChar) || e.KeyChar.Equals((char)Keys.Back) || char.IsPunctuation(e.KeyChar))
             {
                 return;

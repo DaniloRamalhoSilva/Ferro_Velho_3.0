@@ -35,6 +35,8 @@ namespace FerroVelho
 
         private void load()
         {
+            idprodDataGridViewTextBoxColumn.DataPropertyName = IsPostgresMode ? "cod_prod" : "id_prod";
+
             if (IsPostgresMode)
             {
                 this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosPostgres();
@@ -59,6 +61,11 @@ namespace FerroVelho
         
         private void txt_codProd_KeyPress(object sender, KeyPressEventArgs e)
         {
+            if (IsPostgresMode)
+            {
+                return;
+            }
+
             if (char.IsDigit(e.KeyChar) || e.KeyChar.Equals((char)Keys.Back))
             {
                 return;
@@ -82,9 +89,16 @@ namespace FerroVelho
             
             foreach (DataGridViewRow dg in dg_produtos.Rows)
             {
-                int idProduto = Convert.ToInt32(dg.Cells[0].Value);
-                
-                decimal saldo = calcular(idProduto);
+                decimal saldo;
+                if (IsPostgresMode)
+                {
+                    saldo = DataContextFactory.CalcularSaldoProdutoPostgres(Convert.ToString(dg.Cells[0].Value));
+                }
+                else
+                {
+                    int idProduto = Convert.ToInt32(dg.Cells[0].Value);
+                    saldo = calcular(idProduto);
+                }
 
                 dg.Cells[2].Value = saldo;
             }
@@ -94,7 +108,7 @@ namespace FerroVelho
         {
             if (IsPostgresMode)
             {
-                return DataContextFactory.CalcularSaldoProdutoPostgres(id);
+                return DataContextFactory.CalcularSaldoProdutoPostgres(Convert.ToString(id));
             }
 
             List<tb_itemc> itensC = new List<tb_itemc>();
@@ -131,7 +145,7 @@ namespace FerroVelho
         
         private void bt_confirmar_Click(object sender, EventArgs e)
         {
-            string id = this.produtoCorrente.id_prod.ToString();
+            string id = IsPostgresMode ? this.produtoCorrente.cod_prod : this.produtoCorrente.id_prod.ToString();
             string des = this.produtoCorrente.desc_prod;
             decimal saldo = Convert.ToDecimal(dg_produtos[2, dg_produtos.CurrentRow.Index].Value);
             decimal novosaldo = Convert.ToDecimal(txt_novoSaldo.Text);
@@ -223,7 +237,7 @@ namespace FerroVelho
                 if (IsPostgresMode)
                 {
                     this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosPostgres()
-                        .Where(x => x.id_prod == Convert.ToInt32(txt_codProd.Text))
+                        .Where(x => (x.cod_prod ?? string.Empty).StartsWith(txt_codProd.Text, StringComparison.CurrentCultureIgnoreCase))
                         .ToList();
                 }
                 else

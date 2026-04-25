@@ -27,7 +27,7 @@ namespace FerroVelho.Relatorios
 
             if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser))
             {
-                this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosPostgres();
+                this.tb_produtosBindingSource.DataSource = DataContextFactory.CarregarProdutosDataTablePostgres();
             }
             else
             {

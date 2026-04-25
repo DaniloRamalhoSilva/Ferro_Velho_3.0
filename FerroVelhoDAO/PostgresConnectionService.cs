@@ -83,9 +83,10 @@ LIMIT 1;";
         public static List<tb_produtos> ListarProdutos(string connectionString)
         {
             const string sql = @"
-SELECT id_prod, desc_prod, val_prod, usuario
+SELECT id_prod, cod_prod, desc_prod, val_prod, usuario
 FROM dbo.tb_produtos
-ORDER BY desc_prod;";
+WHERE COALESCE(excluido, FALSE) = FALSE
+ORDER BY cod_prod;";
 
             var itens = new List<tb_produtos>();
 
@@ -100,6 +101,9 @@ ORDER BY desc_prod;";
                         var item = new tb_produtos
                         {
                             id_prod = reader.GetInt32(reader.GetOrdinal("id_prod")),
+                            cod_prod = reader.IsDBNull(reader.GetOrdinal("cod_prod"))
+                                ? string.Empty
+                                : reader.GetString(reader.GetOrdinal("cod_prod")),
                             desc_prod = reader.IsDBNull(reader.GetOrdinal("desc_prod"))
                                 ? string.Empty
                                 : reader.GetString(reader.GetOrdinal("desc_prod")),
@@ -119,16 +123,17 @@ ORDER BY desc_prod;";
             return itens;
         }
 
-        public static tb_produtos CriarProduto(string connectionString, string descricao, decimal valor, int? usuario)
+        public static tb_produtos CriarProduto(string connectionString, string codigo, string descricao, decimal valor, int? usuario)
         {
             const string sql = @"
-INSERT INTO dbo.tb_produtos (desc_prod, val_prod, usuario)
-VALUES (@desc_prod, @val_prod, @usuario)
-RETURNING id_prod, desc_prod, val_prod, usuario;";
+INSERT INTO dbo.tb_produtos (cod_prod, desc_prod, val_prod, usuario)
+VALUES (@cod_prod, @desc_prod, @val_prod, @usuario)
+RETURNING id_prod, cod_prod, desc_prod, val_prod, usuario;";
 
             using (var conn = new NpgsqlConnection(connectionString))
             using (var cmd = new NpgsqlCommand(sql, conn))
             {
+                cmd.Parameters.AddWithValue("@cod_prod", (object)(codigo ?? string.Empty));
                 cmd.Parameters.AddWithValue("@desc_prod", (object)(descricao ?? string.Empty));
                 cmd.Parameters.AddWithValue("@val_prod", valor);
                 cmd.Parameters.AddWithValue("@usuario", (object)usuario ?? DBNull.Value);
@@ -144,6 +149,9 @@ RETURNING id_prod, desc_prod, val_prod, usuario;";
                     return new tb_produtos
                     {
                         id_prod = reader.GetInt32(reader.GetOrdinal("id_prod")),
+                        cod_prod = reader.IsDBNull(reader.GetOrdinal("cod_prod"))
+                            ? string.Empty
+                            : reader.GetString(reader.GetOrdinal("cod_prod")),
                         desc_prod = reader.IsDBNull(reader.GetOrdinal("desc_prod"))
                             ? string.Empty
                             : reader.GetString(reader.GetOrdinal("desc_prod")),
@@ -158,18 +166,21 @@ RETURNING id_prod, desc_prod, val_prod, usuario;";
             }
         }
 
-        public static void AtualizarProduto(string connectionString, int idProd, string descricao, decimal valor)
+        public static void AtualizarProduto(string connectionString, int idProd, string codigo, string descricao, decimal valor)
         {
             const string sql = @"
 UPDATE dbo.tb_produtos
-SET desc_prod = @desc_prod,
+SET cod_prod = @cod_prod,
+    desc_prod = @desc_prod,
     val_prod = @val_prod
-WHERE id_prod = @id_prod;";
+WHERE id_prod = @id_prod
+  AND COALESCE(excluido, FALSE) = FALSE;";
 
             using (var conn = new NpgsqlConnection(connectionString))
             using (var cmd = new NpgsqlCommand(sql, conn))
             {
                 cmd.Parameters.AddWithValue("@id_prod", idProd);
+                cmd.Parameters.AddWithValue("@cod_prod", (object)(codigo ?? string.Empty));
                 cmd.Parameters.AddWithValue("@desc_prod", (object)(descricao ?? string.Empty));
                 cmd.Parameters.AddWithValue("@val_prod", valor);
 
@@ -180,7 +191,10 @@ WHERE id_prod = @id_prod;";
 
         public static void ExcluirProduto(string connectionString, int idProd)
         {
-            const string sql = "DELETE FROM dbo.tb_produtos WHERE id_prod = @id_prod;";
+            const string sql = @"
+UPDATE dbo.tb_produtos
+SET excluido = TRUE
+WHERE id_prod = @id_prod;";
 
             using (var conn = new NpgsqlConnection(connectionString))
             using (var cmd = new NpgsqlCommand(sql, conn))
@@ -413,15 +427,15 @@ WHERE id_usuario = @id_usuario;";
             {
                 if (string.Equals(filtroCampo, "nome", StringComparison.OrdinalIgnoreCase))
                 {
-                    filtroSql = "WHERE c.nome_cliente ILIKE @filtro";
+                    filtroSql = "  AND c.nome_cliente ILIKE @filtro";
                 }
                 else if (string.Equals(filtroCampo, "cpf", StringComparison.OrdinalIgnoreCase))
                 {
-                    filtroSql = "WHERE c.cpf_cliente LIKE @filtro";
+                    filtroSql = "  AND c.cpf_cliente LIKE @filtro";
                 }
                 else if (string.Equals(filtroCampo, "tel", StringComparison.OrdinalIgnoreCase))
                 {
-                    filtroSql = "WHERE c.tel_cliente LIKE @filtro";
+                    filtroSql = "  AND c.tel_cliente LIKE @filtro";
                 }
             }
 
@@ -458,6 +472,7 @@ LEFT JOIN (
   WHERE subtot_compra - desconto_compra - valor_nota <> 0 AND id_cliente IS NOT NULL
     AND COALESCE(excluido, FALSE) = FALSE
 ) a ON a.id_cliente = c.id_cliente
+WHERE COALESCE(c.excluido, FALSE) = FALSE
 " + filtroSql + @"
 GROUP BY c.id_cliente, c.cpf_cliente, c.nome_cliente, c.tel_cliente
 ORDER BY c.nome_cliente;";
@@ -525,7 +540,8 @@ UPDATE dbo.tb_cliente
 SET nome_cliente = @nome_cliente,
     cpf_cliente = @cpf_cliente,
     tel_cliente = @tel_cliente
-WHERE id_cliente = @id_cliente;";
+WHERE id_cliente = @id_cliente
+  AND COALESCE(excluido, FALSE) = FALSE;";
 
             using (var conn = new NpgsqlConnection(connectionString))
             using (var cmd = new NpgsqlCommand(sql, conn))
@@ -542,7 +558,10 @@ WHERE id_cliente = @id_cliente;";
 
         public static void ExcluirCliente(string connectionString, int idCliente)
         {
-            const string sql = "DELETE FROM dbo.tb_cliente WHERE id_cliente = @id_cliente;";
+            const string sql = @"
+UPDATE dbo.tb_cliente
+SET excluido = TRUE
+WHERE id_cliente = @id_cliente;";
 
             using (var conn = new NpgsqlConnection(connectionString))
             using (var cmd = new NpgsqlCommand(sql, conn))
@@ -655,7 +674,7 @@ ORDER BY a.data;";
 
         public static string BuscarNomeCliente(string connectionString, int idCliente)
         {
-            const string sql = "SELECT nome_cliente FROM dbo.tb_cliente WHERE id_cliente = @id_cliente;";
+            const string sql = "SELECT nome_cliente FROM dbo.tb_cliente WHERE id_cliente = @id_cliente AND COALESCE(excluido, FALSE) = FALSE;";
 
             using (var conn = new NpgsqlConnection(connectionString))
             using (var cmd = new NpgsqlCommand(sql, conn))
@@ -727,27 +746,31 @@ ORDER BY id_venda;";
         {
             const string sql = @"
 SELECT
-  e.id_prod,
+  e.cod_prod AS id_prod,
+  e.cod_prod,
   p.desc_prod,
   SUM(e.entrada) - SUM(e.saida) AS qunt_est
 FROM (
-  SELECT i.id_prod, SUM(i.quant_item) AS entrada, 0::numeric AS saida
+  SELECT i.cod_prod, SUM(i.quant_item) AS entrada, 0::numeric AS saida
   FROM dbo.tb_itemc i
   INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra
   WHERE COALESCE(c.excluido, FALSE) = FALSE
-  GROUP BY i.id_prod
+    AND COALESCE(i.excluido, FALSE) = FALSE
+  GROUP BY i.cod_prod
 
   UNION ALL
 
-  SELECT i.id_prod, 0::numeric AS entrada, SUM(i.quant_item) AS saida
+  SELECT i.cod_prod, 0::numeric AS entrada, SUM(i.quant_item) AS saida
   FROM dbo.tb_itemv i
   INNER JOIN dbo.tb_venda v ON i.id_venda = v.id_venda
   WHERE COALESCE(v.excluido, FALSE) = FALSE
-  GROUP BY i.id_prod
+    AND COALESCE(i.excluido, FALSE) = FALSE
+  GROUP BY i.cod_prod
 ) e
-INNER JOIN dbo.tb_produtos p ON e.id_prod = p.id_prod
-GROUP BY p.desc_prod, e.id_prod
-ORDER BY e.id_prod;";
+INNER JOIN dbo.tb_produtos p ON e.cod_prod = p.cod_prod
+WHERE COALESCE(p.excluido, FALSE) = FALSE
+GROUP BY p.desc_prod, e.cod_prod
+ORDER BY e.cod_prod;";
 
             var dt = new DataTable();
             using (var conn = new NpgsqlConnection(connectionString))
@@ -765,17 +788,20 @@ ORDER BY e.id_prod;";
         {
             const string sql = @"
 SELECT
-  i.id_prod,
+  i.cod_prod AS id_prod,
+  i.cod_prod,
   p.desc_prod,
   SUM(i.quant_item) AS ""Peso"",
   SUM(i.subtot_item) AS ""Total""
 FROM dbo.tb_itemc i
-INNER JOIN dbo.tb_produtos p ON i.id_prod = p.id_prod
+INNER JOIN dbo.tb_produtos p ON i.cod_prod = p.cod_prod
 INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra
 WHERE c.data_compra BETWEEN @inicio AND @fim
   AND COALESCE(c.excluido, FALSE) = FALSE
-GROUP BY i.id_prod, p.desc_prod
-ORDER BY i.id_prod;";
+  AND COALESCE(i.excluido, FALSE) = FALSE
+  AND COALESCE(p.excluido, FALSE) = FALSE
+GROUP BY i.cod_prod, p.desc_prod
+ORDER BY i.cod_prod;";
 
             return PreencherPeriodo(connectionString, sql, inicio, fim);
         }
@@ -784,16 +810,19 @@ ORDER BY i.id_prod;";
         {
             const string sql = @"
 SELECT
-  i.id_prod,
+  i.cod_prod AS id_prod,
+  i.cod_prod,
   i.quant_item,
   i.subtot_item AS ""subTot_item"",
   i.valor_item,
   p.desc_prod
 FROM dbo.tb_itemc i
 INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra
-INNER JOIN dbo.tb_produtos p ON i.id_prod = p.id_prod
+INNER JOIN dbo.tb_produtos p ON i.cod_prod = p.cod_prod
 WHERE i.id_compra = @id_compra
   AND COALESCE(c.excluido, FALSE) = FALSE
+  AND COALESCE(i.excluido, FALSE) = FALSE
+  AND COALESCE(p.excluido, FALSE) = FALSE
 ORDER BY i.id_item;";
 
             var dt = new DataTable();
@@ -871,12 +900,12 @@ WHERE c.id_compra = @id_compra
 SELECT
   COALESCE((SELECT SUM(valor_caixa) * -1 FROM dbo.tb_caixa WHERE data_caixa < @inicio AND valor_caixa < 0), 0) AS saida_antes,
   COALESCE((SELECT SUM(valor_caixa) FROM dbo.tb_caixa WHERE data_caixa < @inicio AND valor_caixa > 0), 0) AS entrada_antes,
-  COALESCE((SELECT SUM(i.subtot_item) FROM dbo.tb_itemc i INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra WHERE c.data_compra < @inicio AND COALESCE(c.excluido, FALSE) = FALSE), 0) AS compra_antes,
+  COALESCE((SELECT SUM(i.subtot_item) FROM dbo.tb_itemc i INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra WHERE c.data_compra < @inicio AND COALESCE(c.excluido, FALSE) = FALSE AND COALESCE(i.excluido, FALSE) = FALSE), 0) AS compra_antes,
   COALESCE((SELECT SUM(desconto_compra) FROM dbo.tb_compra WHERE data_compra < @inicio AND COALESCE(excluido, FALSE) = FALSE), 0) AS desconto_antes,
   COALESCE((SELECT SUM(subtot_compra - desconto_compra - valor_nota) FROM dbo.tb_compra WHERE data_compra < @inicio AND COALESCE(excluido, FALSE) = FALSE), 0) AS credito_antes,
   COALESCE((SELECT SUM(valor_caixa) * -1 FROM dbo.tb_caixa WHERE data_caixa BETWEEN @inicio AND @fim AND valor_caixa < 0), 0) AS saida_periodo,
   COALESCE((SELECT SUM(valor_caixa) FROM dbo.tb_caixa WHERE data_caixa BETWEEN @inicio AND @fim AND valor_caixa > 0), 0) AS entrada_periodo,
-  COALESCE((SELECT SUM(i.subtot_item) FROM dbo.tb_itemc i INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra WHERE c.data_compra BETWEEN @inicio AND @fim AND COALESCE(c.excluido, FALSE) = FALSE), 0) AS compra_periodo,
+  COALESCE((SELECT SUM(i.subtot_item) FROM dbo.tb_itemc i INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra WHERE c.data_compra BETWEEN @inicio AND @fim AND COALESCE(c.excluido, FALSE) = FALSE AND COALESCE(i.excluido, FALSE) = FALSE), 0) AS compra_periodo,
   COALESCE((SELECT SUM(desconto_compra) FROM dbo.tb_compra WHERE data_compra BETWEEN @inicio AND @fim AND COALESCE(excluido, FALSE) = FALSE), 0) AS desconto_periodo,
   COALESCE((SELECT SUM(subtot_compra - desconto_compra - valor_nota) FROM dbo.tb_compra WHERE data_compra BETWEEN @inicio AND @fim AND COALESCE(excluido, FALSE) = FALSE), 0) AS credito_periodo;";
 
@@ -887,17 +916,20 @@ SELECT
         {
             const string sql = @"
 SELECT
-  i.id_prod,
+  i.cod_prod AS id_prod,
+  i.cod_prod,
   p.desc_prod,
   SUM(i.quant_item) AS ""Peso"",
   SUM(i.subtot_item) AS ""Total""
 FROM dbo.tb_itemv i
-INNER JOIN dbo.tb_produtos p ON i.id_prod = p.id_prod
+INNER JOIN dbo.tb_produtos p ON i.cod_prod = p.cod_prod
 INNER JOIN dbo.tb_venda v ON i.id_venda = v.id_venda
 WHERE v.data_venda BETWEEN @inicio AND @fim
   AND COALESCE(v.excluido, FALSE) = FALSE
-GROUP BY i.id_prod, p.desc_prod
-ORDER BY i.id_prod;";
+  AND COALESCE(i.excluido, FALSE) = FALSE
+  AND COALESCE(p.excluido, FALSE) = FALSE
+GROUP BY i.cod_prod, p.desc_prod
+ORDER BY i.cod_prod;";
 
             return PreencherPeriodo(connectionString, sql, inicio, fim);
         }
@@ -909,7 +941,8 @@ SELECT COALESCE(SUM(i.subtot_item), 0)
 FROM dbo.tb_itemv i
 INNER JOIN dbo.tb_venda v ON i.id_venda = v.id_venda
 WHERE v.data_venda BETWEEN @inicio AND @fim
-  AND COALESCE(v.excluido, FALSE) = FALSE;";
+  AND COALESCE(v.excluido, FALSE) = FALSE
+  AND COALESCE(i.excluido, FALSE) = FALSE;";
 
             return ExecutarDecimalPeriodo(connectionString, sql, inicio, fim);
         }
@@ -918,7 +951,7 @@ WHERE v.data_venda BETWEEN @inicio AND @fim
         {
             const string sql = @"
 SELECT
-  a.id_prod AS codigo,
+  a.cod_prod AS codigo,
   p.desc_prod AS descricao,
   SUM(a.pesoc) AS ""pesoC"",
   SUM(a.totalc) AS ""Compra"",
@@ -927,25 +960,28 @@ SELECT
   SUM(a.totalv) - SUM(a.totalc) AS lucro,
   SUM(a.pesoc) - SUM(a.pesov) AS peso
 FROM (
-  SELECT i.id_prod, SUM(i.quant_item) AS pesoc, SUM(i.subtot_item) AS totalc, 0::numeric AS pesov, 0::numeric AS totalv
+  SELECT i.cod_prod, SUM(i.quant_item) AS pesoc, SUM(i.subtot_item) AS totalc, 0::numeric AS pesov, 0::numeric AS totalv
   FROM dbo.tb_itemc i
   INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra
   WHERE c.data_compra BETWEEN @inicio AND @fim
     AND COALESCE(c.excluido, FALSE) = FALSE
-  GROUP BY i.id_prod
+    AND COALESCE(i.excluido, FALSE) = FALSE
+  GROUP BY i.cod_prod
 
   UNION ALL
 
-  SELECT i.id_prod, 0::numeric AS pesoc, 0::numeric AS totalc, SUM(i.quant_item) AS pesov, SUM(i.subtot_item) AS totalv
+  SELECT i.cod_prod, 0::numeric AS pesoc, 0::numeric AS totalc, SUM(i.quant_item) AS pesov, SUM(i.subtot_item) AS totalv
   FROM dbo.tb_itemv i
   INNER JOIN dbo.tb_venda v ON i.id_venda = v.id_venda
   WHERE v.data_venda BETWEEN @inicio AND @fim
     AND COALESCE(v.excluido, FALSE) = FALSE
-  GROUP BY i.id_prod
+    AND COALESCE(i.excluido, FALSE) = FALSE
+  GROUP BY i.cod_prod
 ) a
-INNER JOIN dbo.tb_produtos p ON a.id_prod = p.id_prod
-GROUP BY a.id_prod, p.desc_prod
-ORDER BY a.id_prod;";
+INNER JOIN dbo.tb_produtos p ON a.cod_prod = p.cod_prod
+WHERE COALESCE(p.excluido, FALSE) = FALSE
+GROUP BY a.cod_prod, p.desc_prod
+ORDER BY a.cod_prod;";
 
             return PreencherPeriodo(connectionString, sql, inicio, fim);
         }
@@ -962,31 +998,34 @@ SELECT
   SUM(e.""Venda"") - SUM(e.""Compra"") AS ""lucroT""
 FROM (
   SELECT
-    a.id_prod AS codigo,
+    a.cod_prod AS codigo,
     p.desc_prod AS descricao,
     SUM(a.pesoc) AS ""pesoC"",
     SUM(a.totalc) AS ""Compra"",
     SUM(a.pesov) AS ""pesoV"",
     SUM(a.totalv) AS ""Venda""
   FROM (
-    SELECT i.id_prod, SUM(i.quant_item) AS pesoc, SUM(i.subtot_item) AS totalc, 0::numeric AS pesov, 0::numeric AS totalv
+    SELECT i.cod_prod, SUM(i.quant_item) AS pesoc, SUM(i.subtot_item) AS totalc, 0::numeric AS pesov, 0::numeric AS totalv
     FROM dbo.tb_itemc i
     INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra
     WHERE c.data_compra BETWEEN @inicio AND @fim
       AND COALESCE(c.excluido, FALSE) = FALSE
-    GROUP BY i.id_prod
+      AND COALESCE(i.excluido, FALSE) = FALSE
+    GROUP BY i.cod_prod
 
     UNION ALL
 
-    SELECT i.id_prod, 0::numeric AS pesoc, 0::numeric AS totalc, SUM(i.quant_item) AS pesov, SUM(i.subtot_item) AS totalv
+    SELECT i.cod_prod, 0::numeric AS pesoc, 0::numeric AS totalc, SUM(i.quant_item) AS pesov, SUM(i.subtot_item) AS totalv
     FROM dbo.tb_itemv i
     INNER JOIN dbo.tb_venda v ON i.id_venda = v.id_venda
     WHERE v.data_venda BETWEEN @inicio AND @fim
       AND COALESCE(v.excluido, FALSE) = FALSE
-    GROUP BY i.id_prod
+      AND COALESCE(i.excluido, FALSE) = FALSE
+    GROUP BY i.cod_prod
   ) a
-  INNER JOIN dbo.tb_produtos p ON a.id_prod = p.id_prod
-  GROUP BY a.id_prod, p.desc_prod
+  INNER JOIN dbo.tb_produtos p ON a.cod_prod = p.cod_prod
+  WHERE COALESCE(p.excluido, FALSE) = FALSE
+  GROUP BY a.cod_prod, p.desc_prod
 ) e;";
 
             return PreencherPeriodo(connectionString, sql, inicio, fim);
@@ -1036,60 +1075,65 @@ SELECT
             return ExecutarDecimalAte(connectionString, sql, inicio.Date);
         }
 
-        public static DataTable CarregarEstoquePeriodo(string connectionString, DateTime inicio, DateTime fim, int? idProduto)
+        public static DataTable CarregarEstoquePeriodo(string connectionString, DateTime inicio, DateTime fim, string codigoProduto)
         {
             const string sql = @"
 WITH estoque AS (
-  SELECT id_prod, SUM(inicio) AS inicio, 0::numeric AS entrada, 0::numeric AS saida
+  SELECT cod_prod, SUM(inicio) AS inicio, 0::numeric AS entrada, 0::numeric AS saida
   FROM (
-    SELECT i.id_prod, SUM(i.quant_item) AS inicio
+    SELECT i.cod_prod, SUM(i.quant_item) AS inicio
     FROM dbo.tb_itemc i
     INNER JOIN dbo.tb_compra c ON c.id_compra = i.id_compra
     WHERE c.data_compra < @inicio
       AND COALESCE(c.excluido, FALSE) = FALSE
-    GROUP BY i.id_prod
+      AND COALESCE(i.excluido, FALSE) = FALSE
+    GROUP BY i.cod_prod
 
     UNION ALL
 
-    SELECT i.id_prod, -SUM(i.quant_item) AS inicio
+    SELECT i.cod_prod, -SUM(i.quant_item) AS inicio
     FROM dbo.tb_itemv i
     INNER JOIN dbo.tb_venda v ON v.id_venda = i.id_venda
     WHERE v.data_venda < @inicio
       AND COALESCE(v.excluido, FALSE) = FALSE
-    GROUP BY i.id_prod
+      AND COALESCE(i.excluido, FALSE) = FALSE
+    GROUP BY i.cod_prod
   ) x
-  GROUP BY id_prod
+  GROUP BY cod_prod
 
   UNION ALL
 
-  SELECT i.id_prod, 0::numeric AS inicio, SUM(i.quant_item) AS entrada, 0::numeric AS saida
+  SELECT i.cod_prod, 0::numeric AS inicio, SUM(i.quant_item) AS entrada, 0::numeric AS saida
   FROM dbo.tb_itemc i
   INNER JOIN dbo.tb_compra c ON c.id_compra = i.id_compra
   WHERE c.data_compra BETWEEN @inicio AND @fim
     AND COALESCE(c.excluido, FALSE) = FALSE
-  GROUP BY i.id_prod
+    AND COALESCE(i.excluido, FALSE) = FALSE
+  GROUP BY i.cod_prod
 
   UNION ALL
 
-  SELECT i.id_prod, 0::numeric AS inicio, 0::numeric AS entrada, SUM(i.quant_item) AS saida
+  SELECT i.cod_prod, 0::numeric AS inicio, 0::numeric AS entrada, SUM(i.quant_item) AS saida
   FROM dbo.tb_itemv i
   INNER JOIN dbo.tb_venda v ON v.id_venda = i.id_venda
   WHERE v.data_venda BETWEEN @inicio AND @fim
     AND COALESCE(v.excluido, FALSE) = FALSE
-  GROUP BY i.id_prod
+    AND COALESCE(i.excluido, FALSE) = FALSE
+  GROUP BY i.cod_prod
 )
 SELECT
-  e.id_prod AS codigo,
+  e.cod_prod AS codigo,
   UPPER(p.desc_prod) AS descricao,
   COALESCE(SUM(e.inicio), 0) AS inicio,
   COALESCE(SUM(e.entrada), 0) AS entrada,
   COALESCE(SUM(e.saida), 0) AS saida,
   COALESCE(SUM(e.inicio), 0) + COALESCE(SUM(e.entrada), 0) - COALESCE(SUM(e.saida), 0) AS saldo
 FROM estoque e
-INNER JOIN dbo.tb_produtos p ON p.id_prod = e.id_prod
-WHERE @id_prod IS NULL OR e.id_prod = @id_prod
-GROUP BY p.desc_prod, e.id_prod
-ORDER BY e.id_prod;";
+INNER JOIN dbo.tb_produtos p ON p.cod_prod = e.cod_prod
+WHERE (@cod_prod IS NULL OR e.cod_prod = @cod_prod)
+  AND COALESCE(p.excluido, FALSE) = FALSE
+GROUP BY p.desc_prod, e.cod_prod
+ORDER BY e.cod_prod;";
 
             var dt = new DataTable();
             using (var conn = new NpgsqlConnection(connectionString))
@@ -1098,9 +1142,9 @@ ORDER BY e.id_prod;";
             {
                 cmd.Parameters.AddWithValue("@inicio", inicio);
                 cmd.Parameters.AddWithValue("@fim", fim);
-                cmd.Parameters.Add(new NpgsqlParameter("@id_prod", NpgsqlTypes.NpgsqlDbType.Integer)
+                cmd.Parameters.Add(new NpgsqlParameter("@cod_prod", NpgsqlTypes.NpgsqlDbType.Varchar)
                 {
-                    Value = (object)idProduto ?? DBNull.Value
+                    Value = string.IsNullOrWhiteSpace(codigoProduto) ? (object)DBNull.Value : codigoProduto.Trim()
                 });
 
                 conn.Open();
@@ -1112,7 +1156,7 @@ ORDER BY e.id_prod;";
 
         public static DataTable CarregarProdutosDataTable(string connectionString)
         {
-            const string sql = "SELECT id_prod, desc_prod, val_prod, usuario FROM dbo.tb_produtos ORDER BY desc_prod;";
+            const string sql = "SELECT cod_prod AS id_prod, cod_prod, desc_prod, val_prod, usuario FROM dbo.tb_produtos WHERE COALESCE(excluido, FALSE) = FALSE ORDER BY cod_prod;";
 
             var dt = new DataTable();
             using (var conn = new NpgsqlConnection(connectionString))
@@ -1312,23 +1356,29 @@ WHERE id_compra = @id_compra;";
             }
         }
 
-        public static void InserirItemCompra(string connectionString, int idProd, int idCompra, decimal quantItem, decimal subTotItem, decimal valorItem)
+        public static void InserirItemCompra(string connectionString, string codigoProduto, int idCompra, decimal quantItem, decimal subTotItem, decimal valorItem)
         {
             const string sql = @"
-INSERT INTO dbo.tb_itemc (id_prod, id_compra, quant_item, subtot_item, valor_item)
-VALUES (@id_prod, @id_compra, @quant_item, @subtot_item, @valor_item);";
+INSERT INTO dbo.tb_itemc (id_prod, cod_prod, id_compra, quant_item, subtot_item, valor_item)
+SELECT p.id_prod, p.cod_prod, @id_compra, @quant_item, @subtot_item, @valor_item
+FROM dbo.tb_produtos p
+WHERE p.cod_prod = @cod_prod
+  AND COALESCE(p.excluido, FALSE) = FALSE;";
 
             using (var conn = new NpgsqlConnection(connectionString))
             using (var cmd = new NpgsqlCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@id_prod", idProd);
+                cmd.Parameters.AddWithValue("@cod_prod", (object)(codigoProduto ?? string.Empty));
                 cmd.Parameters.AddWithValue("@id_compra", idCompra);
                 cmd.Parameters.AddWithValue("@quant_item", quantItem);
                 cmd.Parameters.AddWithValue("@subtot_item", subTotItem);
                 cmd.Parameters.AddWithValue("@valor_item", valorItem);
 
                 conn.Open();
-                cmd.ExecuteNonQuery();
+                if (cmd.ExecuteNonQuery() == 0)
+                {
+                    throw new InvalidOperationException("Produto nao encontrado para o codigo informado.");
+                }
             }
         }
 
@@ -1338,18 +1388,22 @@ VALUES (@id_prod, @id_compra, @quant_item, @subtot_item, @valor_item);";
 SELECT
   i.id_item,
   i.id_prod,
+  i.cod_prod,
   i.id_compra,
   i.quant_item,
   i.subtot_item,
   i.valor_item,
+  p.cod_prod AS produto_cod_prod,
   p.desc_prod,
   p.val_prod,
   p.usuario
 FROM dbo.tb_itemc i
-INNER JOIN dbo.tb_produtos p ON p.id_prod = i.id_prod
+INNER JOIN dbo.tb_produtos p ON p.cod_prod = i.cod_prod
 INNER JOIN dbo.tb_compra c ON c.id_compra = i.id_compra
 WHERE i.id_compra = @id_compra
   AND COALESCE(c.excluido, FALSE) = FALSE
+  AND COALESCE(i.excluido, FALSE) = FALSE
+  AND COALESCE(p.excluido, FALSE) = FALSE
 ORDER BY i.id_item;";
 
             var itens = new List<tb_itemc>();
@@ -1366,6 +1420,7 @@ ORDER BY i.id_item;";
                         var prod = new tb_produtos
                         {
                             id_prod = reader.GetInt32(reader.GetOrdinal("id_prod")),
+                            cod_prod = reader.IsDBNull(reader.GetOrdinal("produto_cod_prod")) ? string.Empty : reader.GetString(reader.GetOrdinal("produto_cod_prod")),
                             desc_prod = reader.IsDBNull(reader.GetOrdinal("desc_prod")) ? string.Empty : reader.GetString(reader.GetOrdinal("desc_prod")),
                             val_prod = reader.IsDBNull(reader.GetOrdinal("val_prod")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("val_prod")),
                             usuario = reader.IsDBNull(reader.GetOrdinal("usuario")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("usuario"))
@@ -1375,6 +1430,7 @@ ORDER BY i.id_item;";
                         {
                             id_item = reader.GetInt32(reader.GetOrdinal("id_item")),
                             id_prod = reader.GetInt32(reader.GetOrdinal("id_prod")),
+                            cod_prod = reader.IsDBNull(reader.GetOrdinal("cod_prod")) ? string.Empty : reader.GetString(reader.GetOrdinal("cod_prod")),
                             id_compra = reader.GetInt32(reader.GetOrdinal("id_compra")),
                             quant_item = reader.GetDecimal(reader.GetOrdinal("quant_item")),
                             subTot_item = reader.GetDecimal(reader.GetOrdinal("subtot_item")),
@@ -1392,7 +1448,10 @@ ORDER BY i.id_item;";
 
         public static void ExcluirItemCompra(string connectionString, int idItem)
         {
-            const string sql = "DELETE FROM dbo.tb_itemc WHERE id_item = @id_item;";
+            const string sql = @"
+UPDATE dbo.tb_itemc
+SET excluido = TRUE
+WHERE id_item = @id_item;";
 
             using (var conn = new NpgsqlConnection(connectionString))
             using (var cmd = new NpgsqlCommand(sql, conn))
@@ -1419,20 +1478,22 @@ WHERE id_compra = @id_compra;";
             }
         }
 
-        public static decimal CalcularSaldoProduto(string connectionString, int idProd)
+        public static decimal CalcularSaldoProduto(string connectionString, string codigoProduto)
         {
             const string sqlEntrada = @"
 SELECT COALESCE(SUM(i.quant_item), 0)
 FROM dbo.tb_itemc i
 INNER JOIN dbo.tb_compra c ON c.id_compra = i.id_compra
-WHERE i.id_prod = @id_prod
-  AND COALESCE(c.excluido, FALSE) = FALSE;";
+WHERE i.cod_prod = @cod_prod
+  AND COALESCE(c.excluido, FALSE) = FALSE
+  AND COALESCE(i.excluido, FALSE) = FALSE;";
             const string sqlSaida = @"
 SELECT COALESCE(SUM(i.quant_item), 0)
 FROM dbo.tb_itemv i
 INNER JOIN dbo.tb_venda v ON v.id_venda = i.id_venda
-WHERE i.id_prod = @id_prod
-  AND COALESCE(v.excluido, FALSE) = FALSE;";
+WHERE i.cod_prod = @cod_prod
+  AND COALESCE(v.excluido, FALSE) = FALSE
+  AND COALESCE(i.excluido, FALSE) = FALSE;";
 
             using (var conn = new NpgsqlConnection(connectionString))
             {
@@ -1441,14 +1502,14 @@ WHERE i.id_prod = @id_prod
                 decimal entrada;
                 using (var cmd = new NpgsqlCommand(sqlEntrada, conn))
                 {
-                    cmd.Parameters.AddWithValue("@id_prod", idProd);
+                    cmd.Parameters.AddWithValue("@cod_prod", (object)(codigoProduto ?? string.Empty));
                     entrada = Convert.ToDecimal(cmd.ExecuteScalar() ?? 0m);
                 }
 
                 decimal saida;
                 using (var cmd = new NpgsqlCommand(sqlSaida, conn))
                 {
-                    cmd.Parameters.AddWithValue("@id_prod", idProd);
+                    cmd.Parameters.AddWithValue("@cod_prod", (object)(codigoProduto ?? string.Empty));
                     saida = Convert.ToDecimal(cmd.ExecuteScalar() ?? 0m);
                 }
 
@@ -1460,7 +1521,7 @@ WHERE i.id_prod = @id_prod
         {
             const string sql = @"
 SELECT
-  COALESCE((SELECT SUM(i.subtot_item) FROM dbo.tb_itemc i INNER JOIN dbo.tb_compra c ON c.id_compra = i.id_compra WHERE COALESCE(c.excluido, FALSE) = FALSE), 0) AS total_saida,
+  COALESCE((SELECT SUM(i.subtot_item) FROM dbo.tb_itemc i INNER JOIN dbo.tb_compra c ON c.id_compra = i.id_compra WHERE COALESCE(c.excluido, FALSE) = FALSE AND COALESCE(i.excluido, FALSE) = FALSE), 0) AS total_saida,
   COALESCE((SELECT SUM(valor_caixa) FROM dbo.tb_caixa), 0) AS total_entrada,
   COALESCE((SELECT SUM(desconto_compra) FROM dbo.tb_compra WHERE COALESCE(excluido, FALSE) = FALSE), 0) AS desconto,
   COALESCE((SELECT SUM(subtot_compra - desconto_compra - valor_nota) FROM dbo.tb_compra WHERE COALESCE(excluido, FALSE) = FALSE), 0) AS credito;";
@@ -1623,23 +1684,29 @@ WHERE id_venda = @id_venda;";
             }
         }
 
-        public static void InserirItemVenda(string connectionString, int idProd, int idVenda, decimal quantItem, decimal subTotItem, decimal valrItem)
+        public static void InserirItemVenda(string connectionString, string codigoProduto, int idVenda, decimal quantItem, decimal subTotItem, decimal valrItem)
         {
             const string sql = @"
-INSERT INTO dbo.tb_itemv (id_prod, id_venda, quant_item, subtot_item, valr_item)
-VALUES (@id_prod, @id_venda, @quant_item, @subtot_item, @valr_item);";
+INSERT INTO dbo.tb_itemv (id_prod, cod_prod, id_venda, quant_item, subtot_item, valr_item)
+SELECT p.id_prod, p.cod_prod, @id_venda, @quant_item, @subtot_item, @valr_item
+FROM dbo.tb_produtos p
+WHERE p.cod_prod = @cod_prod
+  AND COALESCE(p.excluido, FALSE) = FALSE;";
 
             using (var conn = new NpgsqlConnection(connectionString))
             using (var cmd = new NpgsqlCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@id_prod", idProd);
+                cmd.Parameters.AddWithValue("@cod_prod", (object)(codigoProduto ?? string.Empty));
                 cmd.Parameters.AddWithValue("@id_venda", idVenda);
                 cmd.Parameters.AddWithValue("@quant_item", quantItem);
                 cmd.Parameters.AddWithValue("@subtot_item", subTotItem);
                 cmd.Parameters.AddWithValue("@valr_item", valrItem);
 
                 conn.Open();
-                cmd.ExecuteNonQuery();
+                if (cmd.ExecuteNonQuery() == 0)
+                {
+                    throw new InvalidOperationException("Produto nao encontrado para o codigo informado.");
+                }
             }
         }
 
@@ -1649,18 +1716,22 @@ VALUES (@id_prod, @id_venda, @quant_item, @subtot_item, @valr_item);";
 SELECT
   i.id_item,
   i.id_prod,
+  i.cod_prod,
   i.id_venda,
   i.quant_item,
   i.subtot_item,
   i.valr_item,
+  p.cod_prod AS produto_cod_prod,
   p.desc_prod,
   p.val_prod,
   p.usuario
 FROM dbo.tb_itemv i
-INNER JOIN dbo.tb_produtos p ON p.id_prod = i.id_prod
+INNER JOIN dbo.tb_produtos p ON p.cod_prod = i.cod_prod
 INNER JOIN dbo.tb_venda v ON v.id_venda = i.id_venda
 WHERE i.id_venda = @id_venda
   AND COALESCE(v.excluido, FALSE) = FALSE
+  AND COALESCE(i.excluido, FALSE) = FALSE
+  AND COALESCE(p.excluido, FALSE) = FALSE
 ORDER BY i.id_item;";
 
             var itens = new List<tb_itemv>();
@@ -1678,6 +1749,7 @@ ORDER BY i.id_item;";
                         var prod = new tb_produtos
                         {
                             id_prod = reader.GetInt32(reader.GetOrdinal("id_prod")),
+                            cod_prod = reader.IsDBNull(reader.GetOrdinal("produto_cod_prod")) ? string.Empty : reader.GetString(reader.GetOrdinal("produto_cod_prod")),
                             desc_prod = reader.IsDBNull(reader.GetOrdinal("desc_prod")) ? string.Empty : reader.GetString(reader.GetOrdinal("desc_prod")),
                             val_prod = reader.IsDBNull(reader.GetOrdinal("val_prod")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("val_prod")),
                             usuario = reader.IsDBNull(reader.GetOrdinal("usuario")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("usuario"))
@@ -1687,6 +1759,7 @@ ORDER BY i.id_item;";
                         {
                             id_item = reader.GetInt32(reader.GetOrdinal("id_item")),
                             id_prod = reader.IsDBNull(reader.GetOrdinal("id_prod")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("id_prod")),
+                            cod_prod = reader.IsDBNull(reader.GetOrdinal("cod_prod")) ? string.Empty : reader.GetString(reader.GetOrdinal("cod_prod")),
                             id_venda = reader.IsDBNull(reader.GetOrdinal("id_venda")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("id_venda")),
                             quant_item = reader.IsDBNull(reader.GetOrdinal("quant_item")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("quant_item")),
                             subTot_item = reader.IsDBNull(reader.GetOrdinal("subtot_item")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("subtot_item")),
@@ -1704,7 +1777,10 @@ ORDER BY i.id_item;";
 
         public static void ExcluirItemVenda(string connectionString, int idItem)
         {
-            const string sql = "DELETE FROM dbo.tb_itemv WHERE id_item = @id_item;";
+            const string sql = @"
+UPDATE dbo.tb_itemv
+SET excluido = TRUE
+WHERE id_item = @id_item;";
 
             using (var conn = new NpgsqlConnection(connectionString))
             using (var cmd = new NpgsqlCommand(sql, conn))
@@ -1740,16 +1816,19 @@ SELECT
   iv.valr_item,
   p.desc_prod,
   v.data_venda,
-  iv.id_prod,
+  iv.cod_prod AS id_prod,
+  iv.cod_prod,
   iv.id_venda,
   u.nome_usuario,
   v.usuario
 FROM dbo.tb_itemv iv
 INNER JOIN dbo.tb_venda v ON iv.id_venda = v.id_venda
-INNER JOIN dbo.tb_produtos p ON iv.id_prod = p.id_prod
+INNER JOIN dbo.tb_produtos p ON iv.cod_prod = p.cod_prod
 INNER JOIN dbo.tb_usuario u ON v.usuario = u.id_usuario
 WHERE iv.id_venda = @id_venda
-  AND COALESCE(v.excluido, FALSE) = FALSE;";
+  AND COALESCE(v.excluido, FALSE) = FALSE
+  AND COALESCE(iv.excluido, FALSE) = FALSE
+  AND COALESCE(p.excluido, FALSE) = FALSE;";
 
             var dt = new DataTable();
             using (var conn = new NpgsqlConnection(connectionString))

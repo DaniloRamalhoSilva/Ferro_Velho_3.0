@@ -31,7 +31,7 @@ namespace FerroVelho
 
             cb_desProd.DataSource = tb_produtosBindingSource;
             cb_desProd.DisplayMember = "desc_prod";
-            cb_desProd.ValueMember = "id_prod";
+            cb_desProd.ValueMember = DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser) ? "cod_prod" : "id_prod";
 
             if (txt_codProd.Enabled != false)
             {                
@@ -43,7 +43,9 @@ namespace FerroVelho
             }
             else
             {
-                cb_desProd.SelectedValue = Convert.ToInt32(txt_codProd.Text);
+                cb_desProd.SelectedValue = DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser)
+                    ? (object)txt_codProd.Text.Trim()
+                    : Convert.ToInt32(txt_codProd.Text);
             }            
             
         }
@@ -52,11 +54,13 @@ namespace FerroVelho
         {
             if (txt_codProd.Text != "")
             {
-                cb_desProd.SelectedValue = Convert.ToInt32(txt_codProd.Text);
+                cb_desProd.SelectedValue = DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser)
+                    ? (object)txt_codProd.Text.Trim()
+                    : Convert.ToInt32(txt_codProd.Text);
                 decimal saldo;
                 if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
                 {
-                    saldo = DataContextFactory.CalcularSaldoProdutoPostgres(Convert.ToInt32(txt_codProd.Text));
+                    saldo = DataContextFactory.CalcularSaldoProdutoPostgres(txt_codProd.Text.Trim());
                 }
                 else
                 {
@@ -74,11 +78,18 @@ namespace FerroVelho
 
         private void cb_desProd_Leave(object sender, EventArgs e)
         {
-            txt_codProd.Text = Convert.ToString(this.produtoCorrente.id_prod);
+            if (this.produtoCorrente == null)
+            {
+                return;
+            }
+
+            txt_codProd.Text = DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser)
+                ? this.produtoCorrente.cod_prod
+                : Convert.ToString(this.produtoCorrente.id_prod);
             decimal saldo;
             if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
             {
-                saldo = DataContextFactory.CalcularSaldoProdutoPostgres(Convert.ToInt32(txt_codProd.Text));
+                saldo = DataContextFactory.CalcularSaldoProdutoPostgres(txt_codProd.Text.Trim());
             }
             else
             {
@@ -115,6 +126,17 @@ namespace FerroVelho
 
         private void txt_codProd_KeyPress(object sender, KeyPressEventArgs e)
         {
+            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser))
+            {
+                if (e.KeyChar == 13)
+                {
+                    txt_quant.Focus();
+                    e.Handled = true;
+                }
+
+                return;
+            }
+
             if (char.IsDigit(e.KeyChar) || e.KeyChar.Equals((char)Keys.Back))
             {
                 return;
@@ -168,7 +190,7 @@ namespace FerroVelho
             if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
             {
                 DataContextFactory.InserirItemCompraPostgres(
-                    this.produtoCorrente.id_prod,
+                    this.produtoCorrente.cod_prod,
                     this.entradaCorrente.id_compra,
                     Convert.ToDecimal(txt_quant.Text),
                     0m,

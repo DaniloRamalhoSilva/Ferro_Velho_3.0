@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataContextFactory.cs" />
+    <Compile Include="PostgresPartialModels.cs" />
     <Compile Include="PostgresConnectionService.cs" />
     <Compile Include="FerroVelho.cs">
       <DependentUpon>FerroVelho.dbml</DependentUpon>

@@ -83,14 +83,14 @@ namespace FerroVelhoDAO
             return PostgresConnectionService.ListarProdutos(conexaoUser);
         }
 
-        public static tb_produtos CriarProdutoPostgres(string descricao, decimal valor, int? usuario)
+        public static tb_produtos CriarProdutoPostgres(string codigo, string descricao, decimal valor, int? usuario)
         {
-            return PostgresConnectionService.CriarProduto(conexaoUser, descricao, valor, usuario);
+            return PostgresConnectionService.CriarProduto(conexaoUser, codigo, descricao, valor, usuario);
         }
 
-        public static void AtualizarProdutoPostgres(int idProd, string descricao, decimal valor)
+        public static void AtualizarProdutoPostgres(int idProd, string codigo, string descricao, decimal valor)
         {
-            PostgresConnectionService.AtualizarProduto(conexaoUser, idProd, descricao, valor);
+            PostgresConnectionService.AtualizarProduto(conexaoUser, idProd, codigo, descricao, valor);
         }
 
         public static void ExcluirProdutoPostgres(int idProd)
@@ -193,9 +193,9 @@ namespace FerroVelhoDAO
             PostgresConnectionService.AtualizarCompraValores(conexaoImp, idCompra, descontoCompra, subtotCompra, valorNota, idCliente);
         }
 
-        public static void InserirItemCompraPostgres(int idProd, int idCompra, decimal quantItem, decimal subTotItem, decimal valorItem)
+        public static void InserirItemCompraPostgres(string codigoProduto, int idCompra, decimal quantItem, decimal subTotItem, decimal valorItem)
         {
-            PostgresConnectionService.InserirItemCompra(conexaoImp, idProd, idCompra, quantItem, subTotItem, valorItem);
+            PostgresConnectionService.InserirItemCompra(conexaoImp, codigoProduto, idCompra, quantItem, subTotItem, valorItem);
         }
 
         public static List<tb_itemc> ListarItensCompraPostgres(int idCompra)
@@ -213,9 +213,9 @@ namespace FerroVelhoDAO
             PostgresConnectionService.ExcluirCompra(conexaoImp, idCompra);
         }
 
-        public static decimal CalcularSaldoProdutoPostgres(int idProduto)
+        public static decimal CalcularSaldoProdutoPostgres(string codigoProduto)
         {
-            return PostgresConnectionService.CalcularSaldoProduto(conexaoImp, idProduto);
+            return PostgresConnectionService.CalcularSaldoProduto(conexaoImp, codigoProduto);
         }
 
         public static decimal CalcularSaldoCaixaPostgres()
@@ -308,9 +308,9 @@ namespace FerroVelhoDAO
             return PostgresConnectionService.CalcularSaldoInicialFluxoCaixa(conexaoImp, inicio);
         }
 
-        public static DataTable CarregarEstoquePeriodoPostgres(DateTime inicio, DateTime fim, int? idProduto)
+        public static DataTable CarregarEstoquePeriodoPostgres(DateTime inicio, DateTime fim, string codigoProduto)
         {
-            return PostgresConnectionService.CarregarEstoquePeriodo(conexaoImp, inicio, fim, idProduto);
+            return PostgresConnectionService.CarregarEstoquePeriodo(conexaoImp, inicio, fim, codigoProduto);
         }
 
         public static DataTable CarregarProdutosDataTablePostgres()
@@ -328,9 +328,9 @@ namespace FerroVelhoDAO
             PostgresConnectionService.AtualizarVenda(conexaoImp, idVenda, valorNota, usuario);
         }
 
-        public static void InserirItemVendaPostgres(int idProd, int idVenda, decimal quantItem, decimal subTotItem, decimal valrItem)
+        public static void InserirItemVendaPostgres(string codigoProduto, int idVenda, decimal quantItem, decimal subTotItem, decimal valrItem)
         {
-            PostgresConnectionService.InserirItemVenda(conexaoImp, idProd, idVenda, quantItem, subTotItem, valrItem);
+            PostgresConnectionService.InserirItemVenda(conexaoImp, codigoProduto, idVenda, quantItem, subTotItem, valrItem);
         }
 
         public static List<tb_itemv> ListarItensVendaPostgres(int idVenda)
