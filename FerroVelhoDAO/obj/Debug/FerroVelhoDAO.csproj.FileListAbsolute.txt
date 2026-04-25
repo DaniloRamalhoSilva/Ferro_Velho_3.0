@@ -1,0 +1,14 @@
+C:\Users\Raul\Documents\Danilo\Ferro_Velho_3.0\FerroVelhoDAO\bin\Debug\FerroVelhoDAO.dll.config
+C:\Users\Raul\Documents\Danilo\Ferro_Velho_3.0\FerroVelhoDAO\bin\Debug\FerroVelhoDAO.dll
+C:\Users\Raul\Documents\Danilo\Ferro_Velho_3.0\FerroVelhoDAO\bin\Debug\FerroVelhoDAO.pdb
+C:\Users\Raul\Documents\Danilo\Ferro_Velho_3.0\FerroVelhoDAO\bin\Debug\Npgsql.dll
+C:\Users\Raul\Documents\Danilo\Ferro_Velho_3.0\FerroVelhoDAO\bin\Debug\Npgsql.xml
+C:\Users\Raul\Documents\Danilo\Ferro_Velho_3.0\FerroVelhoDAO\obj\Debug\FerroVelhoDAO.csproj.AssemblyReference.cache
+C:\Users\Raul\Documents\Danilo\Ferro_Velho_3.0\FerroVelhoDAO\obj\Debug\FerroVelhoDAO.csproj.CoreCompileInputs.cache
+C:\Users\Raul\Documents\Danilo\Ferro_Velho_3.0\FerroVelhoDAO\obj\Debug\FerroVel.A0DB7478.Up2Date
+C:\Users\Raul\Documents\Danilo\Ferro_Velho_3.0\FerroVelhoDAO\obj\Debug\FerroVelhoDAO.dll
+C:\Users\Raul\Documents\Danilo\Ferro_Velho_3.0\FerroVelhoDAO\obj\Debug\FerroVelhoDAO.pdb
+C:\Users\Raul\Documents\Danilo\Ferro_Velho_3.0\FerroVelhoDAO\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\Raul\Documents\Danilo\Ferro_Velho_3.0\FerroVelhoDAO\bin\Debug\System.Threading.Tasks.Extensions.dll
+C:\Users\Raul\Documents\Danilo\Ferro_Velho_3.0\FerroVelhoDAO\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\Raul\Documents\Danilo\Ferro_Velho_3.0\FerroVelhoDAO\bin\Debug\System.Threading.Tasks.Extensions.xml

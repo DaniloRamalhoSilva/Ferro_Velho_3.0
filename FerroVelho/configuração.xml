@@ -1,0 +1,4 @@
+﻿<configConexao>
+  <dataUser>Host=127.0.0.1;Port=15432;Database=bd_ferrovelho;Username=ramalho;Password=16Zer@51990;Search Path=dbo,public;Pooling=true;Timeout=15;Command Timeout=60;SSL Mode=Disable</dataUser>
+  <dataImp>Host=127.0.0.1;Port=15432;Database=bd_ferrovelho;Username=ramalho;Password=16Zer@51990;Search Path=dbo,public;Pooling=true;Timeout=15;Command Timeout=60;SSL Mode=Disable</dataImp>
+</configConexao>
