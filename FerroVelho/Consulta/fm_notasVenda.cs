@@ -64,23 +64,47 @@ namespace FerroVelho
 
         private void carregaItem()
         {
-            try
+            int id;
+            if (!TryGetVendaSelecionadaId(out id))
             {
-                int id = Convert.ToInt32(tb_vendaDataGridView.CurrentRow.Cells[0].Value);
-                if (IsPostgresMode)
-                {
-                    this.tb_itemvBindingSource.DataSource = DataContextFactory.ListarItensVendaPostgres(id);
-                }
-                else
-                {
-                    this.tb_itemvBindingSource.DataSource = DataContextFactory.DataContext.tb_itemv.Where(x => x.id_venda == id);
-                }
+                this.tb_itemvBindingSource.Clear();
+                return;
             }
-            catch
-            {
 
+            if (IsPostgresMode)
+            {
+                this.tb_itemvBindingSource.DataSource = DataContextFactory.ListarItensVendaPostgres(id);
             }
-        }      
+            else
+            {
+                this.tb_itemvBindingSource.DataSource = DataContextFactory.DataContext.tb_itemv.Where(x => x.id_venda == id);
+            }
+        }
+
+        private bool TryGetVendaSelecionadaId(out int id)
+        {
+            return TryGetValorLinhaAtual(0, out id);
+        }
+
+        private bool TryGetValorLinhaAtual(int coluna, out int valor)
+        {
+            valor = 0;
+
+            if (tb_vendaDataGridView.CurrentRow == null ||
+                tb_vendaDataGridView.CurrentRow.IsNewRow ||
+                tb_vendaDataGridView.CurrentRow.Cells.Count <= coluna)
+            {
+                return false;
+            }
+
+            object cellValue = tb_vendaDataGridView.CurrentRow.Cells[coluna].Value;
+            if (cellValue == null || cellValue == DBNull.Value)
+            {
+                return false;
+            }
+
+            return int.TryParse(cellValue.ToString(), out valor);
+        }
         
         private void button1_Click(object sender, EventArgs e)
         {
@@ -138,7 +162,13 @@ namespace FerroVelho
             SqlCommand comando;
             try
             {
-                int id = Convert.ToInt32(tb_vendaDataGridView.CurrentRow.Cells[0].Value);
+                int id;
+                if (!TryGetVendaSelecionadaId(out id))
+                {
+                    MessageBox.Show("Selecione uma nota fiscal!");
+                    return;
+                }
+
                 if (IsPostgresMode)
                 {
                     DataContextFactory.ExcluirVendaPostgres(id);
@@ -172,7 +202,13 @@ namespace FerroVelho
 
         private void bt_imprimir_Click(object sender, EventArgs e)
         {
-            int id = Convert.ToInt32(tb_vendaDataGridView.CurrentRow.Cells[0].Value);
+            int id;
+            if (!TryGetVendaSelecionadaId(out id))
+            {
+                MessageBox.Show("Selecione uma nota fiscal!");
+                return;
+            }
+
             fm_vender fm = new fm_vender();
             fm.imprimirNF(id);
         }

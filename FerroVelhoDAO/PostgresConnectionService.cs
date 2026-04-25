@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using Npgsql;
+using NpgsqlTypes;
 
 namespace FerroVelhoDAO
 {
@@ -341,7 +342,9 @@ WHERE UPPER(nome_usuario) = UPPER(@nome_usuario)
             using (var cmd = new NpgsqlCommand(sql, conn))
             {
                 cmd.Parameters.AddWithValue("@nome_usuario", (object)(nomeUsuario ?? string.Empty));
-                cmd.Parameters.AddWithValue("@exceto_id", (object)excetoIdUsuario ?? DBNull.Value);
+                cmd.Parameters.Add("@exceto_id", NpgsqlDbType.Integer).Value = excetoIdUsuario.HasValue
+                    ? (object)excetoIdUsuario.Value
+                    : DBNull.Value;
 
                 conn.Open();
                 return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
@@ -446,12 +449,14 @@ LEFT JOIN (
   SELECT desconto_compra AS valor, id_cliente
   FROM dbo.tb_compra
   WHERE desconto_compra <> 0 AND id_cliente IS NOT NULL
+    AND COALESCE(excluido, FALSE) = FALSE
 
   UNION ALL
 
   SELECT subtot_compra - desconto_compra - valor_nota AS valor, id_cliente
   FROM dbo.tb_compra
   WHERE subtot_compra - desconto_compra - valor_nota <> 0 AND id_cliente IS NOT NULL
+    AND COALESCE(excluido, FALSE) = FALSE
 ) a ON a.id_cliente = c.id_cliente
 " + filtroSql + @"
 GROUP BY c.id_cliente, c.cpf_cliente, c.nome_cliente, c.tel_cliente
@@ -570,12 +575,14 @@ FROM (
   SELECT data_compra AS data, desconto_compra AS valor, 'Pg na Nota: ' || id_compra::text AS obs
   FROM dbo.tb_compra
   WHERE id_cliente = @id_cliente AND desconto_compra <> 0
+    AND COALESCE(excluido, FALSE) = FALSE
 
   UNION ALL
 
   SELECT data_compra AS data, subtot_compra - desconto_compra - valor_nota AS valor, 'Credito na Nota: ' || id_compra::text AS obs
   FROM dbo.tb_compra
   WHERE id_cliente = @id_cliente AND subtot_compra - desconto_compra - valor_nota <> 0
+    AND COALESCE(excluido, FALSE) = FALSE
 ) a
 ORDER BY a.data;"
                 : @"
@@ -614,6 +621,7 @@ FROM (
   SELECT data_compra AS data, subtot_compra AS valor_nota, desconto_compra AS pagamento, valor_nota AS valor_pago, subtot_compra - desconto_compra - valor_nota AS credito, 'Nota: ' || id_compra::text AS obs
   FROM dbo.tb_compra
   WHERE id_cliente = @id_cliente
+    AND COALESCE(excluido, FALSE) = FALSE
 ) a
 ORDER BY a.data;";
 
@@ -668,6 +676,7 @@ FROM dbo.tb_compra
 WHERE (@id_compra IS NULL OR id_compra = @id_compra)
   AND (@inicio IS NULL OR data_compra >= @inicio)
   AND (@fim IS NULL OR data_compra <= @fim)
+  AND COALESCE(excluido, FALSE) = FALSE
 ORDER BY id_compra;";
 
             return PreencherNotas(connectionString, sql, inicio, fim, idCompra, "@id_compra");
@@ -681,6 +690,7 @@ FROM dbo.tb_venda
 WHERE (@id_venda IS NULL OR id_venda = @id_venda)
   AND (@inicio IS NULL OR data_venda >= @inicio)
   AND (@fim IS NULL OR data_venda <= @fim)
+  AND COALESCE(excluido, FALSE) = FALSE
 ORDER BY id_venda;";
 
             return PreencherNotas(connectionString, sql, inicio, fim, idVenda, "@id_venda");
@@ -721,15 +731,19 @@ SELECT
   p.desc_prod,
   SUM(e.entrada) - SUM(e.saida) AS qunt_est
 FROM (
-  SELECT id_prod, SUM(quant_item) AS entrada, 0::numeric AS saida
-  FROM dbo.tb_itemc
-  GROUP BY id_prod
+  SELECT i.id_prod, SUM(i.quant_item) AS entrada, 0::numeric AS saida
+  FROM dbo.tb_itemc i
+  INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra
+  WHERE COALESCE(c.excluido, FALSE) = FALSE
+  GROUP BY i.id_prod
 
   UNION ALL
 
-  SELECT id_prod, 0::numeric AS entrada, SUM(quant_item) AS saida
-  FROM dbo.tb_itemv
-  GROUP BY id_prod
+  SELECT i.id_prod, 0::numeric AS entrada, SUM(i.quant_item) AS saida
+  FROM dbo.tb_itemv i
+  INNER JOIN dbo.tb_venda v ON i.id_venda = v.id_venda
+  WHERE COALESCE(v.excluido, FALSE) = FALSE
+  GROUP BY i.id_prod
 ) e
 INNER JOIN dbo.tb_produtos p ON e.id_prod = p.id_prod
 GROUP BY p.desc_prod, e.id_prod
@@ -759,6 +773,7 @@ FROM dbo.tb_itemc i
 INNER JOIN dbo.tb_produtos p ON i.id_prod = p.id_prod
 INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra
 WHERE c.data_compra BETWEEN @inicio AND @fim
+  AND COALESCE(c.excluido, FALSE) = FALSE
 GROUP BY i.id_prod, p.desc_prod
 ORDER BY i.id_prod;";
 
@@ -778,6 +793,7 @@ FROM dbo.tb_itemc i
 INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra
 INNER JOIN dbo.tb_produtos p ON i.id_prod = p.id_prod
 WHERE i.id_compra = @id_compra
+  AND COALESCE(c.excluido, FALSE) = FALSE
 ORDER BY i.id_item;";
 
             var dt = new DataTable();
@@ -807,7 +823,8 @@ SELECT
   u.nome_usuario
 FROM dbo.tb_compra c
 INNER JOIN dbo.tb_usuario u ON c.usuario = u.id_usuario
-WHERE c.id_compra = @id_compra;";
+WHERE c.id_compra = @id_compra
+  AND COALESCE(c.excluido, FALSE) = FALSE;";
 
             var dt = new DataTable();
             using (var conn = new NpgsqlConnection(connectionString))
@@ -832,7 +849,8 @@ SELECT
   cl.cpf_cliente
 FROM dbo.tb_compra c
 LEFT JOIN dbo.tb_cliente cl ON c.id_cliente = cl.id_cliente
-WHERE c.id_compra = @id_compra;";
+WHERE c.id_compra = @id_compra
+  AND COALESCE(c.excluido, FALSE) = FALSE;";
 
             var dt = new DataTable();
             using (var conn = new NpgsqlConnection(connectionString))
@@ -853,14 +871,14 @@ WHERE c.id_compra = @id_compra;";
 SELECT
   COALESCE((SELECT SUM(valor_caixa) * -1 FROM dbo.tb_caixa WHERE data_caixa < @inicio AND valor_caixa < 0), 0) AS saida_antes,
   COALESCE((SELECT SUM(valor_caixa) FROM dbo.tb_caixa WHERE data_caixa < @inicio AND valor_caixa > 0), 0) AS entrada_antes,
-  COALESCE((SELECT SUM(i.subtot_item) FROM dbo.tb_itemc i INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra WHERE c.data_compra < @inicio), 0) AS compra_antes,
-  COALESCE((SELECT SUM(desconto_compra) FROM dbo.tb_compra WHERE data_compra < @inicio), 0) AS desconto_antes,
-  COALESCE((SELECT SUM(subtot_compra - desconto_compra - valor_nota) FROM dbo.tb_compra WHERE data_compra < @inicio), 0) AS credito_antes,
+  COALESCE((SELECT SUM(i.subtot_item) FROM dbo.tb_itemc i INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra WHERE c.data_compra < @inicio AND COALESCE(c.excluido, FALSE) = FALSE), 0) AS compra_antes,
+  COALESCE((SELECT SUM(desconto_compra) FROM dbo.tb_compra WHERE data_compra < @inicio AND COALESCE(excluido, FALSE) = FALSE), 0) AS desconto_antes,
+  COALESCE((SELECT SUM(subtot_compra - desconto_compra - valor_nota) FROM dbo.tb_compra WHERE data_compra < @inicio AND COALESCE(excluido, FALSE) = FALSE), 0) AS credito_antes,
   COALESCE((SELECT SUM(valor_caixa) * -1 FROM dbo.tb_caixa WHERE data_caixa BETWEEN @inicio AND @fim AND valor_caixa < 0), 0) AS saida_periodo,
   COALESCE((SELECT SUM(valor_caixa) FROM dbo.tb_caixa WHERE data_caixa BETWEEN @inicio AND @fim AND valor_caixa > 0), 0) AS entrada_periodo,
-  COALESCE((SELECT SUM(i.subtot_item) FROM dbo.tb_itemc i INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra WHERE c.data_compra BETWEEN @inicio AND @fim), 0) AS compra_periodo,
-  COALESCE((SELECT SUM(desconto_compra) FROM dbo.tb_compra WHERE data_compra BETWEEN @inicio AND @fim), 0) AS desconto_periodo,
-  COALESCE((SELECT SUM(subtot_compra - desconto_compra - valor_nota) FROM dbo.tb_compra WHERE data_compra BETWEEN @inicio AND @fim), 0) AS credito_periodo;";
+  COALESCE((SELECT SUM(i.subtot_item) FROM dbo.tb_itemc i INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra WHERE c.data_compra BETWEEN @inicio AND @fim AND COALESCE(c.excluido, FALSE) = FALSE), 0) AS compra_periodo,
+  COALESCE((SELECT SUM(desconto_compra) FROM dbo.tb_compra WHERE data_compra BETWEEN @inicio AND @fim AND COALESCE(excluido, FALSE) = FALSE), 0) AS desconto_periodo,
+  COALESCE((SELECT SUM(subtot_compra - desconto_compra - valor_nota) FROM dbo.tb_compra WHERE data_compra BETWEEN @inicio AND @fim AND COALESCE(excluido, FALSE) = FALSE), 0) AS credito_periodo;";
 
             return PreencherPeriodo(connectionString, sql, inicio, fim);
         }
@@ -877,6 +895,7 @@ FROM dbo.tb_itemv i
 INNER JOIN dbo.tb_produtos p ON i.id_prod = p.id_prod
 INNER JOIN dbo.tb_venda v ON i.id_venda = v.id_venda
 WHERE v.data_venda BETWEEN @inicio AND @fim
+  AND COALESCE(v.excluido, FALSE) = FALSE
 GROUP BY i.id_prod, p.desc_prod
 ORDER BY i.id_prod;";
 
@@ -889,7 +908,8 @@ ORDER BY i.id_prod;";
 SELECT COALESCE(SUM(i.subtot_item), 0)
 FROM dbo.tb_itemv i
 INNER JOIN dbo.tb_venda v ON i.id_venda = v.id_venda
-WHERE v.data_venda BETWEEN @inicio AND @fim;";
+WHERE v.data_venda BETWEEN @inicio AND @fim
+  AND COALESCE(v.excluido, FALSE) = FALSE;";
 
             return ExecutarDecimalPeriodo(connectionString, sql, inicio, fim);
         }
@@ -911,6 +931,7 @@ FROM (
   FROM dbo.tb_itemc i
   INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra
   WHERE c.data_compra BETWEEN @inicio AND @fim
+    AND COALESCE(c.excluido, FALSE) = FALSE
   GROUP BY i.id_prod
 
   UNION ALL
@@ -919,6 +940,7 @@ FROM (
   FROM dbo.tb_itemv i
   INNER JOIN dbo.tb_venda v ON i.id_venda = v.id_venda
   WHERE v.data_venda BETWEEN @inicio AND @fim
+    AND COALESCE(v.excluido, FALSE) = FALSE
   GROUP BY i.id_prod
 ) a
 INNER JOIN dbo.tb_produtos p ON a.id_prod = p.id_prod
@@ -951,6 +973,7 @@ FROM (
     FROM dbo.tb_itemc i
     INNER JOIN dbo.tb_compra c ON i.id_compra = c.id_compra
     WHERE c.data_compra BETWEEN @inicio AND @fim
+      AND COALESCE(c.excluido, FALSE) = FALSE
     GROUP BY i.id_prod
 
     UNION ALL
@@ -959,6 +982,7 @@ FROM (
     FROM dbo.tb_itemv i
     INNER JOIN dbo.tb_venda v ON i.id_venda = v.id_venda
     WHERE v.data_venda BETWEEN @inicio AND @fim
+      AND COALESCE(v.excluido, FALSE) = FALSE
     GROUP BY i.id_prod
   ) a
   INNER JOIN dbo.tb_produtos p ON a.id_prod = p.id_prod
@@ -992,6 +1016,7 @@ FROM (
 
   SELECT data_compra AS data, 0::numeric AS entrada, SUM(valor_nota) AS saida
   FROM dbo.tb_compra
+  WHERE COALESCE(excluido, FALSE) = FALSE
   GROUP BY data_compra
 ) e
 WHERE e.data::date BETWEEN @inicio::date AND @fim::date
@@ -1006,14 +1031,65 @@ ORDER BY e.data::date;";
             const string sql = @"
 SELECT
   COALESCE((SELECT SUM(valor_caixa) FROM dbo.tb_caixa WHERE data_caixa < @inicio), 0)
-  - COALESCE((SELECT SUM(valor_nota) FROM dbo.tb_compra WHERE data_compra < @inicio), 0);";
+  - COALESCE((SELECT SUM(valor_nota) FROM dbo.tb_compra WHERE data_compra < @inicio AND COALESCE(excluido, FALSE) = FALSE), 0);";
 
             return ExecutarDecimalAte(connectionString, sql, inicio.Date);
         }
 
         public static DataTable CarregarEstoquePeriodo(string connectionString, DateTime inicio, DateTime fim, int? idProduto)
         {
-            const string sql = "SELECT codigo, descricao, inicio, entrada, saida, saldo FROM dbo.s_tb_estoque(@inicio, @fim, @id_prod);";
+            const string sql = @"
+WITH estoque AS (
+  SELECT id_prod, SUM(inicio) AS inicio, 0::numeric AS entrada, 0::numeric AS saida
+  FROM (
+    SELECT i.id_prod, SUM(i.quant_item) AS inicio
+    FROM dbo.tb_itemc i
+    INNER JOIN dbo.tb_compra c ON c.id_compra = i.id_compra
+    WHERE c.data_compra < @inicio
+      AND COALESCE(c.excluido, FALSE) = FALSE
+    GROUP BY i.id_prod
+
+    UNION ALL
+
+    SELECT i.id_prod, -SUM(i.quant_item) AS inicio
+    FROM dbo.tb_itemv i
+    INNER JOIN dbo.tb_venda v ON v.id_venda = i.id_venda
+    WHERE v.data_venda < @inicio
+      AND COALESCE(v.excluido, FALSE) = FALSE
+    GROUP BY i.id_prod
+  ) x
+  GROUP BY id_prod
+
+  UNION ALL
+
+  SELECT i.id_prod, 0::numeric AS inicio, SUM(i.quant_item) AS entrada, 0::numeric AS saida
+  FROM dbo.tb_itemc i
+  INNER JOIN dbo.tb_compra c ON c.id_compra = i.id_compra
+  WHERE c.data_compra BETWEEN @inicio AND @fim
+    AND COALESCE(c.excluido, FALSE) = FALSE
+  GROUP BY i.id_prod
+
+  UNION ALL
+
+  SELECT i.id_prod, 0::numeric AS inicio, 0::numeric AS entrada, SUM(i.quant_item) AS saida
+  FROM dbo.tb_itemv i
+  INNER JOIN dbo.tb_venda v ON v.id_venda = i.id_venda
+  WHERE v.data_venda BETWEEN @inicio AND @fim
+    AND COALESCE(v.excluido, FALSE) = FALSE
+  GROUP BY i.id_prod
+)
+SELECT
+  e.id_prod AS codigo,
+  UPPER(p.desc_prod) AS descricao,
+  COALESCE(SUM(e.inicio), 0) AS inicio,
+  COALESCE(SUM(e.entrada), 0) AS entrada,
+  COALESCE(SUM(e.saida), 0) AS saida,
+  COALESCE(SUM(e.inicio), 0) + COALESCE(SUM(e.entrada), 0) - COALESCE(SUM(e.saida), 0) AS saldo
+FROM estoque e
+INNER JOIN dbo.tb_produtos p ON p.id_prod = e.id_prod
+WHERE @id_prod IS NULL OR e.id_prod = @id_prod
+GROUP BY p.desc_prod, e.id_prod
+ORDER BY e.id_prod;";
 
             var dt = new DataTable();
             using (var conn = new NpgsqlConnection(connectionString))
@@ -1116,12 +1192,12 @@ SELECT
         {
             var pag = ObterSomaPorCliente(
                 connectionString,
-                "SELECT COALESCE(SUM(tb_compra.desconto_compra), 0) FROM dbo.tb_compra WHERE tb_compra.id_cliente = @id_cliente;",
+                "SELECT COALESCE(SUM(tb_compra.desconto_compra), 0) FROM dbo.tb_compra WHERE tb_compra.id_cliente = @id_cliente AND COALESCE(tb_compra.excluido, FALSE) = FALSE;",
                 idCliente);
 
             var credito = ObterSomaPorCliente(
                 connectionString,
-                "SELECT COALESCE(SUM(tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota), 0) FROM dbo.tb_compra WHERE tb_compra.id_cliente = @id_cliente;",
+                "SELECT COALESCE(SUM(tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota), 0) FROM dbo.tb_compra WHERE tb_compra.id_cliente = @id_cliente AND COALESCE(tb_compra.excluido, FALSE) = FALSE;",
                 idCliente);
 
             var adianta = ObterSomaPorCliente(
@@ -1147,12 +1223,12 @@ SELECT
         {
             var pag = ObterSomaPorCliente(
                 connectionString,
-                "SELECT COALESCE(SUM(tb_compra.desconto_compra), 0) FROM dbo.tb_compra WHERE tb_compra.id_cliente = @id_cliente;",
+                "SELECT COALESCE(SUM(tb_compra.desconto_compra), 0) FROM dbo.tb_compra WHERE tb_compra.id_cliente = @id_cliente AND COALESCE(tb_compra.excluido, FALSE) = FALSE;",
                 idCliente);
 
             var credito = ObterSomaPorCliente(
                 connectionString,
-                "SELECT COALESCE(SUM(tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota), 0) FROM dbo.tb_compra WHERE tb_compra.id_cliente = @id_cliente;",
+                "SELECT COALESCE(SUM(tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota), 0) FROM dbo.tb_compra WHERE tb_compra.id_cliente = @id_cliente AND COALESCE(tb_compra.excluido, FALSE) = FALSE;",
                 idCliente);
 
             var adianta = ObterSomaPorCliente(
@@ -1271,7 +1347,9 @@ SELECT
   p.usuario
 FROM dbo.tb_itemc i
 INNER JOIN dbo.tb_produtos p ON p.id_prod = i.id_prod
+INNER JOIN dbo.tb_compra c ON c.id_compra = i.id_compra
 WHERE i.id_compra = @id_compra
+  AND COALESCE(c.excluido, FALSE) = FALSE
 ORDER BY i.id_item;";
 
             var itens = new List<tb_itemc>();
@@ -1327,7 +1405,10 @@ ORDER BY i.id_item;";
 
         public static void ExcluirCompra(string connectionString, int idCompra)
         {
-            const string sql = "DELETE FROM dbo.tb_compra WHERE id_compra = @id_compra;";
+            const string sql = @"
+UPDATE dbo.tb_compra
+SET excluido = TRUE
+WHERE id_compra = @id_compra;";
 
             using (var conn = new NpgsqlConnection(connectionString))
             using (var cmd = new NpgsqlCommand(sql, conn))
@@ -1340,8 +1421,18 @@ ORDER BY i.id_item;";
 
         public static decimal CalcularSaldoProduto(string connectionString, int idProd)
         {
-            const string sqlEntrada = "SELECT COALESCE(SUM(quant_item), 0) FROM dbo.tb_itemc WHERE id_prod = @id_prod;";
-            const string sqlSaida = "SELECT COALESCE(SUM(quant_item), 0) FROM dbo.tb_itemv WHERE id_prod = @id_prod;";
+            const string sqlEntrada = @"
+SELECT COALESCE(SUM(i.quant_item), 0)
+FROM dbo.tb_itemc i
+INNER JOIN dbo.tb_compra c ON c.id_compra = i.id_compra
+WHERE i.id_prod = @id_prod
+  AND COALESCE(c.excluido, FALSE) = FALSE;";
+            const string sqlSaida = @"
+SELECT COALESCE(SUM(i.quant_item), 0)
+FROM dbo.tb_itemv i
+INNER JOIN dbo.tb_venda v ON v.id_venda = i.id_venda
+WHERE i.id_prod = @id_prod
+  AND COALESCE(v.excluido, FALSE) = FALSE;";
 
             using (var conn = new NpgsqlConnection(connectionString))
             {
@@ -1369,10 +1460,10 @@ ORDER BY i.id_item;";
         {
             const string sql = @"
 SELECT
-  COALESCE((SELECT SUM(subtot_item) FROM dbo.tb_itemc), 0) AS total_saida,
+  COALESCE((SELECT SUM(i.subtot_item) FROM dbo.tb_itemc i INNER JOIN dbo.tb_compra c ON c.id_compra = i.id_compra WHERE COALESCE(c.excluido, FALSE) = FALSE), 0) AS total_saida,
   COALESCE((SELECT SUM(valor_caixa) FROM dbo.tb_caixa), 0) AS total_entrada,
-  COALESCE((SELECT SUM(desconto_compra) FROM dbo.tb_compra), 0) AS desconto,
-  COALESCE((SELECT SUM(subtot_compra - desconto_compra - valor_nota) FROM dbo.tb_compra), 0) AS credito;";
+  COALESCE((SELECT SUM(desconto_compra) FROM dbo.tb_compra WHERE COALESCE(excluido, FALSE) = FALSE), 0) AS desconto,
+  COALESCE((SELECT SUM(subtot_compra - desconto_compra - valor_nota) FROM dbo.tb_compra WHERE COALESCE(excluido, FALSE) = FALSE), 0) AS credito;";
 
             using (var conn = new NpgsqlConnection(connectionString))
             using (var cmd = new NpgsqlCommand(sql, conn))
@@ -1458,6 +1549,7 @@ FROM (
 
   SELECT co.data_compra::date AS data, co.valor_nota * -1 AS valor, 'Compras' AS descricao, co.usuario
   FROM dbo.tb_compra co
+  WHERE COALESCE(co.excluido, FALSE) = FALSE
 ) a
 INNER JOIN dbo.tb_usuario u ON a.usuario = u.id_usuario
 WHERE a.data BETWEEN @inicio AND @fim
@@ -1566,7 +1658,9 @@ SELECT
   p.usuario
 FROM dbo.tb_itemv i
 INNER JOIN dbo.tb_produtos p ON p.id_prod = i.id_prod
+INNER JOIN dbo.tb_venda v ON v.id_venda = i.id_venda
 WHERE i.id_venda = @id_venda
+  AND COALESCE(v.excluido, FALSE) = FALSE
 ORDER BY i.id_item;";
 
             var itens = new List<tb_itemv>();
@@ -1623,7 +1717,10 @@ ORDER BY i.id_item;";
 
         public static void ExcluirVenda(string connectionString, int idVenda)
         {
-            const string sql = "DELETE FROM dbo.tb_venda WHERE id_venda = @id_venda;";
+            const string sql = @"
+UPDATE dbo.tb_venda
+SET excluido = TRUE
+WHERE id_venda = @id_venda;";
 
             using (var conn = new NpgsqlConnection(connectionString))
             using (var cmd = new NpgsqlCommand(sql, conn))
@@ -1651,7 +1748,8 @@ FROM dbo.tb_itemv iv
 INNER JOIN dbo.tb_venda v ON iv.id_venda = v.id_venda
 INNER JOIN dbo.tb_produtos p ON iv.id_prod = p.id_prod
 INNER JOIN dbo.tb_usuario u ON v.usuario = u.id_usuario
-WHERE iv.id_venda = @id_venda;";
+WHERE iv.id_venda = @id_venda
+  AND COALESCE(v.excluido, FALSE) = FALSE;";
 
             var dt = new DataTable();
             using (var conn = new NpgsqlConnection(connectionString))

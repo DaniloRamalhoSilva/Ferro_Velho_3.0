@@ -64,22 +64,46 @@ namespace FerroVelho
          
         private void carregaItem()
         {
-            try
+            int id;
+            if (!TryGetNotaSelecionadaId(out id))
             {
-                int id = Convert.ToInt32(tb_vendaDataGridView.CurrentRow.Cells[0].Value);
-                if (IsPostgresMode)
-                {
-                    this.tb_itemcBindingSource.DataSource = DataContextFactory.ListarItensCompraPostgres(id);
-                }
-                else
-                {
-                    this.tb_itemcBindingSource.DataSource = DataContextFactory.DataContext.tb_itemc.Where(x => x.id_compra == id);
-                }
+                this.tb_itemcBindingSource.Clear();
+                return;
             }
-            catch
-            {
 
+            if (IsPostgresMode)
+            {
+                this.tb_itemcBindingSource.DataSource = DataContextFactory.ListarItensCompraPostgres(id);
             }
+            else
+            {
+                this.tb_itemcBindingSource.DataSource = DataContextFactory.DataContext.tb_itemc.Where(x => x.id_compra == id);
+            }
+        }
+
+        private bool TryGetNotaSelecionadaId(out int id)
+        {
+            return TryGetValorLinhaAtual(0, out id);
+        }
+
+        private bool TryGetValorLinhaAtual(int coluna, out int valor)
+        {
+            valor = 0;
+
+            if (tb_vendaDataGridView.CurrentRow == null ||
+                tb_vendaDataGridView.CurrentRow.IsNewRow ||
+                tb_vendaDataGridView.CurrentRow.Cells.Count <= coluna)
+            {
+                return false;
+            }
+
+            object cellValue = tb_vendaDataGridView.CurrentRow.Cells[coluna].Value;
+            if (cellValue == null || cellValue == DBNull.Value)
+            {
+                return false;
+            }
+
+            return int.TryParse(cellValue.ToString(), out valor);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -137,7 +161,13 @@ namespace FerroVelho
             SqlCommand comando;
             try
             {
-                int id = Convert.ToInt32(tb_vendaDataGridView.CurrentRow.Cells[0].Value);
+                int id;
+                if (!TryGetNotaSelecionadaId(out id))
+                {
+                    MessageBox.Show("Selecione uma nota fiscal!");
+                    return;
+                }
+
                 if (IsPostgresMode)
                 {
                     DataContextFactory.ExcluirCompraPostgres(id);
@@ -176,32 +206,39 @@ namespace FerroVelho
 
         private void bt_imprimir_Click(object sender, EventArgs e)
         {
-            int id = Convert.ToInt32(tb_vendaDataGridView.CurrentRow.Cells[0].Value);
+            int id;
+            if (!TryGetNotaSelecionadaId(out id))
+            {
+                MessageBox.Show("Selecione uma nota fiscal!");
+                return;
+            }
+
             fm_menulPrincipal fm = new fm_menulPrincipal();
             fm.imprimirNF(id);
         }
 
         private void tb_vendaDataGridView_CurrentCellChanged(object sender, EventArgs e)
         {
-            string cliente;
-            try
+            int clienteId;
+            if (TryGetValorLinhaAtual(6, out clienteId))
             {
-                cliente = clienteDAO(Convert.ToInt32(tb_vendaDataGridView.CurrentRow.Cells[6].Value));
+                lb_cliente.Text = clienteDAO(clienteId);
             }
-            catch
+            else
             {
-                cliente = "Não informado";
+                lb_cliente.Text = "Não informado";
             }
-            try
+
+            int usuarioId;
+            if (TryGetValorLinhaAtual(5, out usuarioId))
             {
-                lb_usuario.Text = usuarioDAO(Convert.ToInt32(tb_vendaDataGridView.CurrentRow.Cells[5].Value));
+                lb_usuario.Text = usuarioDAO(usuarioId);
             }
-            catch
+            else
             {
                 lb_usuario.Text = "Erro";
             }
-            
-            lb_cliente.Text = cliente;
+
             carregaItem();
         }
 

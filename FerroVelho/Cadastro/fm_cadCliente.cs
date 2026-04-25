@@ -373,17 +373,32 @@ namespace FerroVelho
 
         private void dataGridView1_CurrentCellChanged(object sender, EventArgs e)
         {
-            try
+            int id;
+            if (TryGetClienteSelecionadoId(out id))
             {
-                int id = Convert.ToInt32(dataGridView1.CurrentRow.Cells[0].Value);
                 carregaItem(id);
             }
-            catch
-            {
+        }
 
+        private bool TryGetClienteSelecionadoId(out int id)
+        {
+            id = 0;
+
+            if (dataGridView1.CurrentRow == null ||
+                dataGridView1.CurrentRow.IsNewRow ||
+                dataGridView1.CurrentRow.Cells.Count == 0)
+            {
+                return false;
             }
-            
-        }        
+
+            object valor = dataGridView1.CurrentRow.Cells[0].Value;
+            if (valor == null || valor == DBNull.Value)
+            {
+                return false;
+            }
+
+            return int.TryParse(valor.ToString(), out id);
+        }
 
         private void dg_adPg_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
@@ -421,7 +436,10 @@ namespace FerroVelho
                     { e.CellStyle.ForeColor = Color.Orange;  }
                 }
             }
-            dg_adPg.Rows[dg_adPg.CurrentCell.RowIndex].Selected = false;
+            if (dg_adPg.CurrentCell != null)
+            {
+                dg_adPg.Rows[dg_adPg.CurrentCell.RowIndex].Selected = false;
+            }
         }
 
         private void formatarDatagrid()
@@ -452,8 +470,11 @@ namespace FerroVelho
             else
             {checkBoxCompleto.Checked = true;}            
 
-            int id = Convert.ToInt32(dataGridView1.CurrentRow.Cells[0].Value);
-            carregaItem(id);
+            int id;
+            if (TryGetClienteSelecionadoId(out id))
+            {
+                carregaItem(id);
+            }
         }
 
         private void checkBoxCompleto_CheckedChanged(object sender, EventArgs e)
@@ -463,8 +484,11 @@ namespace FerroVelho
             else
             { checkBox_AdPg.Checked = true; }
 
-            int id = Convert.ToInt32(dataGridView1.CurrentRow.Cells[0].Value);
-            carregaItem(id);
+            int id;
+            if (TryGetClienteSelecionadoId(out id))
+            {
+                carregaItem(id);
+            }
         }
 
         //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Cliente DAO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
