@@ -257,10 +257,10 @@ RETURNING id_compra, data_compra, usuario, desconto_compra, subtot_compra, valor
                     {
                         id_compra = reader.GetInt32(reader.GetOrdinal("id_compra")),
                         data_compra = reader.GetDateTime(reader.GetOrdinal("data_compra")),
-                        usuario = reader.IsDBNull(reader.GetOrdinal("usuario")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("usuario")),
-                        desconto_compra = reader.IsDBNull(reader.GetOrdinal("desconto_compra")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("desconto_compra")),
-                        subtot_compra = reader.IsDBNull(reader.GetOrdinal("subtot_compra")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("subtot_compra")),
-                        valor_nota = reader.IsDBNull(reader.GetOrdinal("valor_nota")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("valor_nota")),
+                        usuario = reader.IsDBNull(reader.GetOrdinal("usuario")) ? 0 : reader.GetInt32(reader.GetOrdinal("usuario")),
+                        desconto_compra = reader.IsDBNull(reader.GetOrdinal("desconto_compra")) ? 0m : reader.GetDecimal(reader.GetOrdinal("desconto_compra")),
+                        subtot_compra = reader.IsDBNull(reader.GetOrdinal("subtot_compra")) ? 0m : reader.GetDecimal(reader.GetOrdinal("subtot_compra")),
+                        valor_nota = reader.IsDBNull(reader.GetOrdinal("valor_nota")) ? 0m : reader.GetDecimal(reader.GetOrdinal("valor_nota")),
                         id_cliente = reader.IsDBNull(reader.GetOrdinal("id_cliente")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("id_cliente"))
                     };
                 }

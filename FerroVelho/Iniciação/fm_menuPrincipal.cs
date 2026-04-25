@@ -363,9 +363,9 @@ namespace FerroVelho
 
                 DataContextFactory.AtualizarCompraPostgres(
                     compraCorrente.id_compra,
-                    compraCorrente.desconto_compra ?? 0m,
-                    compraCorrente.subtot_compra ?? 0m,
-                    compraCorrente.valor_nota ?? 0m,
+                    compraCorrente.desconto_compra,
+                    compraCorrente.subtot_compra,
+                    compraCorrente.valor_nota,
                     idCliente);
                 return;
             }
@@ -474,10 +474,10 @@ namespace FerroVelho
             {
                 tb_Compra = DataContextFactory.CriarCompraPostgres(
                     tb_Compra.data_compra,
-                    tb_Compra.usuario ?? 0,
-                    tb_Compra.desconto_compra ?? 0m,
-                    tb_Compra.subtot_compra ?? 0m,
-                    tb_Compra.valor_nota ?? 0m);
+                    tb_Compra.usuario,
+                    tb_Compra.desconto_compra,
+                    tb_Compra.subtot_compra,
+                    tb_Compra.valor_nota);
 
                 this.tb_compraBindingSource.DataSource = tb_Compra;
                 return;

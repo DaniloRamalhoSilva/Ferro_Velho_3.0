@@ -1,102 +1,12 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho_3.0\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|c:\\users\\raul\\documents\\danilo\\ferro_velho_3.0\\ferrovelho\\inicia\u00E7\u00E3o\\fm_menuprincipal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|solutionrelative:ferrovelho\\inicia\u00E7\u00E3o\\fm_menuprincipal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|c:\\users\\raul\\documents\\danilo\\ferro_velho_3.0\\ferrovelho\\inicia\u00E7\u00E3o\\fm_menuprincipal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|solutionrelative:ferrovelho\\inicia\u00E7\u00E3o\\fm_menuprincipal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9890FD44-B96F-4DFC-A241-2F1E9DE4F9DB}|FerroVelhoDAO\\FerroVelhoDAO.csproj|c:\\users\\raul\\documents\\danilo\\ferro_velho_3.0\\ferrovelhodao\\datacontextfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9890FD44-B96F-4DFC-A241-2F1E9DE4F9DB}|FerroVelhoDAO\\FerroVelhoDAO.csproj|solutionrelative:ferrovelhodao\\datacontextfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|c:\\users\\raul\\documents\\danilo\\ferro_velho_3.0\\ferrovelho\\inicia\u00E7\u00E3o\\fm_login.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|solutionrelative:ferrovelho\\inicia\u00E7\u00E3o\\fm_login.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho_3.0\\ferrovelho\\inicia\u00E7\u00E3o\\fm_login.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|solutionrelative:ferrovelho\\inicia\u00E7\u00E3o\\fm_login.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": [
-        {
-          "DockedWidth": 200,
-          "SelectedChildIndex": 0,
-          "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "fm_menuPrincipal.cs",
-              "DocumentMoniker": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho_3.0\\FerroVelho\\Inicia\u00E7\u00E3o\\fm_menuPrincipal.cs",
-              "RelativeDocumentMoniker": "FerroVelho\\Inicia\u00E7\u00E3o\\fm_menuPrincipal.cs",
-              "ToolTip": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho_3.0\\FerroVelho\\Inicia\u00E7\u00E3o\\fm_menuPrincipal.cs",
-              "RelativeToolTip": "FerroVelho\\Inicia\u00E7\u00E3o\\fm_menuPrincipal.cs",
-              "ViewState": "AgIAABIAAAAAAAAAAAAiwCIAAABJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-25T14:32:26.557Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "fm_menuPrincipal.cs [Design]",
-              "DocumentMoniker": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho_3.0\\FerroVelho\\Inicia\u00E7\u00E3o\\fm_menuPrincipal.cs",
-              "RelativeDocumentMoniker": "FerroVelho\\Inicia\u00E7\u00E3o\\fm_menuPrincipal.cs",
-              "ToolTip": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho_3.0\\FerroVelho\\Inicia\u00E7\u00E3o\\fm_menuPrincipal.cs [Design]",
-              "RelativeToolTip": "FerroVelho\\Inicia\u00E7\u00E3o\\fm_menuPrincipal.cs [Design]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-25T14:40:57.403Z",
-              "EditorCaption": " [Design]"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "DataContextFactory.cs",
-              "DocumentMoniker": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho_3.0\\FerroVelhoDAO\\DataContextFactory.cs",
-              "RelativeDocumentMoniker": "FerroVelhoDAO\\DataContextFactory.cs",
-              "ToolTip": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho_3.0\\FerroVelhoDAO\\DataContextFactory.cs",
-              "RelativeToolTip": "FerroVelhoDAO\\DataContextFactory.cs",
-              "ViewState": "AgIAAEUAAAAAAAAAAAAtwGQAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-25T14:23:20.174Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "fm_login.cs",
-              "DocumentMoniker": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho_3.0\\FerroVelho\\Inicia\u00E7\u00E3o\\fm_login.cs",
-              "RelativeDocumentMoniker": "FerroVelho\\Inicia\u00E7\u00E3o\\fm_login.cs",
-              "ToolTip": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho_3.0\\FerroVelho\\Inicia\u00E7\u00E3o\\fm_login.cs",
-              "RelativeToolTip": "FerroVelho\\Inicia\u00E7\u00E3o\\fm_login.cs",
-              "ViewState": "AgIAAE4AAAAAAAAAAAAWwGsAAAAMAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-25T14:15:31.161Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "fm_login.cs [Design]",
-              "DocumentMoniker": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho_3.0\\FerroVelho\\Inicia\u00E7\u00E3o\\fm_login.cs",
-              "RelativeDocumentMoniker": "FerroVelho\\Inicia\u00E7\u00E3o\\fm_login.cs",
-              "ToolTip": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho_3.0\\FerroVelho\\Inicia\u00E7\u00E3o\\fm_login.cs [Design]",
-              "RelativeToolTip": "FerroVelho\\Inicia\u00E7\u00E3o\\fm_login.cs [Design]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-25T14:15:29.543Z"
-            }
-          ]
-        }
-      ]
+      "DocumentGroups": []
     }
   ]
 }
