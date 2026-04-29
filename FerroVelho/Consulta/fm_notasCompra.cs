@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -26,11 +25,6 @@ namespace FerroVelho
             consulta();
         }
 
-        private bool IsPostgresMode
-        {
-            get { return DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp); }
-        }
-
         private void bt_pesquisa_Click(object sender, EventArgs e)
         {
             consulta();
@@ -41,17 +35,7 @@ namespace FerroVelho
             DateTime dataI = dt_inicio.Value;
             DateTime dataF = dt_fim.Value;
 
-            DataTable dt;
-            if (IsPostgresMode)
-            {
-                dt = DataContextFactory.ListarComprasPostgres(dataI.Date, dataF.Date.Add(new TimeSpan(23, 59, 59)), null);
-            }
-            else
-            {
-                string comando = "SELECT * FROM tb_compra " +
-                    "WHERE tb_compra.data_compra between '" + dataI.Date + "' AND '" + dataF.Date.Add(new TimeSpan(23, 59, 59)) + "'";
-                dt = DataContextFactory.Filtrar(comando);
-            }
+            DataTable dt = DataContextFactory.ListarComprasApi(dataI.Date, dataF.Date.Add(new TimeSpan(23, 59, 59)), null);
 
             tb_vendaDataGridView.DataSource = dt;
             tb_vendaDataGridView.DataMember = dt.TableName;
@@ -71,14 +55,7 @@ namespace FerroVelho
                 return;
             }
 
-            if (IsPostgresMode)
-            {
-                this.tb_itemcBindingSource.DataSource = DataContextFactory.ListarItensCompraPostgres(id);
-            }
-            else
-            {
-                this.tb_itemcBindingSource.DataSource = DataContextFactory.DataContext.tb_itemc.Where(x => x.id_compra == id);
-            }
+            this.tb_itemcBindingSource.DataSource = DataContextFactory.ListarItensCompraApi(id);
         }
 
         private bool TryGetNotaSelecionadaId(out int id)
@@ -110,17 +87,7 @@ namespace FerroVelho
         {            
             try
             {
-                DataTable dt;
-                if (IsPostgresMode)
-                {
-                    dt = DataContextFactory.ListarComprasPostgres(null, null, Convert.ToInt32(txt_notaFiscal.Text));
-                }
-                else
-                {
-                    string comando = "SELECT * FROM tb_compra " +
-                    "WHERE tb_compra.id_compra = " + Convert.ToInt32(txt_notaFiscal.Text);
-                    dt = DataContextFactory.Filtrar(comando);
-                }
+                DataTable dt = DataContextFactory.ListarComprasApi(null, null, Convert.ToInt32(txt_notaFiscal.Text));
 
                 tb_vendaDataGridView.DataSource = dt;
                 tb_vendaDataGridView.DataMember = dt.TableName;
@@ -135,16 +102,7 @@ namespace FerroVelho
             }
             catch
             {
-                DataTable dt;
-                if (IsPostgresMode)
-                {
-                    dt = DataContextFactory.ListarComprasPostgres(null, null, null);
-                }
-                else
-                {
-                    string comando = "SELECT * FROM tb_compra ";
-                    dt = DataContextFactory.Filtrar(comando);
-                }
+                DataTable dt = DataContextFactory.ListarComprasApi(null, null, null);
 
                 tb_vendaDataGridView.DataSource = dt;
                 tb_vendaDataGridView.DataMember = dt.TableName;
@@ -158,7 +116,6 @@ namespace FerroVelho
 
         private void btn_excluir_Click(object sender, EventArgs e)
         {
-            SqlCommand comando;
             try
             {
                 int id;
@@ -168,18 +125,7 @@ namespace FerroVelho
                     return;
                 }
 
-                if (IsPostgresMode)
-                {
-                    DataContextFactory.ExcluirCompraPostgres(id);
-                }
-                else
-                {
-                    comando = new SqlCommand();
-                    comando.CommandType = CommandType.Text;
-                    comando.CommandText = "Delete from tb_compra WHERE id_compra=@id";
-                    comando.Parameters.AddWithValue("@id", id);
-                    DataContextFactory.CRUD(comando);
-                }
+                DataContextFactory.ExcluirCompraApi(id);
 
                 consulta();
                 MessageBox.Show("Excluido com sucesso!");
@@ -244,65 +190,16 @@ namespace FerroVelho
 
         //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  DAO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-        SqlCommand comando;
-
         private string usuarioDAO(int id)
         {
-            if (IsPostgresMode)
-            {
-                return DataContextFactory.BuscarNomeUsuarioPostgres(id);
-            }
-
-            tb_usuario usuario = new tb_usuario();            
-
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "Select * From tb_usuario where id_usuario=@id_usuario";
-            comando.Parameters.AddWithValue("@id_usuario", id);
-            SqlDataReader dr = DataContextFactory.Selecionar(comando);
-
-            if (dr.HasRows)
-            {
-                dr.Read();
-                usuario.id_usuario = (int)dr["id_usuario"];
-                usuario.nome_usuario = (string)dr["nome_usuario"];                            
-            }
-            else
-            {
-                usuario = null;
-            }
-            dr.Close();
-            return usuario.nome_usuario;            
+            return DataContextFactory.BuscarNomeUsuarioApi(id);
         }
 
         private string clienteDAO(int id)
         {
-            if (IsPostgresMode)
-            {
-                return DataContextFactory.BuscarNomeClientePostgres(id);
-            }
-
-            tb_cliente cliente = new tb_cliente();
-
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "Select * From tb_cliente where id_cliente=@id_cliente";
-            comando.Parameters.AddWithValue("@id_cliente", id);
-            SqlDataReader dr = DataContextFactory.Selecionar(comando);
-
-            if (dr.HasRows)
-            {
-                dr.Read();
-                cliente.id_cliente = (int)dr["id_cliente"];
-                cliente.nome_cliente = (string)dr["nome_cliente"];
-            }
-            else
-            {
-                cliente = null;
-            }
-            dr.Close();
-            return cliente.nome_cliente;
+            return DataContextFactory.BuscarNomeClienteApi(id);
         }
 
     }
 }
+

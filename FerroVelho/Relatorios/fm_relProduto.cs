@@ -25,14 +25,7 @@ namespace FerroVelho.Relatorios
         private void fm_relProduto_Load(object sender, EventArgs e)
         {
 
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser))
-            {
-                this.tb_produtosBindingSource.DataSource = DataContextFactory.CarregarProdutosDataTablePostgres();
-            }
-            else
-            {
-                this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos;
-            }
+            this.tb_produtosBindingSource.DataSource = DataContextFactory.CarregarProdutosDataTableApi();
 
             this.reportViewer1.RefreshReport();
             
@@ -50,17 +43,10 @@ namespace FerroVelho.Relatorios
 
         public void imprimirNF()
         {
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            var imp = DataContextFactory.BuscarImpressoraApi(1);
+            if (imp != null)
             {
-                var imp = DataContextFactory.BuscarImpressoraPostgres(1);
-                if (imp != null)
-                {
-                    this.tb_impressoraBindingSource.DataSource = new List<tb_impressora> { imp };
-                }
-            }
-            else
-            {
-                this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
+                this.tb_impressoraBindingSource.DataSource = new List<tb_impressora> { imp };
             }
 
             LocalReport report = new LocalReport();
@@ -72,14 +58,7 @@ namespace FerroVelho.Relatorios
 
         private DataTable LoadSalesData()
         {
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser))
-            {
-                return DataContextFactory.CarregarProdutosDataTablePostgres();
-            }
-
-            string comando = "SELECT * FROM tb_produtos";
-            DataTable dt = DataContextFactory.Filtrar(comando);
-            return dt;
+            return DataContextFactory.CarregarProdutosDataTableApi();
         }
 
         public tb_impressora impressoraCorrente
@@ -158,3 +137,4 @@ namespace FerroVelho.Relatorios
         }
     }
 }
+

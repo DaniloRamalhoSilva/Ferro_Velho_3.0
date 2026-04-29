@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
@@ -43,50 +42,19 @@ namespace FerroVelho.Relatorios
             imprimirNF();
         }
 
-        private bool IsPostgresMode
-        {
-            get { return DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp); }
-        }
-
-        string comando;
-
         private void pesquisa()
         {
             inicio = dt_inicio.Value;
             fim = dt_fim.Value;
 
-            if (IsPostgresMode)
-            {
-                DataTable dtPostgres = DataContextFactory.CarregarResumoVendaProdutosPostgres(
-                    inicio.Date.Add(new TimeSpan(00, 00, 00)),
-                    fim.Date.Add(new TimeSpan(23, 59, 59)));
-                dataGridView1.DataSource = dtPostgres;
-                dataGridView1.DataMember = dtPostgres.TableName;
-                lb_total.Text = DataContextFactory.CalcularTotalVendaProdutosPostgres(
-                    inicio.Date.Add(new TimeSpan(00, 00, 00)),
-                    fim.Date.Add(new TimeSpan(23, 59, 59))).ToString("C2");
-                return;
-            }
-
-            comando = "SELECT tb_itemv.id_prod, tb_produtos.desc_prod, sum(tb_itemv.quant_item) As Peso, sum(tb_itemv.subTot_item) As Total " +
-                "FROM tb_itemv " +
-                "INNER JOIN tb_produtos ON tb_itemv.id_prod = tb_produtos.id_prod " +
-                "INNER JOIN tb_venda ON tb_itemv.id_venda = tb_venda.id_venda  " +
-                "WHERE tb_venda.data_venda between '" + inicio.Date.Add(new TimeSpan(00, 00, 00)) + "' and '" + fim.Date.Add(new TimeSpan(23, 59, 59)) +
-                "' GROUP BY tb_itemv.id_prod, tb_produtos.desc_prod";
-            DataTable dt = DataContextFactory.Filtrar(comando);
-            dataGridView1.DataSource = dt;
-            dataGridView1.DataMember = dt.TableName;
-
-            SqlCommand comand = new SqlCommand();
-            comand.CommandType = CommandType.Text;
-            comand.CommandText = "SELECT sum(tb_itemv.subTot_item) as total " +
-                "FROM tb_itemv " +
-                "INNER JOIN tb_venda ON tb_itemv.id_venda = tb_venda.id_venda " +
-                "WHERE tb_venda.data_venda between '" + inicio.Date.Add(new TimeSpan(00, 00, 00)) + "' and '" + fim.Date.Add(new TimeSpan(23, 59, 59)) + "'";
-            decimal cInicio = DataContextFactory.FiltrarValor(comand);
-
-            lb_total.Text = cInicio.ToString("C2");
+            DataTable dtApi = DataContextFactory.CarregarResumoVendaProdutosApi(
+                inicio.Date.Add(new TimeSpan(00, 00, 00)),
+                fim.Date.Add(new TimeSpan(23, 59, 59)));
+            dataGridView1.DataSource = dtApi;
+            dataGridView1.DataMember = dtApi.TableName;
+            lb_total.Text = DataContextFactory.CalcularTotalVendaProdutosApi(
+                inicio.Date.Add(new TimeSpan(00, 00, 00)),
+                fim.Date.Add(new TimeSpan(23, 59, 59))).ToString("C2");
         }
 
         private int m_currentPageIndex;
@@ -94,17 +62,10 @@ namespace FerroVelho.Relatorios
 
         public void imprimirNF()
         {
-            if (IsPostgresMode)
+            var imp = DataContextFactory.BuscarImpressoraApi(1);
+            if (imp != null)
             {
-                var imp = DataContextFactory.BuscarImpressoraPostgres(1);
-                if (imp != null)
-                {
-                    this.tb_impressoraBindingSource.DataSource = new List<tb_impressora> { imp };
-                }
-            }
-            else
-            {
-                this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
+                this.tb_impressoraBindingSource.DataSource = new List<tb_impressora> { imp };
             }
 
             LocalReport report = new LocalReport();
@@ -121,15 +82,9 @@ namespace FerroVelho.Relatorios
 
         private DataTable LoadSalesData()
         {
-            if (IsPostgresMode)
-            {
-                return DataContextFactory.CarregarResumoVendaProdutosPostgres(
-                    dt_inicio.Value.Date.Add(new TimeSpan(00, 00, 00)),
-                    dt_fim.Value.Date.Add(new TimeSpan(23, 59, 59)));
-            }
-
-            DataTable dt = DataContextFactory.Filtrar(comando);
-            return dt;
+            return DataContextFactory.CarregarResumoVendaProdutosApi(
+                dt_inicio.Value.Date.Add(new TimeSpan(00, 00, 00)),
+                dt_fim.Value.Date.Add(new TimeSpan(23, 59, 59)));
         }
 
         public tb_impressora impressoraCorrente
@@ -209,3 +164,4 @@ namespace FerroVelho.Relatorios
         
     }
 }
+

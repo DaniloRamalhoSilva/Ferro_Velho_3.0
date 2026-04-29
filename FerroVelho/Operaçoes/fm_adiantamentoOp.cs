@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -148,33 +147,17 @@ namespace FerroVelho
 
         //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Cliente DAO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-        SqlCommand comando;
-
         public void Inserir(tb_caixa caixa)
         {
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-            {
-                DataContextFactory.InserirCaixaPostgres(
-                    caixa.data_caixa,
-                    caixa.desc_caixa,
-                    caixa.usuario ?? DataContextFactory.usu.id_usuario,
-                    caixa.valor_caixa,
-                    caixa.id_cliente);
-                return;
-            }
-
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "Insert into tb_caixa(data_caixa, desc_caixa, usuario, valor_caixa, id_cliente) values(@data_caixa, @desc_caixa, @usuario, @valor_caixa, @id_cliente)";
-            comando.Parameters.AddWithValue("@data_caixa", caixa.data_caixa);
-            comando.Parameters.AddWithValue("@desc_caixa", caixa.desc_caixa);
-            comando.Parameters.AddWithValue("@usuario", caixa.usuario);
-            comando.Parameters.AddWithValue("@valor_caixa", caixa.valor_caixa);
-            comando.Parameters.AddWithValue("@id_cliente", caixa.id_cliente);
-
-            DataContextFactory.CRUD(comando);
+            DataContextFactory.InserirCaixaApi(
+                caixa.data_caixa,
+                caixa.desc_caixa,
+                caixa.usuario ?? DataContextFactory.usu.id_usuario,
+                caixa.valor_caixa,
+                caixa.id_cliente);
         }
 
         
     }
 }
+

@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -39,13 +38,7 @@ namespace FerroVelho.Relatorios
             imprimir();
         }
 
-        string comand;
         decimal sInicio;
-
-        private bool IsPostgresMode
-        {
-            get { return DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp); }
-        }
 
         private void pesquisa()
         {
@@ -53,57 +46,11 @@ namespace FerroVelho.Relatorios
             inicio = dt_inicio.Value;
             fim = dt_fim.Value;
 
-            if (IsPostgresMode)
-            {
-                sInicio = DataContextFactory.CalcularSaldoInicialFluxoCaixaPostgres(inicio.Date);
-                DataTable dtPostgres = DataContextFactory.CarregarFluxoCaixaPostgres(inicio.Date, fim.Date);
-                dataGridView1.DataSource = dtPostgres;
-                dataGridView1.DataMember = dtPostgres.TableName;
-                calcular();
-                return;
-            }
-
-            SqlCommand comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-
-            comando.CommandText = "SELECT sum(tb_caixa.valor_caixa) As total " +
-                "FROM tb_caixa " +
-                "WHERE tb_caixa.data_caixa between '" + comeco + "' and '" + inicio.Date.Add(new TimeSpan(00, 00, -01)) + "' ";
-            decimal S = DataContextFactory.FiltrarValor(comando);
-
-            comando.CommandText = "SELECT sum(tb_compra.valor_nota) As total " +
-            "FROM tb_compra " +
-            "WHERE tb_compra.data_compra between '" + comeco + "' and '" + inicio.Date.Add(new TimeSpan(00, 00, -01)) + "'";
-            decimal E = DataContextFactory.FiltrarValor(comando);
-
-            sInicio = S - E;
-
-            //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-            comand = "SELECT cast(e.Data as DATE) as Data, sum(e.Entrada) as Entrada, sum(e.Saida) as Saida " +
-                "FROM(SELECT tb_caixa.data_caixa as Data, sum(tb_caixa.valor_caixa) As Entrada, 0 as Saida " +
-                "FROM tb_caixa " +
-                "where tb_caixa.valor_caixa > 0 " +
-                "GROUP BY tb_caixa.data_caixa " +
-                "union all " +
-                "SELECT tb_caixa.data_caixa as Data, 0 As Entrada, sum(tb_caixa.valor_caixa) * -1 as Saida " +
-                "FROM tb_caixa " +
-                "where tb_caixa.valor_caixa < 0 " +
-                "GROUP BY tb_caixa.data_caixa " +
-                "union all " +
-                "SELECT tb_compra.data_compra as Data, 0 as Entrada, sum(tb_compra.valor_nota) As Saida " +
-                "FROM tb_compra " +
-                "GROUP BY tb_compra.data_compra)e " +
-                "WHERE cast(e.Data as DATE) between '" + inicio + "' and '" + fim + "'" +
-                "GROUP BY cast(e.Data as DATE) " +
-                "order by cast(e.Data as date)";                
-            DataTable dt = DataContextFactory.Filtrar(comand);
-            dataGridView1.DataSource = dt;
-            dataGridView1.DataMember = dt.TableName;
-
+            sInicio = DataContextFactory.CalcularSaldoInicialFluxoCaixaApi(inicio.Date);
+            DataTable dtApi = DataContextFactory.CarregarFluxoCaixaApi(inicio.Date, fim.Date);
+            dataGridView1.DataSource = dtApi;
+            dataGridView1.DataMember = dtApi.TableName;
             calcular();
-
-            //dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
         }
 
         
@@ -137,3 +84,4 @@ namespace FerroVelho.Relatorios
 
     }
 }
+

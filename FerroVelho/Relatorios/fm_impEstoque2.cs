@@ -37,24 +37,8 @@ namespace FerroVelho.Relatorios
 
         private DataTable LoadSalesData()
         {
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-            {
-                return DataContextFactory.CarregarEstoqueAtualPostgres();
-            }
-
-            string comando = "SELECT e.IdProduto as id_prod, tb_produtos.desc_prod, sum(e.Entrada) - sum(e.Saida) as qunt_est " +
-                "FROM (SELECT tb_itemc.id_prod as IdProduto, sum(tb_itemc.quant_item) as Entrada, 0 As Saida " +
-                "FROM tb_itemc " +
-                "GROUP BY tb_itemc.id_prod " +
-                "union all " +
-                "SELECT tb_itemv.id_prod as IdProduto, 0 as Entrada, sum(tb_itemv.quant_item) As Saida " +
-                "FROM tb_itemv " +
-                "GROUP BY tb_itemv.id_prod)e " +
-                "INNER JOIN tb_produtos ON e.IdProduto = tb_produtos.id_prod " +
-                "GROUP BY tb_produtos.desc_prod, e.IdProduto";
-
-            DataTable dt = DataContextFactory.Filtrar(comando);
-            return dt;
+            return DataContextFactory.CarregarEstoqueAtualApi();
         }
     }
 }
+

@@ -53,61 +53,32 @@ namespace FerroVelho
         {
             try
             {
-                if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser))
+                var usuarioApi = DataContextFactory.ValidarLoginApi(txt_nome.Text, txt_senha.Text);
+                if (usuarioApi != null)
                 {
-                    var usuarioPg = DataContextFactory.ValidarLoginPostgres(txt_nome.Text, txt_senha.Text);
-                    if (usuarioPg != null)
-                    {
-                        logar = true;
-                        DataContextFactory.usu = usuarioPg;
-                        this.Dispose();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Usuario ou senha invalido");
-                    }
+                    logar = true;
+                    DataContextFactory.usu = usuarioApi;
+                    this.Dispose();
                 }
                 else
                 {
-                    var cont = DataContextFactory.DataContext.tb_usuario.Count(x => x.nome_usuario == txt_nome.Text && x.senha_usuario == txt_senha.Text && x.ativo);
-
-                    if (cont > 0)
-                    {
-                        this.tb_usuarioBindingSource.DataSource = DataContextFactory.DataContext.tb_usuario.Where(x => x.nome_usuario == txt_nome.Text && x.senha_usuario == txt_senha.Text && x.ativo);
-                        logar = true;
-
-                        DataContextFactory.usu = usuarioCorrente;
-
-                        this.Dispose();
-
-                    }
-                    else
-                    {
-                        MessageBox.Show("Usuario ou senha invalido");
-                    }
+                    MessageBox.Show("Usuario ou senha invalido");
                 }
             }
             catch
             {
-                MessageBox.Show("String de conexão: User inexistente", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Não foi possível acessar a API de usuários.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 fm_configuracao fmc = new fm_configuracao();
                 fmc.ShowDialog();
             }
 
             try
             {
-                if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-                {
-                    DataContextFactory.TestarConexaoPostgres(DataContextFactory.conexaoImp);
-                }
-                else
-                {
-                    var cont = DataContextFactory.Conectar();
-                }
+                DataContextFactory.TestarConexaoApi(DataContextFactory.conexaoImp);
             }
             catch
             {
-                MessageBox.Show("String de conexão: Impressao inexistente", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Não foi possível validar a API configurada.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 fm_configuracao fmc = new fm_configuracao();
                 fmc.ShowDialog();
             }
@@ -120,3 +91,4 @@ namespace FerroVelho
         }
     }
 }
+

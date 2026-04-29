@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -43,28 +42,7 @@ namespace FerroVelho
 
         public decimal calcular()
         {
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-            {
-                return DataContextFactory.CalcularSaldoCaixaPostgres();
-            }
-
-            decimal totalSaida, totalEntrada, desconto, saldo, credito;            
-
-            try { totalSaida = Convert.ToDecimal(DataContextFactory.DataContext.tb_itemc.Sum(x => x.subTot_item)); }
-            catch { totalSaida = 0; };
-
-            try { totalEntrada = Convert.ToDecimal(DataContextFactory.DataContext.tb_caixa.Sum(x => x.valor_caixa)); }
-            catch { totalEntrada = 0; };
-
-            try { desconto = Convert.ToDecimal(DataContextFactory.DataContext.tb_compra.Sum(x => x.desconto_compra)); }
-            catch { desconto = 0; };
-
-            try { credito = Convert.ToDecimal(DataContextFactory.DataContext.tb_compra.Sum(x => x.subtot_compra - x.desconto_compra - x.valor_nota)); }
-            catch { credito = 0; };
-
-            saldo = totalEntrada - totalSaida + desconto + credito;
-
-            return saldo;
+            return DataContextFactory.CalcularSaldoCaixaApi();
         }
 
         private void txt_valRecur_Leave(object sender, EventArgs e)
@@ -168,28 +146,12 @@ namespace FerroVelho
 
         private void apontar(decimal valor, string texto)
         {
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-            {
-                DataContextFactory.InserirCaixaPostgres(
-                    DateTime.Now,
-                    txt_desc.Text,
-                    DataContextFactory.usu.id_usuario,
-                    valor,
-                    null);
-
-                MessageBox.Show(texto);
-                return;
-            }
-
-            this.tb_caixaBindingSource.DataSource = DataContextFactory.DataContext.tb_caixa;
-
-            this.tb_caixaBindingSource.AddNew();
-            this.saldoCorrente.data_caixa = DateTime.Now;
-            this.saldoCorrente.valor_caixa = valor;
-            this.saldoCorrente.usuario = DataContextFactory.usu.id_usuario;
-            this.saldoCorrente.desc_caixa = txt_desc.Text;
-            this.tb_caixaBindingSource.EndEdit();
-            DataContextFactory.DataContext.SubmitChanges();
+            DataContextFactory.InserirCaixaApi(
+                DateTime.Now,
+                txt_desc.Text,
+                DataContextFactory.usu.id_usuario,
+                valor,
+                null);
 
             MessageBox.Show(texto);
         }
@@ -235,3 +197,4 @@ namespace FerroVelho
         
     }
 }
+

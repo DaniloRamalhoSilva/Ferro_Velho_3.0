@@ -20,18 +20,11 @@ namespace FerroVelho
 
         private void fm_outrasEntradas_Load(object sender, EventArgs e)
         {
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser))
-            {
-                this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosPostgres();
-            }
-            else
-            {
-                this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos;
-            }
+            this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosApi();
 
             cb_desProd.DataSource = tb_produtosBindingSource;
             cb_desProd.DisplayMember = "desc_prod";
-            cb_desProd.ValueMember = DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser) ? "cod_prod" : "id_prod";
+            cb_desProd.ValueMember = "cod_prod";
 
             if (txt_codProd.Enabled != false)
             {                
@@ -43,9 +36,7 @@ namespace FerroVelho
             }
             else
             {
-                cb_desProd.SelectedValue = DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser)
-                    ? (object)txt_codProd.Text.Trim()
-                    : Convert.ToInt32(txt_codProd.Text);
+                cb_desProd.SelectedValue = txt_codProd.Text.Trim();
             }            
             
         }
@@ -54,19 +45,8 @@ namespace FerroVelho
         {
             if (txt_codProd.Text != "")
             {
-                cb_desProd.SelectedValue = DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser)
-                    ? (object)txt_codProd.Text.Trim()
-                    : Convert.ToInt32(txt_codProd.Text);
-                decimal saldo;
-                if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-                {
-                    saldo = DataContextFactory.CalcularSaldoProdutoPostgres(txt_codProd.Text.Trim());
-                }
-                else
-                {
-                    fm_estoque fm = new fm_estoque();
-                    saldo = fm.calcular(Convert.ToInt32(txt_codProd.Text));
-                }
+                cb_desProd.SelectedValue = txt_codProd.Text.Trim();
+                decimal saldo = DataContextFactory.CalcularSaldoProdutoApi(txt_codProd.Text.Trim());
                 lb_saldo.Text = saldo.ToString("N3");
             }
             else
@@ -83,19 +63,8 @@ namespace FerroVelho
                 return;
             }
 
-            txt_codProd.Text = DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser)
-                ? this.produtoCorrente.cod_prod
-                : Convert.ToString(this.produtoCorrente.id_prod);
-            decimal saldo;
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-            {
-                saldo = DataContextFactory.CalcularSaldoProdutoPostgres(txt_codProd.Text.Trim());
-            }
-            else
-            {
-                fm_estoque fm = new fm_estoque();
-                saldo = fm.calcular(Convert.ToInt32(txt_codProd.Text));
-            }
+            txt_codProd.Text = this.produtoCorrente.cod_prod;
+            decimal saldo = DataContextFactory.CalcularSaldoProdutoApi(txt_codProd.Text.Trim());
             lb_saldo.Text = saldo.ToString("N3");
 
         }
@@ -126,26 +95,11 @@ namespace FerroVelho
 
         private void txt_codProd_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser))
-            {
-                if (e.KeyChar == 13)
-                {
-                    txt_quant.Focus();
-                    e.Handled = true;
-                }
-
-                return;
-            }
-
-            if (char.IsDigit(e.KeyChar) || e.KeyChar.Equals((char)Keys.Back))
-            {
-                return;
-            }
             if (e.KeyChar == 13)
             {
                 txt_quant.Focus();
+                e.Handled = true;
             }
-            e.Handled = true;
         }
 
         private void txt_quant_KeyPress(object sender, KeyPressEventArgs e)
@@ -163,53 +117,23 @@ namespace FerroVelho
 
         private void novaNota()
         {
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-            {
-                var compra = DataContextFactory.CriarCompraPostgres(
-                    DateTime.Now,
-                    DataContextFactory.usu.id_usuario,
-                    0m,
-                    0m,
-                    0m);
-                this.tb_entradaBindingSource.DataSource = compra;
-                return;
-            }
-
-            this.tb_entradaBindingSource.DataSource = DataContextFactory.DataContext.tb_compra;
-            this.tb_entradaBindingSource.AddNew();
-            this.entradaCorrente.valor_nota = Convert.ToDecimal("0,00");
-            this.entradaCorrente.data_compra = DateTime.Now;
-            this.entradaCorrente.usuario = DataContextFactory.usu.id_usuario;
-            this.tb_entradaBindingSource.EndEdit();
-            DataContextFactory.DataContext.SubmitChanges();
-
+            var compra = DataContextFactory.CriarCompraApi(
+                DateTime.Now,
+                DataContextFactory.usu.id_usuario,
+                0m,
+                0m,
+                0m);
+            this.tb_entradaBindingSource.DataSource = compra;
         }
 
         private void novoItem()
         {
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-            {
-                DataContextFactory.InserirItemCompraPostgres(
-                    this.produtoCorrente.cod_prod,
-                    this.entradaCorrente.id_compra,
-                    Convert.ToDecimal(txt_quant.Text),
-                    0m,
-                    0m);
-                return;
-            }
-
-            this.tb_itemeBindingSource.DataSource = DataContextFactory.DataContext.tb_itemc;
-
-            this.tb_itemeBindingSource.AddNew();
-
-            this.itemCorrente.id_prod = this.produtoCorrente.id_prod;
-            this.itemCorrente.id_compra = this.entradaCorrente.id_compra;
-            this.itemCorrente.quant_item = Convert.ToDecimal(txt_quant.Text);
-            this.itemCorrente.subTot_item = Convert.ToDecimal("0,00");
-            this.itemCorrente.valor_item = Convert.ToDecimal("0,00");
-
-            this.tb_itemeBindingSource.EndEdit();
-            DataContextFactory.DataContext.SubmitChanges();
+            DataContextFactory.InserirItemCompraApi(
+                this.produtoCorrente.cod_prod,
+                this.entradaCorrente.id_compra,
+                Convert.ToDecimal(txt_quant.Text),
+                0m,
+                0m);
         }
 
         private void txt_quant_Leave(object sender, EventArgs e)
@@ -253,3 +177,4 @@ namespace FerroVelho
         }
     }
 }
+

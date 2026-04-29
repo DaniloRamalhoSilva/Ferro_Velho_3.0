@@ -3,7 +3,6 @@ using Microsoft.Reporting.WinForms;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
@@ -19,117 +18,12 @@ namespace FerroVelho
     {
         public decimal valorDevedor(int id)
         {
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-            {
-                return DataContextFactory.CalcularValorDevedorPostgres(id);
-            }
-
-            decimal adianta, pag, acerto, credito, total;
-            SqlCommand comando;
-
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "Select sum(tb_compra.desconto_compra) as total " +
-                "From tb_compra " +
-                "where tb_compra.id_cliente = @id_cliente";
-            comando.Parameters.AddWithValue("@id_cliente", id);
-
-            pag = DataContextFactory.FiltrarValor(comando);
-
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "Select sum(tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota) as total " +
-                "From tb_compra " +
-                "where tb_compra.id_cliente = @id_cliente";
-            comando.Parameters.AddWithValue("@id_cliente", id);
-
-            credito = DataContextFactory.FiltrarValor(comando);
-
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "Select sum(tb_caixa.valor_caixa)  as total " +
-                "From tb_caixa " +
-                "where tb_caixa.id_cliente = @id_cliente";
-            comando.Parameters.AddWithValue("@id_cliente", id);
-
-            adianta = DataContextFactory.FiltrarValor(comando);
-
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "Select sum(tb_aCliente.valor_aCliente)  as total " +
-                "From tb_aCliente " +
-                "where tb_aCliente.id_cliente = @id_cliente";
-            comando.Parameters.AddWithValue("@id_cliente", id);
-
-            acerto = DataContextFactory.FiltrarValor(comando);
-
-            total = adianta + pag + acerto + credito;
-
-            if (total > 0)
-            {
-                total = 0;
-            }
-            else
-            {
-                total = total * -1;
-            }
-            return total;
+            return DataContextFactory.CalcularValorDevedorApi(id);
         }
 
         public decimal valorCredito(int id)
         {
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-            {
-                return DataContextFactory.CalcularValorCreditoPostgres(id);
-            }
-
-            decimal adianta, pag, acerto, credito, total;
-            SqlCommand comando;
-
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "Select sum(tb_compra.desconto_compra) as total " +
-                "From tb_compra " +
-                "where tb_compra.id_cliente = @id_cliente";
-            comando.Parameters.AddWithValue("@id_cliente", id);
-
-            pag = DataContextFactory.FiltrarValor(comando);
-
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "Select sum(tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota) as total " +
-                "From tb_compra " +
-                "where tb_compra.id_cliente = @id_cliente";
-            comando.Parameters.AddWithValue("@id_cliente", id);
-
-            credito = DataContextFactory.FiltrarValor(comando);
-
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "Select sum(tb_caixa.valor_caixa)  as total " +
-                "From tb_caixa " +
-                "where tb_caixa.id_cliente = @id_cliente";
-            comando.Parameters.AddWithValue("@id_cliente", id);
-
-            adianta = DataContextFactory.FiltrarValor(comando);
-
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "Select sum(tb_aCliente.valor_aCliente)  as total " +
-                "From tb_aCliente " +
-                "where tb_aCliente.id_cliente = @id_cliente";
-            comando.Parameters.AddWithValue("@id_cliente", id);
-
-            acerto = DataContextFactory.FiltrarValor(comando);
-
-            total = adianta + pag + credito + acerto;
-
-            if (total < 0)
-            {
-                total = 0;
-            }
-           
-            return total;
+            return DataContextFactory.CalcularValorCreditoApi(id);
         }
 
         // Codigo referente a impressão do cupom fiscal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -156,15 +50,6 @@ namespace FerroVelho
             Export(report);
             Print();
         }
-
-        //private DataTable LoadSalesData(int nf)
-        //{
-        //    string comando = "SELECT tb_itemv.quant_item, tb_itemv.subTot_item, tb_itemv.valr_item, tb_produtos.desc_prod, tb_venda.data_venda, tb_itemv.id_prod, tb_itemv.id_venda, tb_usuario.nome_usuario, tb_venda.usuario FROM tb_itemv INNER JOIN tb_venda ON tb_itemv.id_venda = tb_venda.id_venda INNER JOIN tb_produtos ON tb_itemv.id_prod = tb_produtos.id_prod INNER JOIN tb_usuario ON tb_venda.usuario = tb_usuario.id_usuario WHERE tb_itemv.id_venda =" + nf;
-        //    DataTable dt = DataContextFactory.Filtrar(comando);
-
-        //    return dt;
-        //}
-
 
         //public tb_impressora impressoraCorrente
         //{
@@ -246,3 +131,4 @@ namespace FerroVelho
         }
     }
 }
+

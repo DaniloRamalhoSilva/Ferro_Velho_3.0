@@ -42,9 +42,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 48);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(146, 13);
+            this.label1.Size = new System.Drawing.Size(100, 13);
             this.label1.TabIndex = 17;
-            this.label1.Text = "String de conexão impressão:";
+            this.label1.Text = "Código da empresa:";
             // 
             // txt_datauImpressao
             // 
@@ -75,9 +75,9 @@
             this.lb_conexao.AutoSize = true;
             this.lb_conexao.Location = new System.Drawing.Point(12, 9);
             this.lb_conexao.Name = "lb_conexao";
-            this.lb_conexao.Size = new System.Drawing.Size(119, 13);
+            this.lb_conexao.Size = new System.Drawing.Size(63, 13);
             this.lb_conexao.TabIndex = 13;
-            this.lb_conexao.Text = "String de conexão user:";
+            this.lb_conexao.Text = "URL da API:";
             // 
             // bt_salvar
             // 

@@ -117,10 +117,6 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.txt_operador = new System.Windows.Forms.ToolStripStatusLabel();
-            this.compraBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.bd_ferroVelhoDataSet = new FerroVelho.bd_ferroVelhoDataSet();
-            this.compraTableAdapter = new FerroVelho.bd_ferroVelhoDataSetTableAdapters.CompraTableAdapter();
-            this.tableAdapterManager = new FerroVelho.bd_ferroVelhoDataSetTableAdapters.TableAdapterManager();
             this.tb_compraBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tb_produtosBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tb_impressoraBindingSource = new System.Windows.Forms.BindingSource(this.components);
@@ -135,8 +131,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.tbitemcBindingSource)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.compraBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.bd_ferroVelhoDataSet)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tb_compraBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tb_produtosBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tb_impressoraBindingSource)).BeginInit();
@@ -971,32 +965,6 @@
             this.txt_operador.Size = new System.Drawing.Size(118, 17);
             this.txt_operador.Text = "toolStripStatusLabel2";
             // 
-            // compraBindingSource
-            // 
-            this.compraBindingSource.DataMember = "Compra";
-            this.compraBindingSource.DataSource = this.bd_ferroVelhoDataSet;
-            // 
-            // bd_ferroVelhoDataSet
-            // 
-            this.bd_ferroVelhoDataSet.DataSetName = "bd_ferroVelhoDataSet";
-            this.bd_ferroVelhoDataSet.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
-            // 
-            // compraTableAdapter
-            // 
-            this.compraTableAdapter.ClearBeforeFill = true;
-            // 
-            // tableAdapterManager
-            // 
-            this.tableAdapterManager.BackupDataSetBeforeUpdate = false;
-            this.tableAdapterManager.Connection = null;
-            this.tableAdapterManager.tb_compraTableAdapter = null;
-            this.tableAdapterManager.tb_impressoraTableAdapter = null;
-            this.tableAdapterManager.tb_itemcTableAdapter = null;
-            this.tableAdapterManager.tb_itemvTableAdapter = null;
-            this.tableAdapterManager.tb_produtosTableAdapter = null;
-            this.tableAdapterManager.tb_vendaTableAdapter = null;
-            this.tableAdapterManager.UpdateOrder = FerroVelho.bd_ferroVelhoDataSetTableAdapters.TableAdapterManager.UpdateOrderOption.InsertUpdateDelete;
-            // 
             // tb_compraBindingSource
             // 
             this.tb_compraBindingSource.DataSource = typeof(FerroVelhoDAO.tb_compra);
@@ -1049,8 +1017,6 @@
             this.groupBox1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.compraBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.bd_ferroVelhoDataSet)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tb_compraBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tb_produtosBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tb_impressoraBindingSource)).EndInit();
@@ -1090,8 +1056,6 @@
         private System.Windows.Forms.TextBox txt_codProd;
         private System.Windows.Forms.ComboBox cb_desProd;
         private System.Windows.Forms.DataGridView dg_compra;
-        private System.Windows.Forms.DataGridViewTextBoxColumn idvendaDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn tbvendaDataGridViewTextBoxColumn;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button bt_excluir;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -1116,10 +1080,6 @@
         private System.Windows.Forms.ToolStripMenuItem compraToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem vendaToolStripMenuItem1;
         private System.Windows.Forms.BindingSource tb_usuarioBindingSource;
-        private bd_ferroVelhoDataSet bd_ferroVelhoDataSet;
-        private System.Windows.Forms.BindingSource compraBindingSource;
-        private bd_ferroVelhoDataSetTableAdapters.CompraTableAdapter compraTableAdapter;
-        private bd_ferroVelhoDataSetTableAdapters.TableAdapterManager tableAdapterManager;
         private System.Windows.Forms.Button bt_calculadora;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Label lb_cpf;

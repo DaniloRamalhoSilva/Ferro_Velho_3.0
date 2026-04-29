@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -133,33 +132,17 @@ namespace FerroVelho.Operaçoes
 
         //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Cliente DAO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-        SqlCommand comando;
-
         public void Inserir(tb_aCliente aCliente)
         {
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-            {
-                DataContextFactory.InserirAcertoClientePostgres(
-                    aCliente.data__aCliente,
-                    aCliente.desc_aCliente,
-                    aCliente.usuario,
-                    aCliente.valor_aCliente,
-                    aCliente.id_cliente);
-                return;
-            }
-
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "Insert into tb_aCliente(data__aCliente, desc_aCliente, usuario, valor_aCliente, id_cliente) values(@data__aCliente, @desc_aCliente, @usuario, @valor_aCliente, @id_cliente)";
-            comando.Parameters.AddWithValue("@data__aCliente", aCliente.data__aCliente);
-            comando.Parameters.AddWithValue("@desc_aCliente", aCliente.desc_aCliente);
-            comando.Parameters.AddWithValue("@usuario", aCliente.usuario);
-            comando.Parameters.AddWithValue("@valor_aCliente", aCliente.valor_aCliente);
-            comando.Parameters.AddWithValue("@id_cliente", aCliente.id_cliente);
-
-            DataContextFactory.CRUD(comando);
+            DataContextFactory.InserirAcertoClienteApi(
+                aCliente.data__aCliente,
+                aCliente.desc_aCliente,
+                aCliente.usuario,
+                aCliente.valor_aCliente,
+                aCliente.id_cliente);
         }
 
 
     }
 }
+

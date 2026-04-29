@@ -2,7 +2,7 @@
 <Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
-    <DataSource Name="bd_ferroVelhoDataSet">
+    <DataSource Name="ApiDataSource">
       <ConnectionProperties>
         <DataProvider>System.Data.DataSet</DataProvider>
         <ConnectString>/* Local Connection */</ConnectString>
@@ -13,7 +13,7 @@
   <DataSets>
     <DataSet Name="DataSet1">
       <Query>
-        <DataSourceName>bd_ferroVelhoDataSet</DataSourceName>
+        <DataSourceName>ApiDataSource</DataSourceName>
         <CommandText>/* Local Query */</CommandText>
       </Query>
       <Fields>
@@ -51,12 +51,8 @@
         </Field>
       </Fields>
       <rd:DataSetInfo>
-        <rd:DataSetName>bd_ferroVelhoDataSet</rd:DataSetName>
-        <rd:SchemaPath>C:\Users\daniloramalho\Documents\Projetos\Sistema\FerroVelho\bd_ferroVelhoDataSet.xsd</rd:SchemaPath>
+        <rd:DataSetName>ApiDataSource</rd:DataSetName>
         <rd:TableName>Venda</rd:TableName>
-        <rd:TableAdapterFillMethod>Fill</rd:TableAdapterFillMethod>
-        <rd:TableAdapterGetDataMethod>GetData</rd:TableAdapterGetDataMethod>
-        <rd:TableAdapterName>VendaTableAdapter</rd:TableAdapterName>
       </rd:DataSetInfo>
     </DataSet>
   </DataSets>

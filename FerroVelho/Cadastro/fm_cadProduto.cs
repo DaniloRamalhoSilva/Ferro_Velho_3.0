@@ -21,23 +21,10 @@ namespace FerroVelho
             InitializeComponent();
         }
 
-        private bool IsPostgresMode
-        {
-            get { return DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser); }
-        }
-
         private void CarregarProdutos()
         {
-            idprodDataGridViewTextBoxColumn.DataPropertyName = IsPostgresMode ? "cod_prod" : "id_prod";
-
-            if (IsPostgresMode)
-            {
-                this.tbprodutosBindingSource.DataSource = DataContextFactory.ListarProdutosPostgres();
-            }
-            else
-            {
-                this.tbprodutosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos;
-            }
+            idprodDataGridViewTextBoxColumn.DataPropertyName = "cod_prod";
+            this.tbprodutosBindingSource.DataSource = DataContextFactory.ListarProdutosApi();
         }
 
         private void fm_cadastroProduto_Load(object sender, EventArgs e)
@@ -49,21 +36,14 @@ namespace FerroVelho
         private void btn_novo_Click(object sender, EventArgs e)
         {
             novoProduto = true;
-            txt_codPro.Enabled = IsPostgresMode;
+            txt_codPro.Enabled = true;
             txt_descrição.Enabled = true;
             txt_valor.Enabled = true;
             txt_descrição.Text = "";
             txt_codPro.Text = "";
             txt_valor.Text = "";
 
-            if (IsPostgresMode)
-            {
-                txt_codPro.Focus();
-            }
-            else
-            {
-                txt_descrição.Focus();
-            }
+            txt_codPro.Focus();
 
             btn_cancelar.Visible = true;
             btn_salvar.Visible = true;
@@ -100,17 +80,10 @@ namespace FerroVelho
             else
             {
                 novoProduto = false;
-                txt_codPro.Enabled = IsPostgresMode;
+                txt_codPro.Enabled = true;
                 txt_descrição.Enabled = true;
                 txt_valor.Enabled = true;
-                if (IsPostgresMode)
-                {
-                    txt_codPro.Focus();
-                }
-                else
-                {
-                    txt_descrição.Focus();
-                }
+                txt_codPro.Focus();
 
                 btn_cancelar.Visible = true;
                 btn_salvar.Visible = true;
@@ -129,7 +102,7 @@ namespace FerroVelho
             {
                 MessageBox.Show("Descrição e Valor são obrigatorios!");
             }
-            else if (IsPostgresMode && string.IsNullOrWhiteSpace(txt_codPro.Text))
+            else if (string.IsNullOrWhiteSpace(txt_codPro.Text))
             {
                 MessageBox.Show("Código do produto é obrigatório!");
                 txt_codPro.Focus();
@@ -144,52 +117,12 @@ namespace FerroVelho
                     return;
                 }
 
-                if (IsPostgresMode)
-                {
-                    try
-                    {
-                        if (novoProduto)
-                        {
-                            int? usuarioLogado = DataContextFactory.usu != null ? (int?)DataContextFactory.usu.id_usuario : null;
-                            DataContextFactory.CriarProdutoPostgres(txt_codPro.Text.Trim(), txt_descrição.Text.Trim(), valorProduto, usuarioLogado);
-                            MessageBox.Show("Salvo com sucesso!");
-                        }
-                        else
-                        {
-                            if (this.produtoCorrente == null)
-                            {
-                                MessageBox.Show("Selecione um produto valido!");
-                                return;
-                            }
-
-                            DataContextFactory.AtualizarProdutoPostgres(this.produtoCorrente.id_prod, txt_codPro.Text.Trim(), txt_descrição.Text.Trim(), valorProduto);
-                            MessageBox.Show("Alterado com sucesso!");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Não foi possível salvar o produto. Verifique se o código já existe. Erro: " + ex.Message);
-                        return;
-                    }
-
-                    CarregarProdutos();
-                }
-                else
+                try
                 {
                     if (novoProduto)
                     {
-                        this.tbprodutosBindingSource.AddNew();
-                        if (this.produtoCorrente == null)
-                        {
-                            MessageBox.Show("Não foi possível iniciar um novo produto.");
-                            return;
-                        }
-
-                        this.produtoCorrente.desc_prod = txt_descrição.Text;
-                        this.produtoCorrente.val_prod = valorProduto;
-                        this.produtoCorrente.usuario = DataContextFactory.usu.id_usuario;
-                        this.tbprodutosBindingSource.EndEdit();
-                        DataContextFactory.DataContext.SubmitChanges();
+                        int? usuarioLogado = DataContextFactory.usu != null ? (int?)DataContextFactory.usu.id_usuario : null;
+                        DataContextFactory.CriarProdutoApi(txt_codPro.Text.Trim(), txt_descrição.Text.Trim(), valorProduto, usuarioLogado);
                         MessageBox.Show("Salvo com sucesso!");
                     }
                     else
@@ -200,14 +133,17 @@ namespace FerroVelho
                             return;
                         }
 
-                        this.produtoCorrente.desc_prod = txt_descrição.Text;
-                        this.produtoCorrente.val_prod = valorProduto;
-
-                        this.tbprodutosBindingSource.EndEdit();
-                        DataContextFactory.DataContext.SubmitChanges();
+                        DataContextFactory.AtualizarProdutoApi(this.produtoCorrente.id_prod, txt_codPro.Text.Trim(), txt_descrição.Text.Trim(), valorProduto);
                         MessageBox.Show("Alterado com sucesso!");
                     }
                 }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Não foi possível salvar o produto. Verifique se o código já existe. Erro: " + ex.Message);
+                    return;
+                }
+
+                CarregarProdutos();
 
                 novoProduto = false;
                 txt_codPro.Enabled = false;
@@ -236,21 +172,13 @@ namespace FerroVelho
 
                 try
                 {
-                    if (IsPostgresMode)
+                    if (this.produtoCorrente == null)
                     {
-                        if (this.produtoCorrente == null)
-                        {
-                            MessageBox.Show("Selecione um produto valido!");
-                            return;
-                        }
+                        MessageBox.Show("Selecione um produto valido!");
+                        return;
+                    }
 
-                        DataContextFactory.ExcluirProdutoPostgres(this.produtoCorrente.id_prod);
-                    }
-                    else
-                    {
-                        this.tbprodutosBindingSource.RemoveCurrent();
-                        DataContextFactory.DataContext.SubmitChanges();
-                    }
+                    DataContextFactory.ExcluirProdutoApi(this.produtoCorrente.id_prod);
 
                     CarregarProdutos();
                     clik();
@@ -281,7 +209,7 @@ namespace FerroVelho
 
             txt_descrição.Text = atual.desc_prod;
             txt_valor.Text = Convert.ToString(atual.val_prod);
-            txt_codPro.Text = IsPostgresMode ? (atual.cod_prod ?? string.Empty) : Convert.ToString(atual.id_prod);
+            txt_codPro.Text = atual.cod_prod ?? string.Empty;
         }
 
         public tb_produtos produtoCorrente
@@ -294,22 +222,11 @@ namespace FerroVelho
 
         private void txt_codPro_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (IsPostgresMode)
+            if (e.KeyChar == 13)
             {
-                if (e.KeyChar == 13)
-                {
-                    txt_descrição.Focus();
-                    e.Handled = true;
-                }
-
-                return;
+                txt_descrição.Focus();
+                e.Handled = true;
             }
-
-            if (char.IsDigit(e.KeyChar) || e.KeyChar.Equals((char)Keys.Back))
-            {
-                return;
-            }
-            e.Handled = true;
         }
 
         private void txt_valor_KeyPress(object sender, KeyPressEventArgs e)
@@ -324,3 +241,4 @@ namespace FerroVelho
         
     }
 }
+

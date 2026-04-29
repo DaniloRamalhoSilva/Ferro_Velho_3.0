@@ -61,10 +61,6 @@
             this.lb_saldo = new System.Windows.Forms.Label();
             this.tb_produtosBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tb_impressoraBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.bd_ferroVelhoDataSet = new FerroVelho.bd_ferroVelhoDataSet();
-            this.vendaBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.vendaTableAdapter = new FerroVelho.bd_ferroVelhoDataSetTableAdapters.VendaTableAdapter();
-            this.tableAdapterManager = new FerroVelho.bd_ferroVelhoDataSetTableAdapters.TableAdapterManager();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.tbprodutosDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.valritemDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -81,8 +77,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.tb_itemvBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tb_produtosBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tb_impressoraBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.bd_ferroVelhoDataSet)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.vendaBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // id_vendaLabel
@@ -365,32 +359,6 @@
             // 
             this.tb_impressoraBindingSource.DataSource = typeof(FerroVelhoDAO.tb_impressora);
             // 
-            // bd_ferroVelhoDataSet
-            // 
-            this.bd_ferroVelhoDataSet.DataSetName = "bd_ferroVelhoDataSet";
-            this.bd_ferroVelhoDataSet.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
-            // 
-            // vendaBindingSource
-            // 
-            this.vendaBindingSource.DataMember = "Venda";
-            this.vendaBindingSource.DataSource = this.bd_ferroVelhoDataSet;
-            // 
-            // vendaTableAdapter
-            // 
-            this.vendaTableAdapter.ClearBeforeFill = true;
-            // 
-            // tableAdapterManager
-            // 
-            this.tableAdapterManager.BackupDataSetBeforeUpdate = false;
-            this.tableAdapterManager.Connection = null;
-            this.tableAdapterManager.tb_compraTableAdapter = null;
-            this.tableAdapterManager.tb_impressoraTableAdapter = null;
-            this.tableAdapterManager.tb_itemcTableAdapter = null;
-            this.tableAdapterManager.tb_itemvTableAdapter = null;
-            this.tableAdapterManager.tb_produtosTableAdapter = null;
-            this.tableAdapterManager.tb_vendaTableAdapter = null;
-            this.tableAdapterManager.UpdateOrder = FerroVelho.bd_ferroVelhoDataSetTableAdapters.TableAdapterManager.UpdateOrderOption.InsertUpdateDelete;
-            // 
             // checkBox1
             // 
             this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -513,8 +481,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.tb_itemvBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tb_produtosBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tb_impressoraBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.bd_ferroVelhoDataSet)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.vendaBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -545,10 +511,6 @@
         private System.Windows.Forms.DataGridView dg_venda;
         private System.Windows.Forms.Label lb_saldo;
         private System.Windows.Forms.BindingSource tb_impressoraBindingSource;
-        private bd_ferroVelhoDataSet bd_ferroVelhoDataSet;
-        private System.Windows.Forms.BindingSource vendaBindingSource;
-        private bd_ferroVelhoDataSetTableAdapters.VendaTableAdapter vendaTableAdapter;
-        private bd_ferroVelhoDataSetTableAdapters.TableAdapterManager tableAdapterManager;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.DataGridViewTextBoxColumn tbprodutosDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn valritemDataGridViewTextBoxColumn;

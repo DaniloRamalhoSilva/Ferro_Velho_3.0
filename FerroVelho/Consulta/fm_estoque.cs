@@ -28,23 +28,10 @@ namespace FerroVelho
             load();
         }
 
-        private bool IsPostgresMode
-        {
-            get { return DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp); }
-        }
-
         private void load()
         {
-            idprodDataGridViewTextBoxColumn.DataPropertyName = IsPostgresMode ? "cod_prod" : "id_prod";
-
-            if (IsPostgresMode)
-            {
-                this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosPostgres();
-            }
-            else
-            {
-                this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos;
-            }
+            idprodDataGridViewTextBoxColumn.DataPropertyName = "cod_prod";
+            this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosApi();
 
             caregarEstoque();
             bt_corrigir.Enabled = true;
@@ -61,16 +48,10 @@ namespace FerroVelho
         
         private void txt_codProd_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (IsPostgresMode)
+            if (e.KeyChar == 13)
             {
-                return;
+                e.Handled = true;
             }
-
-            if (char.IsDigit(e.KeyChar) || e.KeyChar.Equals((char)Keys.Back))
-            {
-                return;
-            }
-            e.Handled = true;
         }
 
         private void txt_novoSaldo_KeyPress(object sender, KeyPressEventArgs e)
@@ -89,16 +70,7 @@ namespace FerroVelho
             
             foreach (DataGridViewRow dg in dg_produtos.Rows)
             {
-                decimal saldo;
-                if (IsPostgresMode)
-                {
-                    saldo = DataContextFactory.CalcularSaldoProdutoPostgres(Convert.ToString(dg.Cells[0].Value));
-                }
-                else
-                {
-                    int idProduto = Convert.ToInt32(dg.Cells[0].Value);
-                    saldo = calcular(idProduto);
-                }
+                decimal saldo = DataContextFactory.CalcularSaldoProdutoApi(Convert.ToString(dg.Cells[0].Value));
 
                 dg.Cells[2].Value = saldo;
             }
@@ -106,28 +78,12 @@ namespace FerroVelho
 
         public decimal calcular(int id )
         {
-            if (IsPostgresMode)
-            {
-                return DataContextFactory.CalcularSaldoProdutoPostgres(Convert.ToString(id));
-            }
+            return DataContextFactory.CalcularSaldoProdutoApi(Convert.ToString(id));
+        }
 
-            List<tb_itemc> itensC = new List<tb_itemc>();
-            itensC = DataContextFactory.DataContext.tb_itemc.Where(x => x.id_prod == id).ToList();
-            decimal totalC = 0;
-            foreach (tb_itemc item in itensC)
-            {
-                totalC = totalC + item.quant_item;
-            }
-
-            List<tb_itemv> itensV = new List<tb_itemv>();
-            itensV = DataContextFactory.DataContext.tb_itemv.Where(x => x.id_prod == id).ToList();
-            decimal totalV = 0;
-            foreach (tb_itemv item in itensV)
-            {
-                totalV = totalV + Convert.ToDecimal(item.quant_item);
-            }
-            decimal saldo = totalC - totalV;
-            return saldo;
+        public decimal calcular(string codigo)
+        {
+            return DataContextFactory.CalcularSaldoProdutoApi(codigo);
         }
 
         private void bt_corrigir_Click(object sender, EventArgs e)
@@ -145,7 +101,7 @@ namespace FerroVelho
         
         private void bt_confirmar_Click(object sender, EventArgs e)
         {
-            string id = IsPostgresMode ? this.produtoCorrente.cod_prod : this.produtoCorrente.id_prod.ToString();
+            string id = this.produtoCorrente.cod_prod;
             string des = this.produtoCorrente.desc_prod;
             decimal saldo = Convert.ToDecimal(dg_produtos[2, dg_produtos.CurrentRow.Index].Value);
             decimal novosaldo = Convert.ToDecimal(txt_novoSaldo.Text);
@@ -201,16 +157,9 @@ namespace FerroVelho
 
         private void txt_desc_KeyUp(object sender, KeyEventArgs e)
         {
-            if (IsPostgresMode)
-            {
-                this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosPostgres()
-                    .Where(x => (x.desc_prod ?? string.Empty).StartsWith(txt_desc.Text, StringComparison.CurrentCultureIgnoreCase))
-                    .ToList();
-            }
-            else
-            {
-                this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos.Where(x => x.desc_prod.StartsWith(txt_desc.Text));
-            }
+            this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosApi()
+                .Where(x => (x.desc_prod ?? string.Empty).StartsWith(txt_desc.Text, StringComparison.CurrentCultureIgnoreCase))
+                .ToList();
 
             txt_codProd.Text = "";
             caregarEstoque();
@@ -220,30 +169,16 @@ namespace FerroVelho
             {
             if (txt_codProd.Text == "")
             {
-                if (IsPostgresMode)
-                {
-                    this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosPostgres();
-                }
-                else
-                {
-                    this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos;
-                }
+                this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosApi();
 
                 txt_desc.Text = "";
                 caregarEstoque();
             }
             else
             {
-                if (IsPostgresMode)
-                {
-                    this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosPostgres()
-                        .Where(x => (x.cod_prod ?? string.Empty).StartsWith(txt_codProd.Text, StringComparison.CurrentCultureIgnoreCase))
-                        .ToList();
-                }
-                else
-                {
-                    this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos.Where(x => x.id_prod == (Convert.ToInt32(txt_codProd.Text)));
-                }
+                this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosApi()
+                    .Where(x => (x.cod_prod ?? string.Empty).StartsWith(txt_codProd.Text, StringComparison.CurrentCultureIgnoreCase))
+                    .ToList();
 
                 txt_desc.Text = "";
                 caregarEstoque();
@@ -256,20 +191,8 @@ namespace FerroVelho
             load();
         }
 
-        string comando;
-
         private void bt_imprimir_Click(object sender, EventArgs e)
         {
-            comando = "SELECT e.IdProduto as id_prod, tb_produtos.desc_prod, sum(e.Entrada) - sum(e.Saida) as qunt_est " +
-                "FROM (SELECT tb_itemc.id_prod as IdProduto, sum(tb_itemc.quant_item) as Entrada, 0 As Saida " +
-                "FROM tb_itemc " +
-                "GROUP BY tb_itemc.id_prod " +
-                "union all " +
-                "SELECT tb_itemv.id_prod as IdProduto, 0 as Entrada, sum(tb_itemv.quant_item) As Saida " +
-                "FROM tb_itemv " +
-                "GROUP BY tb_itemv.id_prod)e " +
-                "INNER JOIN tb_produtos ON e.IdProduto = tb_produtos.id_prod " +
-                "GROUP BY tb_produtos.desc_prod, e.IdProduto";
             imprimir();
         }
 
@@ -278,17 +201,10 @@ namespace FerroVelho
 
         public void imprimir()
         {
-            if (IsPostgresMode)
+            var imp = DataContextFactory.BuscarImpressoraApi(1);
+            if (imp != null)
             {
-                var imp = DataContextFactory.BuscarImpressoraPostgres(1);
-                if (imp != null)
-                {
-                    this.tb_impressoraBindingSource.DataSource = new List<tb_impressora> { imp };
-                }
-            }
-            else
-            {
-                this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
+                this.tb_impressoraBindingSource.DataSource = new List<tb_impressora> { imp };
             }
 
             LocalReport report = new LocalReport();
@@ -303,13 +219,7 @@ namespace FerroVelho
 
         private DataTable LoadSalesData()
         {
-            if (IsPostgresMode)
-            {
-                return DataContextFactory.CarregarEstoqueAtualPostgres();
-            }
-
-            DataTable dt = DataContextFactory.Filtrar(comando);
-            return dt;
+            return DataContextFactory.CarregarEstoqueAtualApi();
         }
 
         public tb_impressora impressoraCorrente
@@ -396,3 +306,4 @@ namespace FerroVelho
         }
     }
 }
+

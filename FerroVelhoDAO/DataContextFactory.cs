@@ -1,10 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -12,7 +9,8 @@ namespace FerroVelhoDAO
 {
     public class DataContextFactory
     {
-        private static FerroVelhoDataContext dataContext;
+        private const string DefaultApiUrl = "http://localhost:3000";
+
         public static tb_usuario usu;
         public static string nome;
         public static string tel;
@@ -20,479 +18,315 @@ namespace FerroVelhoDAO
         public static string conexaoUser;
         public static string conexaoImp;
 
-        public static bool IsPostgresConnectionString(string connectionString)
-        {
-            if (string.IsNullOrWhiteSpace(connectionString))
-            {
-                return false;
-            }
-
-            var cs = connectionString.Trim();
-            return cs.IndexOf("Host=", StringComparison.OrdinalIgnoreCase) >= 0
-                || cs.IndexOf("Username=", StringComparison.OrdinalIgnoreCase) >= 0
-                || cs.IndexOf("SSL Mode=", StringComparison.OrdinalIgnoreCase) >= 0;
-        }
-
-        public static bool IsSqlServerConnectionString(string connectionString)
-        {
-            if (string.IsNullOrWhiteSpace(connectionString))
-            {
-                return false;
-            }
-
-            var cs = connectionString.Trim();
-            return cs.IndexOf("Data Source=", StringComparison.OrdinalIgnoreCase) >= 0
-                || cs.IndexOf("Server=", StringComparison.OrdinalIgnoreCase) >= 0
-                || cs.IndexOf("Initial Catalog=", StringComparison.OrdinalIgnoreCase) >= 0;
-        }
-
-        public static tb_usuario ValidarLoginPostgres(string nomeUsuario, string senhaUsuario)
-        {
-            var login = PostgresConnectionService.ValidarLogin(conexaoUser, nomeUsuario, senhaUsuario);
-            if (login == null)
-            {
-                return null;
-            }
-
-            var tipo = new tb_tipoUsuario
-            {
-                id_tipoUsuario = login.PermissaoUsuario,
-                desc_tipoUsuario = login.DescricaoPermissao
-            };
-
-            var usuario = new tb_usuario
-            {
-                id_usuario = login.UsuarioId,
-                nome_usuario = login.NomeUsuario,
-                senha_usuario = login.SenhaUsuario,
-                permi_usuario = login.PermissaoUsuario,
-                ativo = login.Ativo
-            };
-
-            usuario.tb_tipoUsuario = tipo;
-            return usuario;
-        }
-
-        public static bool TestarConexaoPostgres(string connectionString)
-        {
-            return PostgresConnectionService.TestarConexao(connectionString);
-        }
-
-        public static List<tb_produtos> ListarProdutosPostgres()
-        {
-            return PostgresConnectionService.ListarProdutos(conexaoUser);
-        }
-
-        public static tb_produtos CriarProdutoPostgres(string codigo, string descricao, decimal valor, int? usuario)
-        {
-            return PostgresConnectionService.CriarProduto(conexaoUser, codigo, descricao, valor, usuario);
-        }
-
-        public static void AtualizarProdutoPostgres(int idProd, string codigo, string descricao, decimal valor)
-        {
-            PostgresConnectionService.AtualizarProduto(conexaoUser, idProd, codigo, descricao, valor);
-        }
-
-        public static void ExcluirProdutoPostgres(int idProd)
-        {
-            PostgresConnectionService.ExcluirProduto(conexaoUser, idProd);
-        }
-
-        public static tb_impressora BuscarImpressoraPostgres(int idImpressora)
-        {
-            return PostgresConnectionService.BuscarImpressoraPorId(conexaoImp, idImpressora);
-        }
-
-        public static void SalvarImpressoraPostgres(int idImpressora, string nomeImpressora)
-        {
-            PostgresConnectionService.SalvarImpressora(conexaoImp, idImpressora, nomeImpressora);
-        }
-
-        public static List<tb_tipoUsuario> ListarTiposUsuarioPostgres()
-        {
-            return PostgresConnectionService.ListarTiposUsuario(conexaoUser);
-        }
-
-        public static List<tb_usuario> ListarUsuariosPostgres(bool incluirInativos)
-        {
-            return PostgresConnectionService.ListarUsuarios(conexaoUser, incluirInativos);
-        }
-
-        public static bool ExisteUsuarioPostgres(string nomeUsuario, int? excetoIdUsuario)
-        {
-            return PostgresConnectionService.ExisteUsuarioPorNome(conexaoUser, nomeUsuario, excetoIdUsuario);
-        }
-
-        public static void CriarUsuarioPostgres(string nomeUsuario, string senhaUsuario, int permissaoUsuario)
-        {
-            PostgresConnectionService.CriarUsuario(conexaoUser, nomeUsuario, senhaUsuario, permissaoUsuario);
-        }
-
-        public static void AtualizarUsuarioPostgres(int idUsuario, string nomeUsuario, string senhaUsuario, int permissaoUsuario)
-        {
-            PostgresConnectionService.AtualizarUsuario(conexaoUser, idUsuario, nomeUsuario, senhaUsuario, permissaoUsuario);
-        }
-
-        public static void DefinirUsuarioAtivoPostgres(int idUsuario, bool ativo)
-        {
-            PostgresConnectionService.DefinirUsuarioAtivo(conexaoUser, idUsuario, ativo);
-        }
-
-        public static List<tb_cliente> ListarClientesPostgres(string filtroCampo = null, string filtroValor = null)
-        {
-            return PostgresConnectionService.ListarClientes(conexaoImp, filtroCampo, filtroValor);
-        }
-
-        public static void InserirClientePostgres(string nomeCliente, string cpfCliente, string telCliente)
-        {
-            PostgresConnectionService.InserirCliente(conexaoImp, nomeCliente, cpfCliente, telCliente);
-        }
-
-        public static void AtualizarClientePostgres(int idCliente, string nomeCliente, string cpfCliente, string telCliente)
-        {
-            PostgresConnectionService.AtualizarCliente(conexaoImp, idCliente, nomeCliente, cpfCliente, telCliente);
-        }
-
-        public static void ExcluirClientePostgres(int idCliente)
-        {
-            PostgresConnectionService.ExcluirCliente(conexaoImp, idCliente);
-        }
-
-        public static DataTable CarregarMovimentacaoClientePostgres(int idCliente, bool resumido)
-        {
-            return PostgresConnectionService.CarregarMovimentacaoCliente(conexaoImp, idCliente, resumido);
-        }
-
-        public static string BuscarNomeUsuarioPostgres(int idUsuario)
-        {
-            return PostgresConnectionService.BuscarNomeUsuario(conexaoImp, idUsuario);
-        }
-
-        public static string BuscarNomeClientePostgres(int idCliente)
-        {
-            return PostgresConnectionService.BuscarNomeCliente(conexaoImp, idCliente);
-        }
-
-        public static decimal CalcularValorDevedorPostgres(int idCliente)
-        {
-            return PostgresConnectionService.CalcularValorDevedor(conexaoImp, idCliente);
-        }
-
-        public static decimal CalcularValorCreditoPostgres(int idCliente)
-        {
-            return PostgresConnectionService.CalcularValorCredito(conexaoImp, idCliente);
-        }
-
-        public static tb_compra CriarCompraPostgres(DateTime dataCompra, int usuario, decimal descontoCompra, decimal subtotCompra, decimal valorNota)
-        {
-            return PostgresConnectionService.CriarCompra(conexaoImp, dataCompra, usuario, descontoCompra, subtotCompra, valorNota);
-        }
-
-        public static void AtualizarCompraPostgres(int idCompra, decimal descontoCompra, decimal subtotCompra, decimal valorNota, int? idCliente)
-        {
-            PostgresConnectionService.AtualizarCompraValores(conexaoImp, idCompra, descontoCompra, subtotCompra, valorNota, idCliente);
-        }
-
-        public static void InserirItemCompraPostgres(string codigoProduto, int idCompra, decimal quantItem, decimal subTotItem, decimal valorItem)
-        {
-            PostgresConnectionService.InserirItemCompra(conexaoImp, codigoProduto, idCompra, quantItem, subTotItem, valorItem);
-        }
-
-        public static List<tb_itemc> ListarItensCompraPostgres(int idCompra)
-        {
-            return PostgresConnectionService.ListarItensCompra(conexaoImp, idCompra);
-        }
-
-        public static void ExcluirItemCompraPostgres(int idItem)
-        {
-            PostgresConnectionService.ExcluirItemCompra(conexaoImp, idItem);
-        }
-
-        public static void ExcluirCompraPostgres(int idCompra)
-        {
-            PostgresConnectionService.ExcluirCompra(conexaoImp, idCompra);
-        }
-
-        public static decimal CalcularSaldoProdutoPostgres(string codigoProduto)
-        {
-            return PostgresConnectionService.CalcularSaldoProduto(conexaoImp, codigoProduto);
-        }
-
-        public static decimal CalcularSaldoCaixaPostgres()
-        {
-            return PostgresConnectionService.CalcularSaldoCaixa(conexaoImp);
-        }
-
-        public static void InserirCaixaPostgres(DateTime dataCaixa, string descricao, int usuario, decimal valorCaixa, int? idCliente)
-        {
-            PostgresConnectionService.InserirCaixa(conexaoImp, dataCaixa, descricao, usuario, valorCaixa, idCliente);
-        }
-
-        public static void InserirAcertoClientePostgres(DateTime dataAcerto, string descricao, int usuario, decimal valorAcerto, int idCliente)
-        {
-            PostgresConnectionService.InserirAcertoCliente(conexaoImp, dataAcerto, descricao, usuario, valorAcerto, idCliente);
-        }
-
-        public static DataTable CarregarMovimentacaoRecursosPostgres(DateTime inicio, DateTime fim)
-        {
-            return PostgresConnectionService.CarregarMovimentacaoRecursos(conexaoImp, inicio, fim);
-        }
-
-        public static DataTable ListarComprasPostgres(DateTime? inicio, DateTime? fim, int? idCompra)
-        {
-            return PostgresConnectionService.ListarCompras(conexaoImp, inicio, fim, idCompra);
-        }
-
-        public static DataTable ListarVendasPostgres(DateTime? inicio, DateTime? fim, int? idVenda)
-        {
-            return PostgresConnectionService.ListarVendas(conexaoImp, inicio, fim, idVenda);
-        }
-
-        public static DataTable CarregarEstoqueAtualPostgres()
-        {
-            return PostgresConnectionService.CarregarEstoqueAtual(conexaoImp);
-        }
-
-        public static DataTable CarregarResumoCompraProdutosPostgres(DateTime inicio, DateTime fim)
-        {
-            return PostgresConnectionService.CarregarResumoCompraProdutos(conexaoImp, inicio, fim);
-        }
-
-        public static DataTable CarregarRelatorioCompraItensPostgres(int idCompra)
-        {
-            return PostgresConnectionService.CarregarRelatorioCompraItens(conexaoImp, idCompra);
-        }
-
-        public static DataTable CarregarRelatorioCompraCabecalhoPostgres(int idCompra)
-        {
-            return PostgresConnectionService.CarregarRelatorioCompraCabecalho(conexaoImp, idCompra);
-        }
-
-        public static DataTable CarregarRelatorioCompraClientePostgres(int idCompra)
-        {
-            return PostgresConnectionService.CarregarRelatorioCompraCliente(conexaoImp, idCompra);
-        }
-
-        public static DataTable CalcularResumoCompraCaixaPostgres(DateTime inicio, DateTime fim)
-        {
-            return PostgresConnectionService.CalcularResumoCompraCaixa(conexaoImp, inicio, fim);
-        }
-
-        public static DataTable CarregarResumoVendaProdutosPostgres(DateTime inicio, DateTime fim)
-        {
-            return PostgresConnectionService.CarregarResumoVendaProdutos(conexaoImp, inicio, fim);
-        }
-
-        public static decimal CalcularTotalVendaProdutosPostgres(DateTime inicio, DateTime fim)
-        {
-            return PostgresConnectionService.CalcularTotalVendaProdutos(conexaoImp, inicio, fim);
-        }
-
-        public static DataTable CarregarLucroDetalhadoPostgres(DateTime inicio, DateTime fim)
-        {
-            return PostgresConnectionService.CarregarLucroDetalhado(conexaoImp, inicio, fim);
-        }
-
-        public static DataTable CarregarLucroTotalPostgres(DateTime inicio, DateTime fim)
-        {
-            return PostgresConnectionService.CarregarLucroTotal(conexaoImp, inicio, fim);
-        }
-
-        public static DataTable CarregarFluxoCaixaPostgres(DateTime inicio, DateTime fim)
-        {
-            return PostgresConnectionService.CarregarFluxoCaixa(conexaoImp, inicio, fim);
-        }
-
-        public static decimal CalcularSaldoInicialFluxoCaixaPostgres(DateTime inicio)
-        {
-            return PostgresConnectionService.CalcularSaldoInicialFluxoCaixa(conexaoImp, inicio);
-        }
-
-        public static DataTable CarregarEstoquePeriodoPostgres(DateTime inicio, DateTime fim, string codigoProduto)
-        {
-            return PostgresConnectionService.CarregarEstoquePeriodo(conexaoImp, inicio, fim, codigoProduto);
-        }
-
-        public static DataTable CarregarProdutosDataTablePostgres()
-        {
-            return PostgresConnectionService.CarregarProdutosDataTable(conexaoUser);
-        }
-
-        public static tb_venda CriarVendaPostgres(DateTime dataVenda, int usuario, decimal valorNota)
-        {
-            return PostgresConnectionService.CriarVenda(conexaoImp, dataVenda, usuario, valorNota);
-        }
-
-        public static void AtualizarVendaPostgres(int idVenda, decimal valorNota, int usuario)
-        {
-            PostgresConnectionService.AtualizarVenda(conexaoImp, idVenda, valorNota, usuario);
-        }
-
-        public static void InserirItemVendaPostgres(string codigoProduto, int idVenda, decimal quantItem, decimal subTotItem, decimal valrItem)
-        {
-            PostgresConnectionService.InserirItemVenda(conexaoImp, codigoProduto, idVenda, quantItem, subTotItem, valrItem);
-        }
-
-        public static List<tb_itemv> ListarItensVendaPostgres(int idVenda)
-        {
-            return PostgresConnectionService.ListarItensVenda(conexaoImp, idVenda);
-        }
-
-        public static void ExcluirItemVendaPostgres(int idItem)
-        {
-            PostgresConnectionService.ExcluirItemVenda(conexaoImp, idItem);
-        }
-
-        public static void ExcluirVendaPostgres(int idVenda)
-        {
-            PostgresConnectionService.ExcluirVenda(conexaoImp, idVenda);
-        }
-
-        public static DataTable CarregarRelatorioVendaPostgres(int idVenda)
-        {
-            return PostgresConnectionService.CarregarDadosRelatorioVenda(conexaoImp, idVenda);
-        }
-
-        public static FerroVelhoDataContext DataContext
+        public static string ApiBaseUrl
         {
             get
             {
-                if (dataContext == null)
-                    dataContext = new FerroVelhoDataContext();
-
-                // LINQ-to-SQL usa SqlClient; nao pode receber string de conexao PostgreSQL.
-                if (IsSqlServerConnectionString(conexaoUser))
+                if (string.IsNullOrWhiteSpace(conexaoUser))
                 {
-                    dataContext.Connection.ConnectionString = conexaoUser;
+                    return DefaultApiUrl;
                 }
 
-                return dataContext;
-            } 
-        }
-
-        public static SqlConnection Conectar()
-        {
-            SqlConnection con = new SqlConnection(conexaoImp);
-            con.Open();
-            return con;
-
-        }
-
-        public static DataTable GetDataTableBySP(string storedProcedure, object[] arrParametros = null, object[] arrParametrosValores = null, bool enviarDbNullValue = true)
-        {
-            try
-            {
-                DataTable dt = new DataTable();
-
-                SqlConnection conn = Conectar();
-
-                SqlCommand cmd = new SqlCommand(storedProcedure, conn);
-                cmd.CommandTimeout = 45000;
-                cmd.CommandType = CommandType.StoredProcedure;
-                //conn.Open();
-
-                if (arrParametros != null && arrParametrosValores != null && arrParametros.Length == arrParametrosValores.Length)
-                {
-                    for (int i = 0; i < arrParametros.Length; i++)
-                    {
-                        if (arrParametrosValores[i] != null)
-                        {
-                            if (arrParametrosValores[i].GetType() != typeof(byte[]))
-                                cmd.Parameters.Add(new SqlParameter(arrParametros[i].ToString(), arrParametrosValores[i].ToString()));
-                            else
-                                cmd.Parameters.Add(new SqlParameter(arrParametros[i].ToString(), arrParametrosValores[i]));
-                        }
-                        else if (enviarDbNullValue)
-                            cmd.Parameters.Add(new SqlParameter(arrParametros[i].ToString(), DBNull.Value));
-                    }
-                }
-
-                SqlDataAdapter da = new SqlDataAdapter(cmd);
-
-                da.Fill(dt);
-                conn.Close();
-
-                if (cmd != null) cmd.Dispose();
-                if (da != null) da.Dispose();
-                if (conn != null) conn.Close();
-                if (conn != null) conn.Dispose();
-
-                return dt;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-
-                e.Data["storedProcedure"] = storedProcedure;
-                e.Data["arrParametros"] = arrParametros != null ? string.Join(",", arrParametros) : null;
-                e.Data["arrParametrosValores"] = arrParametrosValores != null ? string.Join(",", arrParametrosValores) : null;
-                e.Data["enviarDbNullValue"] = enviarDbNullValue;
-
-                throw;
+                var value = conexaoUser.Trim();
+                return value.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+                       value.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+                    ? value
+                    : DefaultApiUrl;
             }
         }
 
-
-        public static DataTable Filtrar(string comando)
+        public static int EmpresaCod
         {
-            SqlConnection con = Conectar();
-            SqlDataAdapter da = new SqlDataAdapter("", con);
-            da.SelectCommand.CommandText = comando;
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            con.Close();
-            return dt;
-            
-        }
-
-        public static decimal FiltrarValor (SqlCommand comando)
-        {
-
-            SqlConnection con = Conectar();
-            comando.Connection = con;
-            SqlDataReader dr = comando.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-
-            try
+            get
             {
-                dr.Read();
-                decimal aki = (decimal)dr["total"];
-                con.Close();
-                return aki;
-                
+                int empresaCod;
+                return int.TryParse(conexaoImp, out empresaCod) && empresaCod > 0 ? empresaCod : 1;
             }
-            catch
-            {
-                con.Close();
-                return 0;
-                
-            }
-            
-
         }
 
-        public static void CRUD(SqlCommand comando)
+        public static tb_usuario ValidarLoginApi(string nomeUsuario, string senhaUsuario)
         {
-            SqlConnection con = Conectar();
-            comando.Connection = con;
-            comando.ExecuteNonQuery();
-            con.Close();
-
+            return ApiConnectionService.ValidarLogin(ApiBaseUrl, EmpresaCod, nomeUsuario, senhaUsuario);
         }
 
-        public static SqlDataReader CRUDID(SqlCommand comando)
+        public static bool TestarConexaoApi(string ignored = null)
         {
-            SqlConnection con = Conectar();
-            comando.Connection = con;
-            SqlDataReader dr = comando.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-            return dr;
+            return ApiConnectionService.TestarConexao(ApiBaseUrl);
         }
 
-        public static SqlDataReader Selecionar(SqlCommand comando)
+        public static List<tb_produtos> ListarProdutosApi()
         {
-            SqlConnection con = Conectar();
-            comando.Connection = con;
-            SqlDataReader dr = comando.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-            return dr;
+            return ApiConnectionService.ListarProdutos(ApiBaseUrl, EmpresaCod);
+        }
+
+        public static tb_produtos CriarProdutoApi(string codigo, string descricao, decimal valor, int? usuario)
+        {
+            return ApiConnectionService.CriarProduto(ApiBaseUrl, EmpresaCod, codigo, descricao, valor, usuario);
+        }
+
+        public static void AtualizarProdutoApi(int idProd, string codigo, string descricao, decimal valor)
+        {
+            ApiConnectionService.AtualizarProduto(ApiBaseUrl, EmpresaCod, idProd, codigo, descricao, valor);
+        }
+
+        public static void ExcluirProdutoApi(int idProd)
+        {
+            ApiConnectionService.ExcluirProduto(ApiBaseUrl, EmpresaCod, idProd);
+        }
+
+        public static tb_impressora BuscarImpressoraApi(int idImpressora)
+        {
+            return ApiConnectionService.BuscarImpressoraPorId(ApiBaseUrl, EmpresaCod, idImpressora);
+        }
+
+        public static void SalvarImpressoraApi(int idImpressora, string nomeImpressora)
+        {
+            ApiConnectionService.SalvarImpressora(ApiBaseUrl, EmpresaCod, idImpressora, nomeImpressora);
+        }
+
+        public static List<tb_tipoUsuario> ListarTiposUsuarioApi()
+        {
+            return ApiConnectionService.ListarTiposUsuario(ApiBaseUrl, EmpresaCod);
+        }
+
+        public static List<tb_usuario> ListarUsuariosApi(bool incluirInativos)
+        {
+            return ApiConnectionService.ListarUsuarios(ApiBaseUrl, EmpresaCod, incluirInativos);
+        }
+
+        public static bool ExisteUsuarioApi(string nomeUsuario, int? excetoIdUsuario)
+        {
+            return ApiConnectionService.ExisteUsuarioPorNome(ApiBaseUrl, EmpresaCod, nomeUsuario, excetoIdUsuario);
+        }
+
+        public static void CriarUsuarioApi(string nomeUsuario, string senhaUsuario, int permissaoUsuario)
+        {
+            ApiConnectionService.CriarUsuario(ApiBaseUrl, EmpresaCod, nomeUsuario, senhaUsuario, permissaoUsuario);
+        }
+
+        public static void AtualizarUsuarioApi(int idUsuario, string nomeUsuario, string senhaUsuario, int permissaoUsuario)
+        {
+            ApiConnectionService.AtualizarUsuario(ApiBaseUrl, EmpresaCod, idUsuario, nomeUsuario, senhaUsuario, permissaoUsuario);
+        }
+
+        public static void DefinirUsuarioAtivoApi(int idUsuario, bool ativo)
+        {
+            ApiConnectionService.DefinirUsuarioAtivo(ApiBaseUrl, EmpresaCod, idUsuario, ativo);
+        }
+
+        public static List<tb_cliente> ListarClientesApi(string filtroCampo = null, string filtroValor = null)
+        {
+            return ApiConnectionService.ListarClientes(ApiBaseUrl, EmpresaCod, filtroCampo, filtroValor);
+        }
+
+        public static void InserirClienteApi(string nomeCliente, string cpfCliente, string telCliente)
+        {
+            ApiConnectionService.InserirCliente(ApiBaseUrl, EmpresaCod, nomeCliente, cpfCliente, telCliente);
+        }
+
+        public static void AtualizarClienteApi(int idCliente, string nomeCliente, string cpfCliente, string telCliente)
+        {
+            ApiConnectionService.AtualizarCliente(ApiBaseUrl, EmpresaCod, idCliente, nomeCliente, cpfCliente, telCliente);
+        }
+
+        public static void ExcluirClienteApi(int idCliente)
+        {
+            ApiConnectionService.ExcluirCliente(ApiBaseUrl, EmpresaCod, idCliente);
+        }
+
+        public static DataTable CarregarMovimentacaoClienteApi(int idCliente, bool resumido)
+        {
+            return ApiConnectionService.CarregarMovimentacaoCliente(ApiBaseUrl, EmpresaCod, idCliente, resumido);
+        }
+
+        public static string BuscarNomeUsuarioApi(int idUsuario)
+        {
+            return ApiConnectionService.BuscarNomeUsuario(ApiBaseUrl, EmpresaCod, idUsuario);
+        }
+
+        public static string BuscarNomeClienteApi(int idCliente)
+        {
+            return ApiConnectionService.BuscarNomeCliente(ApiBaseUrl, EmpresaCod, idCliente);
+        }
+
+        public static decimal CalcularValorDevedorApi(int idCliente)
+        {
+            return ApiConnectionService.CalcularValorDevedor(ApiBaseUrl, EmpresaCod, idCliente);
+        }
+
+        public static decimal CalcularValorCreditoApi(int idCliente)
+        {
+            return ApiConnectionService.CalcularValorCredito(ApiBaseUrl, EmpresaCod, idCliente);
+        }
+
+        public static tb_compra CriarCompraApi(DateTime dataCompra, int usuario, decimal descontoCompra, decimal subtotCompra, decimal valorNota)
+        {
+            return ApiConnectionService.CriarCompra(ApiBaseUrl, EmpresaCod, dataCompra, usuario, descontoCompra, subtotCompra, valorNota);
+        }
+
+        public static void AtualizarCompraApi(int idCompra, decimal descontoCompra, decimal subtotCompra, decimal valorNota, int? idCliente)
+        {
+            ApiConnectionService.AtualizarCompraValores(ApiBaseUrl, EmpresaCod, idCompra, descontoCompra, subtotCompra, valorNota, idCliente);
+        }
+
+        public static void InserirItemCompraApi(string codigoProduto, int idCompra, decimal quantItem, decimal subTotItem, decimal valorItem)
+        {
+            ApiConnectionService.InserirItemCompra(ApiBaseUrl, EmpresaCod, codigoProduto, idCompra, quantItem, subTotItem, valorItem);
+        }
+
+        public static List<tb_itemc> ListarItensCompraApi(int idCompra)
+        {
+            return ApiConnectionService.ListarItensCompra(ApiBaseUrl, EmpresaCod, idCompra);
+        }
+
+        public static void ExcluirItemCompraApi(int idItem)
+        {
+            ApiConnectionService.ExcluirItemCompra(ApiBaseUrl, EmpresaCod, idItem);
+        }
+
+        public static void ExcluirCompraApi(int idCompra)
+        {
+            ApiConnectionService.ExcluirCompra(ApiBaseUrl, EmpresaCod, idCompra);
+        }
+
+        public static decimal CalcularSaldoProdutoApi(string codigoProduto)
+        {
+            return ApiConnectionService.CalcularSaldoProduto(ApiBaseUrl, EmpresaCod, codigoProduto);
+        }
+
+        public static decimal CalcularSaldoCaixaApi()
+        {
+            return ApiConnectionService.CalcularSaldoCaixa(ApiBaseUrl, EmpresaCod);
+        }
+
+        public static void InserirCaixaApi(DateTime dataCaixa, string descricao, int usuario, decimal valorCaixa, int? idCliente)
+        {
+            ApiConnectionService.InserirCaixa(ApiBaseUrl, EmpresaCod, dataCaixa, descricao, usuario, valorCaixa, idCliente);
+        }
+
+        public static void InserirAcertoClienteApi(DateTime dataAcerto, string descricao, int usuario, decimal valorAcerto, int idCliente)
+        {
+            ApiConnectionService.InserirAcertoCliente(ApiBaseUrl, EmpresaCod, dataAcerto, descricao, usuario, valorAcerto, idCliente);
+        }
+
+        public static DataTable CarregarMovimentacaoRecursosApi(DateTime inicio, DateTime fim)
+        {
+            return ApiConnectionService.CarregarMovimentacaoRecursos(ApiBaseUrl, EmpresaCod, inicio, fim);
+        }
+
+        public static DataTable ListarComprasApi(DateTime? inicio, DateTime? fim, int? idCompra)
+        {
+            return ApiConnectionService.ListarCompras(ApiBaseUrl, EmpresaCod, inicio, fim, idCompra);
+        }
+
+        public static DataTable ListarVendasApi(DateTime? inicio, DateTime? fim, int? idVenda)
+        {
+            return ApiConnectionService.ListarVendas(ApiBaseUrl, EmpresaCod, inicio, fim, idVenda);
+        }
+
+        public static DataTable CarregarEstoqueAtualApi()
+        {
+            return ApiConnectionService.CarregarEstoqueAtual(ApiBaseUrl, EmpresaCod);
+        }
+
+        public static DataTable CarregarResumoCompraProdutosApi(DateTime inicio, DateTime fim)
+        {
+            return ApiConnectionService.CarregarResumoCompraProdutos(ApiBaseUrl, EmpresaCod, inicio, fim);
+        }
+
+        public static DataTable CarregarRelatorioCompraItensApi(int idCompra)
+        {
+            return ApiConnectionService.CarregarRelatorioCompraItens(ApiBaseUrl, EmpresaCod, idCompra);
+        }
+
+        public static DataTable CarregarRelatorioCompraCabecalhoApi(int idCompra)
+        {
+            return ApiConnectionService.CarregarRelatorioCompraCabecalho(ApiBaseUrl, EmpresaCod, idCompra);
+        }
+
+        public static DataTable CarregarRelatorioCompraClienteApi(int idCompra)
+        {
+            return ApiConnectionService.CarregarRelatorioCompraCliente(ApiBaseUrl, EmpresaCod, idCompra);
+        }
+
+        public static DataTable CalcularResumoCompraCaixaApi(DateTime inicio, DateTime fim)
+        {
+            return ApiConnectionService.CalcularResumoCompraCaixa(ApiBaseUrl, EmpresaCod, inicio, fim);
+        }
+
+        public static DataTable CarregarResumoVendaProdutosApi(DateTime inicio, DateTime fim)
+        {
+            return ApiConnectionService.CarregarResumoVendaProdutos(ApiBaseUrl, EmpresaCod, inicio, fim);
+        }
+
+        public static decimal CalcularTotalVendaProdutosApi(DateTime inicio, DateTime fim)
+        {
+            return ApiConnectionService.CalcularTotalVendaProdutos(ApiBaseUrl, EmpresaCod, inicio, fim);
+        }
+
+        public static DataTable CarregarLucroDetalhadoApi(DateTime inicio, DateTime fim)
+        {
+            return ApiConnectionService.CarregarLucroDetalhado(ApiBaseUrl, EmpresaCod, inicio, fim);
+        }
+
+        public static DataTable CarregarLucroTotalApi(DateTime inicio, DateTime fim)
+        {
+            return ApiConnectionService.CarregarLucroTotal(ApiBaseUrl, EmpresaCod, inicio, fim);
+        }
+
+        public static DataTable CarregarFluxoCaixaApi(DateTime inicio, DateTime fim)
+        {
+            return ApiConnectionService.CarregarFluxoCaixa(ApiBaseUrl, EmpresaCod, inicio, fim);
+        }
+
+        public static decimal CalcularSaldoInicialFluxoCaixaApi(DateTime inicio)
+        {
+            return ApiConnectionService.CalcularSaldoInicialFluxoCaixa(ApiBaseUrl, EmpresaCod, inicio);
+        }
+
+        public static DataTable CarregarEstoquePeriodoApi(DateTime inicio, DateTime fim, string codigoProduto)
+        {
+            return ApiConnectionService.CarregarEstoquePeriodo(ApiBaseUrl, EmpresaCod, inicio, fim, codigoProduto);
+        }
+
+        public static DataTable CarregarProdutosDataTableApi()
+        {
+            return ApiConnectionService.CarregarProdutosDataTable(ApiBaseUrl, EmpresaCod);
+        }
+
+        public static tb_venda CriarVendaApi(DateTime dataVenda, int usuario, decimal valorNota)
+        {
+            return ApiConnectionService.CriarVenda(ApiBaseUrl, EmpresaCod, dataVenda, usuario, valorNota);
+        }
+
+        public static void AtualizarVendaApi(int idVenda, decimal valorNota, int usuario)
+        {
+            ApiConnectionService.AtualizarVenda(ApiBaseUrl, EmpresaCod, idVenda, valorNota, usuario);
+        }
+
+        public static void InserirItemVendaApi(string codigoProduto, int idVenda, decimal quantItem, decimal subTotItem, decimal valrItem)
+        {
+            ApiConnectionService.InserirItemVenda(ApiBaseUrl, EmpresaCod, codigoProduto, idVenda, quantItem, subTotItem, valrItem);
+        }
+
+        public static List<tb_itemv> ListarItensVendaApi(int idVenda)
+        {
+            return ApiConnectionService.ListarItensVenda(ApiBaseUrl, EmpresaCod, idVenda);
+        }
+
+        public static void ExcluirItemVendaApi(int idItem)
+        {
+            ApiConnectionService.ExcluirItemVenda(ApiBaseUrl, EmpresaCod, idItem);
+        }
+
+        public static void ExcluirVendaApi(int idVenda)
+        {
+            ApiConnectionService.ExcluirVenda(ApiBaseUrl, EmpresaCod, idVenda);
+        }
+
+        public static DataTable CarregarRelatorioVendaApi(int idVenda)
+        {
+            return ApiConnectionService.CarregarDadosRelatorioVenda(ApiBaseUrl, EmpresaCod, idVenda);
         }
 
         public static void GravarCabecario(string nome, string tel, string endereco)
@@ -507,15 +341,13 @@ namespace FerroVelhoDAO
             STW_Arquivo.Close();
         }
 
-        public static void GravarConecxao(string dataUser, string dataImp)
+        public static void GravarConecxao(string apiUrl, string empresaCod)
         {
             XmlTextWriter STW_Arquivo;
             STW_Arquivo = new XmlTextWriter(@"..\..\configuração.xml", Encoding.UTF8);
             STW_Arquivo.WriteStartElement("configConexao");
-            STW_Arquivo.WriteElementString("dataUser", dataUser.Trim());
-            STW_Arquivo.WriteElementString("dataImp", dataImp.Trim());
-
-
+            STW_Arquivo.WriteElementString("apiUrl", string.IsNullOrWhiteSpace(apiUrl) ? DefaultApiUrl : apiUrl.Trim());
+            STW_Arquivo.WriteElementString("empresaCod", string.IsNullOrWhiteSpace(empresaCod) ? "1" : empresaCod.Trim());
             STW_Arquivo.WriteEndElement();
             STW_Arquivo.Close();
         }
@@ -546,21 +378,41 @@ namespace FerroVelhoDAO
             {
                 XElement XML = XElement.Load(@"..\..\configuração.xml");
 
-                conexaoUser = XML.Element("dataUser").Value;
-                conexaoImp = XML.Element("dataImp").Value;
+                conexaoUser = GetXmlValue(XML, "apiUrl", "dataUser");
+                conexaoImp = GetXmlValue(XML, "empresaCod", "dataImp");
+
+                if (string.IsNullOrWhiteSpace(conexaoUser) ||
+                    (!conexaoUser.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
+                     !conexaoUser.StartsWith("https://", StringComparison.OrdinalIgnoreCase)))
+                {
+                    conexaoUser = DefaultApiUrl;
+                }
+
+                int empresaCod;
+                if (!int.TryParse(conexaoImp, out empresaCod) || empresaCod <= 0)
+                {
+                    conexaoImp = "1";
+                }
 
                 XML = null;
             }
             catch
             {
-                conexaoUser = "";
-                conexaoImp = "";
+                conexaoUser = DefaultApiUrl;
+                conexaoImp = "1";
             }
-
         }
 
+        private static string GetXmlValue(XElement xml, string currentName, string legacyName)
+        {
+            var current = xml.Element(currentName);
+            if (current != null)
+            {
+                return current.Value;
+            }
 
-
-    }   
-
+            var legacy = xml.Element(legacyName);
+            return legacy == null ? string.Empty : legacy.Value;
+        }
+    }
 }

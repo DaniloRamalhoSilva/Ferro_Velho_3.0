@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -31,11 +30,6 @@ namespace FerroVelho
             {
                 return (tb_cliente)this.tb_clienteBindingSource.Current;
             }
-        }
-
-        private bool IsPostgresMode
-        {
-            get { return DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp); }
         }
 
         private void fm_cadCliente_Load(object sender, EventArgs e)
@@ -491,434 +485,48 @@ namespace FerroVelho
             }
         }
 
-        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Cliente DAO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        //private decimal valorDevedor(int id)
-        //{
-        //    decimal adianta, pag, credito, total;
-        //    SqlCommand comando;
-
-        //    comando = new SqlCommand();
-        //    comando.CommandType = CommandType.Text;
-        //    comando.CommandText = "Select sum(tb_compra.desconto_compra) as total " +
-        //        "From tb_compra " +
-        //        "where tb_compra.id_cliente = @id_cliente";
-        //    comando.Parameters.AddWithValue("@id_cliente", id);
-
-        //    pag = DataContextFactory.FiltrarValor(comando);
-
-        //    comando = new SqlCommand();
-        //    comando.CommandType = CommandType.Text;
-        //    comando.CommandText = "Select sum(tb_caixa.valor_caixa) as total " +
-        //        "From tb_caixa " +
-        //        "where tb_caixa.id_cliente = @id_cliente";
-        //    comando.Parameters.AddWithValue("@id_cliente", id);
-
-        //    adianta = DataContextFactory.FiltrarValor(comando);
-
-        //    comando = new SqlCommand();
-        //    comando.CommandType = CommandType.Text;
-        //    comando.CommandText = "Select sum( tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota) as total " +
-        //        "From tb_compra " +
-        //        "where tb_compra.id_cliente = @id_cliente";
-        //    comando.Parameters.AddWithValue("@id_cliente", id);
-
-        //    credito = DataContextFactory.FiltrarValor(comando);
-
-        //    total = adianta + pag + credito;
-        //    return total;
-        //}
-
         private void carregaItem(int id)
         {
-            if (IsPostgresMode)
-            {
-                dg_adPg.DataSource = DataContextFactory.CarregarMovimentacaoClientePostgres(id, checkBox_AdPg.Checked);
-                formatarDatagrid();
-                return;
-            }
-
-            string comando;
-            if (checkBox_AdPg.Checked == true)
-            {
-                comando = "select a.Data, a.Valor as Valor, a.Obs " +
-                    "from(Select tb_caixa.data_caixa as Data, tb_caixa.valor_caixa as Valor, tb_caixa.desc_caixa as Obs " +
-                    "From tb_caixa " +
-                    "where tb_caixa.id_cliente =" + id + "  AND tb_caixa.valor_caixa != 0 " +
-                    "union all " +
-                    "Select tb_aCliente.data__aCliente as Data, tb_aCliente.valor_aCliente as Valor, tb_aCliente.desc_aCliente as Obs " +
-                    "From tb_aCliente " +
-                    "where tb_aCliente.id_cliente =" + id + "  AND tb_aCliente.valor_aCliente != 0 " +
-                    "union all " +
-                    "Select tb_compra.data_compra as Data, tb_compra.desconto_compra as Valor, 'Pg na Nota: ' + CAST(tb_compra.id_compra as Varchar(10)) as Obs " +
-                    "From tb_compra " +
-                    "where tb_compra.id_cliente =" + id + "  AND tb_compra.desconto_compra != 0 " +
-                    "union all " +
-                    "Select tb_compra.data_compra as Data, tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota as Valor, 'Credito na Nota: ' + CAST(tb_compra.id_compra as Varchar(10)) as Obs " +
-                    "From tb_compra " +
-                    "where tb_compra.id_cliente =" + id + "  and tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota != 0 " +
-                    ")a " +
-                    "order by a.Data";
-            }
-            else
-            {
-                comando = "select a.Data, a.[Valor Nota], a.Pagamento as [Recebido do cliente], a.[Valor pago] as [Pago ao cliente], a.credito, a.Obs as Observação " +
-                    "from(Select tb_caixa.data_caixa as Data, 0.00 as [Valor Nota], 0.00 as Pagamento, tb_caixa.valor_caixa * (-1) as [Valor pago], 0 as credito, tb_caixa.desc_caixa as Obs " +
-                    "From tb_caixa " +
-                    "where tb_caixa.id_cliente =" + id + " and tb_caixa.valor_caixa <= 0 " +
-                    "union all " +
-                    "Select tb_caixa.data_caixa as Data, 0.00 as [Valor Nota], tb_caixa.valor_caixa as Pagamento, 0 as [Valor pago], 0 as credito, tb_caixa.desc_caixa as Obs " +
-                    "From tb_caixa " +
-                    "where tb_caixa.id_cliente =" + id + " and tb_caixa.valor_caixa > 0 " +
-                    "union all " +
-                    "Select tb_aCliente.data__aCliente as Data, 0.00 as [Valor Nota], 0.00 as Pagamento, tb_aCliente.valor_aCliente * (-1) as [Valor pago], 0 as credito, tb_aCliente.desc_aCliente as Obs " +
-                    "From tb_aCliente " +
-                    "where tb_aCliente.id_cliente =" + id + " and tb_aCliente.valor_aCliente <= 0 " +
-                    "union all " +
-                    "Select tb_aCliente.data__aCliente as Data, 0.00 as [Valor Nota], tb_aCliente.valor_aCliente as Pagamento, 0 as [Valor pago], 0 as credito, tb_aCliente.desc_aCliente as Obs " +
-                    "From tb_aCliente " +
-                    "where tb_aCliente.id_cliente =" + id + " and tb_aCliente.valor_aCliente > 0 " +
-                    "union all " +
-                    "Select tb_compra.data_compra as Data, tb_compra.subtot_compra as [Valor Nota], tb_compra.desconto_compra as Pagamento, tb_compra.valor_nota as [Valor pago], tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota as credito, 'Nota: ' + CAST(tb_compra.id_compra as Varchar(10)) as Obs " +
-                    "From tb_compra " +
-                    "where tb_compra.id_cliente =" + id + " )a " +
-                    "order by a.Data";
-                
-            }
-            DataTable dt = DataContextFactory.Filtrar(comando);
-            
-            dg_adPg.DataSource = dt;
+            dg_adPg.DataSource = DataContextFactory.CarregarMovimentacaoClienteApi(id, checkBox_AdPg.Checked);
             formatarDatagrid();
         }
 
-        SqlCommand comando;
-
         public IList<tb_cliente> BuscarTudo()
         {
-            if (IsPostgresMode)
-            {
-                return DataContextFactory.ListarClientesPostgres();
-            }
-
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "select a.id_cliente, tb_cliente.cpf_cliente, tb_cliente.nome_cliente, tb_cliente.tel_cliente,  sum(a.Valor) as Saldo " +
-                "from(Select  tb_caixa.valor_caixa as Valor, tb_cliente.id_cliente " +
-                "From tb_caixa " +
-                "inner join tb_cliente on tb_caixa.id_cliente = tb_cliente.id_cliente " +
-                "where tb_caixa.valor_caixa != 0 " +
-                "union all " +
-                "Select  tb_aCliente.valor_aCliente as Valor, tb_cliente.id_cliente " +
-                "From tb_aCliente " +
-                "inner join tb_cliente on tb_aCliente.id_cliente = tb_cliente.id_cliente " +
-                "where tb_aCliente.valor_aCliente != 0 " +
-                "union all " +
-                "Select  tb_compra.desconto_compra as Valor, tb_cliente.id_cliente " +
-                "From tb_compra " +
-                "inner join tb_cliente on tb_compra.id_cliente = tb_cliente.id_cliente " +
-                "where tb_compra.desconto_compra != 0 " +
-                "union all " +
-                "Select  tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota as Valor, tb_cliente.id_cliente " +
-                "From tb_compra " +
-                "inner join tb_cliente on tb_compra.id_cliente = tb_cliente.id_cliente " +
-                "where tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota != 0 " +
-                "union all " +
-                "Select 0 as Valor, tb_cliente.id_cliente " +
-                "from tb_cliente)a " +
-                "inner join tb_cliente on a.id_cliente = tb_cliente.id_cliente " +
-                "group by a.id_cliente, tb_cliente.cpf_cliente, tb_cliente.nome_cliente, tb_cliente.tel_cliente";
-            SqlDataReader dr = DataContextFactory.Selecionar(comando);
-            IList<tb_cliente> Cliente = new List<tb_cliente>();
-
-            if (dr.HasRows)
-            {
-                while (dr.Read())
-                {
-                    tb_cliente cliente = new tb_cliente();
-                    cliente.id_cliente = (int)dr["id_cliente"];
-                    cliente.nome_cliente = (string)dr["nome_cliente"];
-                    try
-                    {
-                        cliente.cpf_cliente = (string)dr["cpf_cliente"];
-                        cliente.tel_cliente = (string)dr["tel_cliente"];
-                    }
-                    catch
-                    {
-                        cliente.cpf_cliente = "";
-                        cliente.tel_cliente = "";
-                    }
-                    cliente.Saldo = (decimal)dr["Saldo"];
-
-                    Cliente.Add(cliente);
-                }
-            }
-            else
-            {
-                Cliente = null;
-            }
-            dr.Close();
-            return Cliente;
+            return DataContextFactory.ListarClientesApi();
         }
 
         public void Deletar(tb_cliente cliente)
         {
-            if (IsPostgresMode)
-            {
-                DataContextFactory.ExcluirClientePostgres(cliente.id_cliente);
-                return;
-            }
-
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "Delete from tb_cliente where id_cliente=@id_cliente";
-            comando.Parameters.AddWithValue("@id_cliente", cliente.id_cliente);
-            DataContextFactory.CRUD(comando);
-
+            DataContextFactory.ExcluirClienteApi(cliente.id_cliente);
         }
 
         public void Inserir(tb_cliente cliente)
         {
-            if (IsPostgresMode)
-            {
-                DataContextFactory.InserirClientePostgres(cliente.nome_cliente, cliente.cpf_cliente, cliente.tel_cliente);
-                return;
-            }
-
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "Insert into tb_cliente(nome_cliente, cpf_cliente, tel_cliente) values(@nome_cliente, @cpf_cliente, @tel_cliente)";
-            comando.Parameters.AddWithValue("@nome_cliente", cliente.nome_cliente);
-            comando.Parameters.AddWithValue("@cpf_cliente", cliente.cpf_cliente);
-            comando.Parameters.AddWithValue("@tel_cliente", cliente.tel_cliente);
-
-            DataContextFactory.CRUD(comando);
+            DataContextFactory.InserirClienteApi(cliente.nome_cliente, cliente.cpf_cliente, cliente.tel_cliente);
         }
 
         public void Alterar(tb_cliente cliente)
         {
-            if (IsPostgresMode)
-            {
-                DataContextFactory.AtualizarClientePostgres(cliente.id_cliente, cliente.nome_cliente, cliente.cpf_cliente, cliente.tel_cliente);
-                return;
-            }
-
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "UPDATE  tb_cliente SET nome_cliente=@nome_cliente, cpf_cliente=@cpf_cliente, tel_cliente=@tel_cliente WHERE id_cliente=@id_cliente";
-            comando.Parameters.AddWithValue("@id_cliente", cliente.id_cliente);
-            comando.Parameters.AddWithValue("@nome_cliente", cliente.nome_cliente);
-            comando.Parameters.AddWithValue("@cpf_cliente", cliente.cpf_cliente);
-            comando.Parameters.AddWithValue("@tel_cliente", cliente.tel_cliente);
-
-            DataContextFactory.CRUD(comando);
+            DataContextFactory.AtualizarClienteApi(cliente.id_cliente, cliente.nome_cliente, cliente.cpf_cliente, cliente.tel_cliente);
         }
 
         public IList<tb_cliente> BuscaDesc(string desc)
         {
-            if (IsPostgresMode)
-            {
-                return DataContextFactory.ListarClientesPostgres("nome", desc);
-            }
-
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "select a.id_cliente, tb_cliente.cpf_cliente, tb_cliente.nome_cliente, tb_cliente.tel_cliente,  sum(a.Valor) as Saldo " +
-                "from(Select  tb_caixa.valor_caixa as Valor, tb_cliente.id_cliente " +
-                "From tb_caixa " +
-                "inner join tb_cliente on tb_caixa.id_cliente = tb_cliente.id_cliente " +
-                "where tb_caixa.valor_caixa != 0 " +
-                "union all " +
-                "Select  tb_aCliente.valor_aCliente as Valor, tb_cliente.id_cliente " +
-                "From tb_aCliente " +
-                "inner join tb_cliente on tb_aCliente.id_cliente = tb_cliente.id_cliente " +
-                "where tb_aCliente.valor_aCliente != 0 " +
-                "union all " +
-                "Select  tb_compra.desconto_compra as Valor, tb_cliente.id_cliente " +
-                "From tb_compra " +
-                "inner join tb_cliente on tb_compra.id_cliente = tb_cliente.id_cliente " +
-                "where tb_compra.desconto_compra != 0 " +
-                "union all " +
-                "Select  tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota as Valor, tb_cliente.id_cliente " +
-                "From tb_compra " +
-                "inner join tb_cliente on tb_compra.id_cliente = tb_cliente.id_cliente " +
-                "where tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota != 0 " +
-                "union all " +
-                "Select 0 as Valor, tb_cliente.id_cliente " +
-                "from tb_cliente)a " +
-                "inner join tb_cliente on a.id_cliente = tb_cliente.id_cliente " +
-                "where nome_cliente Like @nome_cliente " +
-                "group by a.id_cliente, tb_cliente.cpf_cliente, tb_cliente.nome_cliente, tb_cliente.tel_cliente";
-            comando.Parameters.AddWithValue("@nome_cliente", desc + "%");
-            SqlDataReader dr = DataContextFactory.Selecionar(comando);
-            IList<tb_cliente> Cliente = new List<tb_cliente>();
-
-            if (dr.HasRows)
-            {
-                while (dr.Read())
-                {
-                    tb_cliente cliente = new tb_cliente();
-                    cliente.id_cliente = (int)dr["id_cliente"];
-                    cliente.nome_cliente = (string)dr["nome_cliente"];
-                    try
-                    {
-                        cliente.cpf_cliente = (string)dr["cpf_cliente"];
-                        cliente.tel_cliente = (string)dr["tel_cliente"];
-                    }
-                    catch
-                    {
-                        cliente.cpf_cliente = "";
-                        cliente.tel_cliente = "";
-                    }
-                    cliente.Saldo = (decimal)dr["Saldo"];
-
-                    Cliente.Add(cliente);
-                }
-            }
-            else
-            {
-                Cliente = null;
-            }
-            dr.Close();
-            return Cliente;
+            return DataContextFactory.ListarClientesApi("nome", desc);
         }
 
         public IList<tb_cliente> BuscaCPF(string desc)
         {
-            if (IsPostgresMode)
-            {
-                return DataContextFactory.ListarClientesPostgres("cpf", desc);
-            }
-
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "select a.id_cliente, tb_cliente.cpf_cliente, tb_cliente.nome_cliente, tb_cliente.tel_cliente,  sum(a.Valor) as Saldo " +
-                "from(Select  tb_caixa.valor_caixa as Valor, tb_cliente.id_cliente " +
-                "From tb_caixa " +
-                "inner join tb_cliente on tb_caixa.id_cliente = tb_cliente.id_cliente " +
-                "where tb_caixa.valor_caixa != 0 " +
-                "union all " +
-                "Select  tb_aCliente.valor_aCliente as Valor, tb_cliente.id_cliente " +
-                "From tb_aCliente " +
-                "inner join tb_cliente on tb_aCliente.id_cliente = tb_cliente.id_cliente " +
-                "where tb_aCliente.valor_aCliente != 0 " +
-                "union all " +
-                "Select  tb_compra.desconto_compra as Valor, tb_cliente.id_cliente " +
-                "From tb_compra " +
-                "inner join tb_cliente on tb_compra.id_cliente = tb_cliente.id_cliente " +
-                "where tb_compra.desconto_compra != 0 " +
-                "union all " +
-                "Select  tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota as Valor, tb_cliente.id_cliente " +
-                "From tb_compra " +
-                "inner join tb_cliente on tb_compra.id_cliente = tb_cliente.id_cliente " +
-                "where tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota != 0 " +
-                "union all " +
-                "Select 0 as Valor, tb_cliente.id_cliente " +
-                "from tb_cliente)a " +
-                "inner join tb_cliente on a.id_cliente = tb_cliente.id_cliente " +
-                "where cpf_cliente Like @cpf_cliente " +
-                "group by a.id_cliente, tb_cliente.cpf_cliente, tb_cliente.nome_cliente, tb_cliente.tel_cliente";
-            comando.Parameters.AddWithValue("@cpf_cliente", desc + "%");
-            SqlDataReader dr = DataContextFactory.Selecionar(comando);
-            IList<tb_cliente> Cliente = new List<tb_cliente>();
-
-            if (dr.HasRows)
-            {
-                while (dr.Read())
-                {
-                    tb_cliente cliente = new tb_cliente();
-                    cliente.id_cliente = (int)dr["id_cliente"];
-                    cliente.nome_cliente = (string)dr["nome_cliente"];
-                    try
-                    {
-                        cliente.cpf_cliente = (string)dr["cpf_cliente"];
-                        cliente.tel_cliente = (string)dr["tel_cliente"];
-                    }
-                    catch
-                    {
-                        cliente.cpf_cliente = "";
-                        cliente.tel_cliente = "";
-                    }
-                    cliente.Saldo = (decimal)dr["Saldo"];
-
-                    Cliente.Add(cliente);
-                }
-            }
-            else
-            {
-                Cliente = null;
-            }
-            dr.Close();
-            return Cliente;
+            return DataContextFactory.ListarClientesApi("cpf", desc);
         }
 
         public IList<tb_cliente> BuscaTel(string desc)
         {
-            if (IsPostgresMode)
-            {
-                return DataContextFactory.ListarClientesPostgres("tel", desc);
-            }
-
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "select a.id_cliente, tb_cliente.cpf_cliente, tb_cliente.nome_cliente, tb_cliente.tel_cliente,  sum(a.Valor) as Saldo " +
-                "from(Select  tb_caixa.valor_caixa as Valor, tb_cliente.id_cliente " +
-                "From tb_caixa " +
-                "inner join tb_cliente on tb_caixa.id_cliente = tb_cliente.id_cliente " +
-                "where tb_caixa.valor_caixa != 0 " +
-                "union all " +
-                "Select  tb_aCliente.valor_aCliente as Valor, tb_cliente.id_cliente " +
-                "From tb_aCliente " +
-                "inner join tb_cliente on tb_aCliente.id_cliente = tb_cliente.id_cliente " +
-                "where tb_aCliente.valor_aCliente != 0 " +
-                "union all " +
-                "Select  tb_compra.desconto_compra as Valor, tb_cliente.id_cliente " +
-                "From tb_compra " +
-                "inner join tb_cliente on tb_compra.id_cliente = tb_cliente.id_cliente " +
-                "where tb_compra.desconto_compra != 0 " +
-                "union all " +
-                "Select  tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota as Valor, tb_cliente.id_cliente " +
-                "From tb_compra " +
-                "inner join tb_cliente on tb_compra.id_cliente = tb_cliente.id_cliente " +
-                "where tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota != 0 " +
-                "union all " +
-                "Select 0 as Valor, tb_cliente.id_cliente " +
-                "from tb_cliente)a " +
-                "inner join tb_cliente on a.id_cliente = tb_cliente.id_cliente " +
-                "where tel_cliente Like @tel_cliente " +
-                "group by a.id_cliente, tb_cliente.cpf_cliente, tb_cliente.nome_cliente, tb_cliente.tel_cliente";
-            comando.Parameters.AddWithValue("@tel_cliente", desc + "%");
-            SqlDataReader dr = DataContextFactory.Selecionar(comando);
-            IList<tb_cliente> Cliente = new List<tb_cliente>();
-
-            if (dr.HasRows)
-            {
-                while (dr.Read())
-                {
-                    tb_cliente cliente = new tb_cliente();
-                    cliente.id_cliente = (int)dr["id_cliente"];
-                    cliente.nome_cliente = (string)dr["nome_cliente"];
-                    try
-                    {
-                        cliente.cpf_cliente = (string)dr["cpf_cliente"];
-                        cliente.tel_cliente = (string)dr["tel_cliente"];
-                    }
-                    catch
-                    {
-                        cliente.cpf_cliente = "";
-                        cliente.tel_cliente = "";
-                    }
-                    cliente.Saldo = (decimal)dr["Saldo"];
-
-                    Cliente.Add(cliente);
-                }
-            }
-            else
-            {
-                Cliente = null;
-            }
-            dr.Close();
-            return Cliente;
+            return DataContextFactory.ListarClientesApi("tel", desc);
         }
 
         
     }
 }
+

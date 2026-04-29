@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -40,37 +39,12 @@ namespace FerroVelho
             imprimir();
         }
 
-        string comand;        
-
         private void pesquisa()
         {           
             inicio = dt_inicio.Value;
             fim = dt_fim.Value;
 
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-            {
-                dg_recurso.DataSource = DataContextFactory.CarregarMovimentacaoRecursosPostgres(inicio, fim);
-                return;
-            }
-
-            comand = "Select a.Data, Sum(a.Valor) as Valor, a.Descricao, tb_usuario.nome_usuario as Usuario " +
-                "from(Select CONVERT(DATE, tb_caixa.data_caixa) as Data, tb_caixa.valor_caixa as Valor, tb_caixa.desc_caixa as Descricao, tb_caixa.usuario " +
-                "From tb_caixa " +
-                "where tb_caixa.id_cliente IS NOT NULL " +
-                "union all " +
-                "Select CONVERT(DATE, tb_caixa.data_caixa) as Data, tb_caixa.valor_caixa as Valor, tb_caixa.desc_caixa as Descricao, tb_caixa.usuario " +
-                "From tb_caixa " +
-                "where tb_caixa.id_cliente IS NULL " +
-                "union all " +
-                "Select CONVERT(DATE, tb_compra.data_compra) as Data, tb_compra.valor_nota * -1 as Valor, 'Compras' as Descricao, tb_compra.usuario " +
-                "From tb_compra)a " +
-                "inner join tb_usuario On a.usuario = tb_usuario.id_usuario " +
-                "where a.Data between '" + inicio + "' and '" + fim + "' " +
-                "group by CONVERT(DATE, a.Data), a.Descricao, tb_usuario.nome_usuario " +
-                "order by a.Data";
-
-            DataTable dt = DataContextFactory.Filtrar(comand);
-            dg_recurso.DataSource = dt;
+            dg_recurso.DataSource = DataContextFactory.CarregarMovimentacaoRecursosApi(inicio, fim);
         }
 
         private void dg_recurso_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -94,3 +68,4 @@ namespace FerroVelho
         }
     }
 }
+

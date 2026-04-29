@@ -12,3 +12,10 @@ C:\Users\Raul\Documents\Danilo\Ferro_Velho_3.0\FerroVelhoDAO\bin\Debug\System.Ru
 C:\Users\Raul\Documents\Danilo\Ferro_Velho_3.0\FerroVelhoDAO\bin\Debug\System.Threading.Tasks.Extensions.dll
 C:\Users\Raul\Documents\Danilo\Ferro_Velho_3.0\FerroVelhoDAO\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
 C:\Users\Raul\Documents\Danilo\Ferro_Velho_3.0\FerroVelhoDAO\bin\Debug\System.Threading.Tasks.Extensions.xml
+C:\Users\Danilo\Documents\Projetos\Ferro_Velho_3.0\FerroVelhoDAO\bin\Debug\FerroVelhoDAO.dll.config
+C:\Users\Danilo\Documents\Projetos\Ferro_Velho_3.0\FerroVelhoDAO\bin\Debug\FerroVelhoDAO.dll
+C:\Users\Danilo\Documents\Projetos\Ferro_Velho_3.0\FerroVelhoDAO\bin\Debug\FerroVelhoDAO.pdb
+C:\Users\Danilo\Documents\Projetos\Ferro_Velho_3.0\FerroVelhoDAO\obj\Debug\FerroVelhoDAO.csproj.AssemblyReference.cache
+C:\Users\Danilo\Documents\Projetos\Ferro_Velho_3.0\FerroVelhoDAO\obj\Debug\FerroVelhoDAO.csproj.CoreCompileInputs.cache
+C:\Users\Danilo\Documents\Projetos\Ferro_Velho_3.0\FerroVelhoDAO\obj\Debug\FerroVelhoDAO.dll
+C:\Users\Danilo\Documents\Projetos\Ferro_Velho_3.0\FerroVelhoDAO\obj\Debug\FerroVelhoDAO.pdb

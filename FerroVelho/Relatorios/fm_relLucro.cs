@@ -22,14 +22,8 @@ namespace FerroVelho.Relatorios
             InitializeComponent();
         }
 
-        private string comando1, comando2;
         private DateTime inicio, fim;
         private int tipoR;
-
-        private bool IsPostgresMode
-        {
-            get { return DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp); }
-        }
 
         private void fm_relLucro_Load(object sender, EventArgs e)
         {
@@ -47,58 +41,17 @@ namespace FerroVelho.Relatorios
 
         private DataTable pesquisa1()
         {
-            if (IsPostgresMode)
-            {
-                return DataContextFactory.CarregarLucroDetalhadoPostgres(
-                    inicio.Date.Add(new TimeSpan(00, 00, 00)),
-                    fim.Date.Add(new TimeSpan(23, 59, 59)));
-            }
-
-           comando1 = "SELECT a.id_prod as codigo, tb_produtos.desc_prod as descricao, sum(a.PesoC) as pesoC, sum(a.TotalC) as Compra, sum(a.PesoV) as pesoV, sum(a.TotalV) as Venda, sum(a.TotalV) - sum(a.TotalC) as lucro, sum(a.PesoC) - sum(a.PesoV) as peso " +
-                "from(SELECT tb_itemc.id_prod, sum(tb_itemc.quant_item) As PesoC, sum(tb_itemc.subTot_item) As TotalC, 0 as pesoV, 0 as totalV " +
-                "FROM tb_itemc " +
-                "INNER JOIN tb_compra ON tb_itemc.id_compra = tb_compra.id_compra " +
-                "where tb_compra.data_compra between '" + inicio.Date.Add(new TimeSpan(00, 00, 00)) + "' and '" + fim.Date.Add(new TimeSpan(23, 59, 59)) +
-                "' GROUP BY tb_itemc.id_prod " +
-                "union all " +
-                "SELECT tb_itemv.id_prod, 0 As PesoC, 0 As TotalC, sum(tb_itemv.quant_item) as pesoV, sum(tb_itemv.subTot_item) as totalV " +
-                "FROM tb_itemv " +
-                "INNER JOIN tb_venda ON tb_itemv.id_venda = tb_venda.id_venda " +
-                "where tb_venda.data_venda between '" + inicio.Date.Add(new TimeSpan(00, 00, 00)) + "' and '" + fim.Date.Add(new TimeSpan(23, 59, 59)) +
-                "' GROUP BY tb_itemv.id_prod)a " +
-                "INNER JOIN tb_produtos ON a.id_prod = tb_produtos.id_prod " +
-                "GROUP BY a.id_prod, tb_produtos.desc_prod";
-            DataTable dt1 = DataContextFactory.Filtrar(comando1);
-            return dt1;
+            return DataContextFactory.CarregarLucroDetalhadoApi(
+                inicio.Date.Add(new TimeSpan(00, 00, 00)),
+                fim.Date.Add(new TimeSpan(23, 59, 59)));
            
         }
 
         private DataTable pesquisa2()
         {
-            if (IsPostgresMode)
-            {
-                return DataContextFactory.CarregarLucroTotalPostgres(
-                    inicio.Date.Add(new TimeSpan(00, 00, 00)),
-                    fim.Date.Add(new TimeSpan(23, 59, 59)));
-            }
-
-            comando2 = "SELECT sum(e.pesoC) as pesoCT, sum(e.Compra) as compraT, sum(e.pesoV) as pesoVT, sum(e.Venda) as vendaT, sum(e.pesoC) - sum(e.pesoV) as pesoT, sum(e.Venda) - sum(e.Compra) as lucroT " +
-                "from(SELECT a.id_prod as codigo, tb_produtos.desc_prod as descricao, sum(a.PesoC) as pesoC, sum(a.TotalC) as Compra, sum(a.PesoV) as pesoV, sum(a.TotalV) as Venda, sum(a.TotalV) - sum(a.TotalC) as lucro, sum(a.PesoC) - sum(a.PesoV) as peso " +
-                "from(SELECT tb_itemc.id_prod, sum(tb_itemc.quant_item) As PesoC, sum(tb_itemc.subTot_item) As TotalC, 0 as pesoV, 0 as totalV " +
-                "FROM tb_itemc " +
-                "INNER JOIN tb_compra ON tb_itemc.id_compra = tb_compra.id_compra " +
-                "where tb_compra.data_compra between '" + inicio.Date.Add(new TimeSpan(00, 00, 00)) + "' and '" + fim.Date.Add(new TimeSpan(23, 59, 59)) +
-                "' GROUP BY tb_itemc.id_prod " +
-                "union all " +
-                "SELECT tb_itemv.id_prod, 0 As PesoC, 0 As TotalC, sum(tb_itemv.quant_item) as pesoV, sum(tb_itemv.subTot_item) as totalV " +
-                "FROM tb_itemv " +
-                "INNER JOIN tb_venda ON tb_itemv.id_venda = tb_venda.id_venda " +
-                "where tb_venda.data_venda between '" + inicio.Date.Add(new TimeSpan(00, 00, 00)) + "' and '" + fim.Date.Add(new TimeSpan(23, 59, 59)) +
-                "' GROUP BY tb_itemv.id_prod)a " +
-                "INNER JOIN tb_produtos ON a.id_prod = tb_produtos.id_prod " +
-                "GROUP BY a.id_prod, tb_produtos.desc_prod)e";
-            DataTable dt2 = DataContextFactory.Filtrar(comando2);
-            return dt2;
+            return DataContextFactory.CarregarLucroTotalApi(
+                inicio.Date.Add(new TimeSpan(00, 00, 00)),
+                fim.Date.Add(new TimeSpan(23, 59, 59)));
         }
 
         private void preencrer()
@@ -171,17 +124,10 @@ namespace FerroVelho.Relatorios
 
         public void imprimirNF()
         {
-            if (IsPostgresMode)
+            var imp = DataContextFactory.BuscarImpressoraApi(1);
+            if (imp != null)
             {
-                var imp = DataContextFactory.BuscarImpressoraPostgres(1);
-                if (imp != null)
-                {
-                    this.tb_impressoraBindingSource.DataSource = new List<tb_impressora> { imp };
-                }
-            }
-            else
-            {
-                this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
+                this.tb_impressoraBindingSource.DataSource = new List<tb_impressora> { imp };
             }
 
             LocalReport report = new LocalReport();
@@ -204,30 +150,16 @@ namespace FerroVelho.Relatorios
 
         private DataTable LoadSalesData1()
         {
-            if (IsPostgresMode)
-            {
-                return DataContextFactory.CarregarLucroDetalhadoPostgres(
-                    dt_inicio.Value.Date.Add(new TimeSpan(00, 00, 00)),
-                    dt_fim.Value.Date.Add(new TimeSpan(23, 59, 59)));
-            }
-
-            DataTable dt = DataContextFactory.Filtrar(comando1);
-
-            return dt;
+            return DataContextFactory.CarregarLucroDetalhadoApi(
+                dt_inicio.Value.Date.Add(new TimeSpan(00, 00, 00)),
+                dt_fim.Value.Date.Add(new TimeSpan(23, 59, 59)));
         }
 
         private DataTable LoadSalesData2()
         {
-            if (IsPostgresMode)
-            {
-                return DataContextFactory.CarregarLucroTotalPostgres(
-                    dt_inicio.Value.Date.Add(new TimeSpan(00, 00, 00)),
-                    dt_fim.Value.Date.Add(new TimeSpan(23, 59, 59)));
-            }
-
-            DataTable dt = DataContextFactory.Filtrar(comando2);
-
-            return dt;
+            return DataContextFactory.CarregarLucroTotalApi(
+                dt_inicio.Value.Date.Add(new TimeSpan(00, 00, 00)),
+                dt_fim.Value.Date.Add(new TimeSpan(23, 59, 59)));
         }
 
 
@@ -312,3 +244,4 @@ namespace FerroVelho.Relatorios
         
     }
 }
+

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
@@ -222,18 +221,11 @@ namespace FerroVelho
 
         private void groupBox2_Layout(object sender, LayoutEventArgs e)
         {
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser))
-            {
-                this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosPostgres();
-            }
-            else
-            {
-                this.tb_produtosBindingSource.DataSource = DataContextFactory.DataContext.tb_produtos;
-            }
+            this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosApi();
 
             cb_desProd.DataSource = tb_produtosBindingSource;
             cb_desProd.DisplayMember = "desc_prod";
-            cb_desProd.ValueMember = DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser) ? "cod_prod" : "id_prod";
+            cb_desProd.ValueMember = "cod_prod";
             cb_desProd.SelectedIndex = -1;
             txt_quant.Focus();
             guia = 0;
@@ -246,9 +238,7 @@ namespace FerroVelho
                 return;
             }
 
-            txt_codProd.Text = DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser)
-                ? this.produtoCorrente.cod_prod
-                : Convert.ToString(this.produtoCorrente.id_prod);
+            txt_codProd.Text = this.produtoCorrente.cod_prod;
             txt_valProd.Text = (Convert.ToDecimal(this.produtoCorrente.val_prod)).ToString("N2");
 
             calcula();
@@ -259,9 +249,7 @@ namespace FerroVelho
         {
             if (txt_codProd.Text != "" )
             {
-                cb_desProd.SelectedValue = DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser)
-                    ? (object)txt_codProd.Text.Trim()
-                    : Convert.ToInt32(txt_codProd.Text);
+                cb_desProd.SelectedValue = txt_codProd.Text.Trim();
                 if (this.produtoCorrente == null)
                 {
                     MessageBox.Show("Produto não encontrado!");
@@ -335,14 +323,7 @@ namespace FerroVelho
                     novoItem();
                 }
                 dg_compra.DataSource = this.tbitemcBindingSource;
-                if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-                {
-                    this.tbitemcBindingSource.DataSource = DataContextFactory.ListarItensCompraPostgres(this.compraCorrente.id_compra);
-                }
-                else
-                {
-                    this.tbitemcBindingSource.DataSource = DataContextFactory.DataContext.tb_itemc.Where(x => x.id_compra == this.compraCorrente.id_compra);
-                }
+                this.tbitemcBindingSource.DataSource = DataContextFactory.ListarItensCompraApi(this.compraCorrente.id_compra);
                 calcula();
                 
                 upDateValor();
@@ -368,48 +349,19 @@ namespace FerroVelho
             this.compraCorrente.desconto_compra = Convert.ToDecimal(lb_desconto.Text);
             this.compraCorrente.subtot_compra = Convert.ToDecimal(lb_subtotal.Text);
             
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-            {
-                int? idCliente = null;
-                if (clienteCorrente != null && clienteCorrente.id_cliente != 0)
-                {
-                    this.compraCorrente.id_cliente = clienteCorrente.id_cliente;
-                    idCliente = clienteCorrente.id_cliente;
-                }
-
-                DataContextFactory.AtualizarCompraPostgres(
-                    compraCorrente.id_compra,
-                    compraCorrente.desconto_compra,
-                    compraCorrente.subtot_compra,
-                    compraCorrente.valor_nota,
-                    idCliente);
-                return;
-            }
-
-            SqlCommand comando;
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-
+            int? idCliente = null;
             if (clienteCorrente != null && clienteCorrente.id_cliente != 0)
             {
                 this.compraCorrente.id_cliente = clienteCorrente.id_cliente;
-                comando.CommandText = "UPDATE tb_compra SET desconto_compra=@desconto_compra, subtot_compra=@subtot_compra, valor_nota=@valor_nota, id_cliente=@id_cliente WHERE id_compra=@id_compra";
-                comando.Parameters.AddWithValue("@id_compra", compraCorrente.id_compra);
-                comando.Parameters.AddWithValue("@desconto_compra", compraCorrente.desconto_compra);
-                comando.Parameters.AddWithValue("@subtot_compra", compraCorrente.subtot_compra);
-                comando.Parameters.AddWithValue("@valor_nota", compraCorrente.valor_nota);
-                comando.Parameters.AddWithValue("@id_cliente", compraCorrente.id_cliente);
-            }
-            else
-            {
-                comando.CommandText = "UPDATE tb_compra SET desconto_compra=@desconto_compra, subtot_compra=@subtot_compra, valor_nota=@valor_nota, id_cliente= Null WHERE id_compra=@id_compra";
-                comando.Parameters.AddWithValue("@id_compra", compraCorrente.id_compra);
-                comando.Parameters.AddWithValue("@desconto_compra", compraCorrente.desconto_compra);
-                comando.Parameters.AddWithValue("@subtot_compra", compraCorrente.subtot_compra);
-                comando.Parameters.AddWithValue("@valor_nota", compraCorrente.valor_nota);                
+                idCliente = clienteCorrente.id_cliente;
             }
 
-            DataContextFactory.CRUD(comando);
+            DataContextFactory.AtualizarCompraApi(
+                compraCorrente.id_compra,
+                compraCorrente.desconto_compra,
+                compraCorrente.subtot_compra,
+                compraCorrente.valor_nota,
+                idCliente);
         }
         
         private void bt_novoItem_Click_1(object sender, EventArgs e)
@@ -421,28 +373,12 @@ namespace FerroVelho
         {
             try
             {
-                string aki;
-                if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-                {
-                    aki = itemCorrente.tb_produtos != null ? itemCorrente.tb_produtos.desc_prod : itemCorrente.cod_prod;
-                }
-                else
-                {
-                    aki = ((tb_produtos)dg_compra[0, dg_compra.CurrentRow.Index].Value).desc_prod;
-                }
+                string aki = itemCorrente.tb_produtos != null ? itemCorrente.tb_produtos.desc_prod : itemCorrente.cod_prod;
 
                 if (MessageBox.Show("Realmente deseja excuir: " + aki, "Confirmação", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-                    {
-                        DataContextFactory.ExcluirItemCompraPostgres(itemCorrente.id_item);
-                        this.tbitemcBindingSource.DataSource = DataContextFactory.ListarItensCompraPostgres(this.compraCorrente.id_compra);
-                    }
-                    else
-                    {
-                        this.tbitemcBindingSource.RemoveCurrent();
-                        DataContextFactory.DataContext.SubmitChanges();
-                    }
+                    DataContextFactory.ExcluirItemCompraApi(itemCorrente.id_item);
+                    this.tbitemcBindingSource.DataSource = DataContextFactory.ListarItensCompraApi(this.compraCorrente.id_compra);
 
                     MessageBox.Show("Produto excluido com sucesso!");
                     calcula();
@@ -454,16 +390,8 @@ namespace FerroVelho
 
                 if (dg_compra.RowCount == 0)
                 {
-                    if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-                    {
-                        DataContextFactory.ExcluirCompraPostgres(compraCorrente.id_compra);
-                        this.tb_compraBindingSource.DataSource = null;
-                    }
-                    else
-                    {
-                        this.tb_compraBindingSource.RemoveCurrent();
-                        DataContextFactory.DataContext.SubmitChanges();
-                    }
+                    DataContextFactory.ExcluirCompraApi(compraCorrente.id_compra);
+                    this.tb_compraBindingSource.DataSource = null;
 
                     limpar();
                     txt_quant.Focus();
@@ -478,74 +406,13 @@ namespace FerroVelho
 
         private void novaNota()
         {
-            tb_compra tb_Compra = new tb_compra();
+            tb_compra tb_Compra = DataContextFactory.CriarCompraApi(
+                DateTime.Now,
+                DataContextFactory.usu.id_usuario,
+                0,
+                0,
+                Convert.ToDecimal(labelTotal.Text));
 
-            tb_Compra.data_compra = DateTime.Now;
-            tb_Compra.usuario = DataContextFactory.usu.id_usuario;
-            tb_Compra.desconto_compra = 0;
-            tb_Compra.subtot_compra = 0;
-            tb_Compra.valor_nota = Convert.ToDecimal(labelTotal.Text);
-
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-            {
-                tb_Compra = DataContextFactory.CriarCompraPostgres(
-                    tb_Compra.data_compra,
-                    tb_Compra.usuario,
-                    tb_Compra.desconto_compra,
-                    tb_Compra.subtot_compra,
-                    tb_Compra.valor_nota);
-
-                this.tb_compraBindingSource.DataSource = tb_Compra;
-                return;
-            }
-
-            SqlCommand comando;
-            comando = new SqlCommand();
-            comando.CommandType = CommandType.Text;
-            comando.CommandText = "Insert into tb_compra(data_compra, usuario, desconto_compra, subtot_compra, valor_nota )  OUTPUT Inserted.id_compra values(@data_compra, @usuario , @desconto_compra, @subtot_compra, @valor_nota)";
-            comando.Parameters.AddWithValue("@data_compra", tb_Compra.data_compra);
-            comando.Parameters.AddWithValue("@usuario", tb_Compra.usuario);
-            comando.Parameters.AddWithValue("@desconto_compra", tb_Compra.desconto_compra);
-            comando.Parameters.AddWithValue("@subtot_compra", tb_Compra.subtot_compra);
-            comando.Parameters.AddWithValue("@valor_nota", tb_Compra.valor_nota);
-
-            SqlDataReader dr = DataContextFactory.CRUDID(comando);
-
-            if (dr.HasRows)
-            {
-                dr.Read();
-
-                int BuscaID = (int)dr["id_compra"];
-
-                comando = new SqlCommand();
-                comando.CommandType = CommandType.Text;
-                comando.CommandText = "Select * From tb_compra where id_compra=@id_compra";
-                comando.Parameters.AddWithValue("@id_compra", BuscaID);
-                SqlDataReader dr2 = DataContextFactory.Selecionar(comando);
-
-                if (dr2.HasRows)
-                {
-                    dr2.Read();
-                    tb_Compra.id_compra = (int)dr2["id_compra"];
-                    tb_Compra.data_compra = (DateTime)dr2["data_compra"];
-                    tb_Compra.usuario = (int)dr2["usuario"];
-                    tb_Compra.desconto_compra = (decimal)dr2["desconto_compra"];
-                    tb_Compra.subtot_compra = (decimal)dr2["subtot_compra"];
-                    tb_Compra.valor_nota = (decimal)dr2["valor_nota"];
-                }
-                else
-                {
-                    tb_Compra = null;
-                }
-                dr.Close();
-                
-            }
-            else
-            {
-                tb_Compra = null;
-            }
-            dr.Close();
-            
             this.tb_compraBindingSource.DataSource = tb_Compra;
                         
         }
@@ -566,29 +433,12 @@ namespace FerroVelho
                 tb_Itemc.subTot_item = Convert.ToDecimal(txt_subTot.Text);
                 tb_Itemc.valor_item = Convert.ToDecimal(txt_valProd.Text);
 
-                if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-                {
-                    DataContextFactory.InserirItemCompraPostgres(
-                        produtoCorrente.cod_prod,
-                        tb_Itemc.id_compra,
-                        tb_Itemc.quant_item,
-                        tb_Itemc.subTot_item,
-                        tb_Itemc.valor_item);
-                }
-                else
-                {
-                    SqlCommand comando;
-                    comando = new SqlCommand();
-                    comando.CommandType = CommandType.Text;
-                    comando.CommandText = "Insert into tb_Itemc(id_prod, id_compra, quant_item, subTot_item, valor_item) values(@id_prod, @id_compra, @quant_item, @subTot_item, @valor_item)";
-                    comando.Parameters.AddWithValue("@id_prod", tb_Itemc.id_prod);
-                    comando.Parameters.AddWithValue("@id_compra", tb_Itemc.id_compra);
-                    comando.Parameters.AddWithValue("@quant_item", tb_Itemc.quant_item);
-                    comando.Parameters.AddWithValue("@subTot_item", tb_Itemc.subTot_item);
-                    comando.Parameters.AddWithValue("@valor_item", tb_Itemc.valor_item);
-                    
-                    DataContextFactory.CRUD(comando);
-                }
+                DataContextFactory.InserirItemCompraApi(
+                    produtoCorrente.cod_prod,
+                    tb_Itemc.id_compra,
+                    tb_Itemc.quant_item,
+                    tb_Itemc.subTot_item,
+                    tb_Itemc.valor_item);
 
             }
             else
@@ -859,26 +709,11 @@ namespace FerroVelho
 
         private void txt_codProd_KeyPress_1(object sender, KeyPressEventArgs e)
         {
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoUser))
-            {
-                if (e.KeyChar == 13)
-                {
-                    txt_valProd.Focus();
-                    e.Handled = true;
-                }
-
-                return;
-            }
-
-            if (char.IsDigit(e.KeyChar) || e.KeyChar.Equals((char)Keys.Back))
-            {
-                return;
-            }
             if (e.KeyChar == 13)
             {
                 txt_valProd.Focus();
+                e.Handled = true;
             }            
-            e.Handled = true;
         }
 
         private void fm_menulPrincipal_FormClosing(object sender, FormClosingEventArgs e)
@@ -1024,17 +859,10 @@ namespace FerroVelho
 
         public void imprimirNF(int nf)
         {
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
+            var imp = DataContextFactory.BuscarImpressoraApi(1);
+            if (imp != null)
             {
-                var imp = DataContextFactory.BuscarImpressoraPostgres(1);
-                if (imp != null)
-                {
-                    this.tb_impressoraBindingSource.DataSource = new List<tb_impressora> { imp };
-                }
-            }
-            else
-            {
-                this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
+                this.tb_impressoraBindingSource.DataSource = new List<tb_impressora> { imp };
             }
                        
             LocalReport report = new LocalReport();
@@ -1052,51 +880,17 @@ namespace FerroVelho
 
         private DataTable LoadSalesData1(int nf)
         {
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-            {
-                return DataContextFactory.CarregarRelatorioCompraItensPostgres(nf);
-            }
-
-            string comando = "SELECT tb_itemc.quant_item, tb_itemc.subTot_item, tb_itemc.valor_item, tb_produtos.desc_prod " +
-                "FROM tb_itemc " +
-                "INNER JOIN tb_compra ON tb_itemc.id_compra = tb_compra.id_compra " +
-                "INNER JOIN tb_produtos ON tb_itemc.id_prod = tb_produtos.id_prod " +
-                "WHERE tb_itemc.id_compra = " + nf;
-            DataTable dt = DataContextFactory.Filtrar(comando);
-                        
-            return dt;
+            return DataContextFactory.CarregarRelatorioCompraItensApi(nf);
         }
 
         private DataTable LoadSalesData2(int nf)
         {
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-            {
-                return DataContextFactory.CarregarRelatorioCompraCabecalhoPostgres(nf);
-            }
-
-            string comando = "select tb_compra.id_compra, tb_compra.data_compra, tb_compra.desconto_compra, tb_compra.subtot_compra, tb_compra.valor_nota, tb_usuario.nome_usuario " +
-                "from tb_compra " +
-                "INNER JOIN tb_usuario ON tb_compra.usuario = tb_usuario.id_usuario " +
-                "where tb_compra.id_compra = " + nf;
-            DataTable dt = DataContextFactory.Filtrar(comando);
-
-            return dt;
+            return DataContextFactory.CarregarRelatorioCompraCabecalhoApi(nf);
         }
 
         private DataTable LoadSalesData3(int nf)
         {
-            if (DataContextFactory.IsPostgresConnectionString(DataContextFactory.conexaoImp))
-            {
-                return DataContextFactory.CarregarRelatorioCompraClientePostgres(nf);
-            }
-
-            string comando = "select tb_cliente.nome_cliente, tb_cliente.tel_cliente , tb_cliente.cpf_cliente " +
-                "from tb_compra " +
-                "INNER JOIN tb_cliente ON tb_compra.id_cliente = tb_cliente.id_cliente " +
-                "where tb_compra.id_compra = " + nf;
-            DataTable dt = DataContextFactory.Filtrar(comando);
-
-            return dt;
+            return DataContextFactory.CarregarRelatorioCompraClienteApi(nf);
         }
 
         public tb_impressora impressoraCorrente
@@ -1198,3 +992,4 @@ namespace FerroVelho
         
     }
 }
+
