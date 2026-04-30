@@ -144,8 +144,8 @@
             // 
             // dataGridViewTextBoxColumn5
             // 
-            this.dataGridViewTextBoxColumn5.DataPropertyName = "tb_usuario";
-            this.dataGridViewTextBoxColumn5.HeaderText = "tb_usuario";
+            this.dataGridViewTextBoxColumn5.DataPropertyName = "usuario";
+            this.dataGridViewTextBoxColumn5.HeaderText = "usuario";
             this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
             this.dataGridViewTextBoxColumn5.ReadOnly = true;
             this.dataGridViewTextBoxColumn5.Visible = false;
@@ -383,12 +383,11 @@
             // nome_usuarioLabel2
             // 
             this.nome_usuarioLabel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.nome_usuarioLabel2.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.tb_vendaBindingSource, "tb_usuario.nome_usuario", true));
             this.nome_usuarioLabel2.Location = new System.Drawing.Point(59, 562);
             this.nome_usuarioLabel2.Name = "nome_usuarioLabel2";
-            this.nome_usuarioLabel2.Size = new System.Drawing.Size(100, 17);
+            this.nome_usuarioLabel2.Size = new System.Drawing.Size(250, 17);
             this.nome_usuarioLabel2.TabIndex = 24;
-            this.nome_usuarioLabel2.Text = "label4";
+            this.nome_usuarioLabel2.Text = "";
             // 
             // fm_notasVenda
             // 

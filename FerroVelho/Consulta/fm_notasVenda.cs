@@ -43,6 +43,7 @@ namespace FerroVelho
             {
                 tb_vendaDataGridView.CurrentCell = tb_vendaDataGridView.Rows[tb_vendaDataGridView.Rows.Count - 1].Cells[0];
             }
+            AtualizarUsuarioSelecionado();
             carregaItem();
         }
 
@@ -110,6 +111,7 @@ namespace FerroVelho
                 {
                     tb_vendaDataGridView.CurrentCell = tb_vendaDataGridView.Rows[tb_vendaDataGridView.Rows.Count - 1].Cells[0];
                 }
+                AtualizarUsuarioSelecionado();
                 carregaItem();
             }
 
@@ -161,7 +163,21 @@ namespace FerroVelho
 
         private void tb_vendaDataGridView_CurrentCellChanged(object sender, EventArgs e)
         {
+            AtualizarUsuarioSelecionado();
             carregaItem();
+        }
+
+        private void AtualizarUsuarioSelecionado()
+        {
+            int usuarioId;
+            if (TryGetValorLinhaAtual(3, out usuarioId))
+            {
+                nome_usuarioLabel2.Text = DataContextFactory.BuscarNomeUsuarioApi(usuarioId);
+            }
+            else
+            {
+                nome_usuarioLabel2.Text = "Não informado";
+            }
         }
         
 
