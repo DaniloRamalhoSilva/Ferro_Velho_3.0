@@ -11,6 +11,7 @@ namespace FerroVelhoDAO
     public class tb_produtos
     {
         public int id_prod { get; set; }
+        public int empresa_cod { get; set; }
         public string cod_prod { get; set; }
         public string desc_prod { get; set; }
         public decimal? val_prod { get; set; }

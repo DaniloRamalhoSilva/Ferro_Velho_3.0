@@ -109,6 +109,8 @@ namespace FerroVelho
             }
             else
             {
+                string codigoProduto = txt_codPro.Text.Trim();
+                string descricaoProduto = txt_descrição.Text.Trim();
                 decimal valorProduto;
                 if (!decimal.TryParse(txt_valor.Text, NumberStyles.Number, CultureInfo.CurrentCulture, out valorProduto))
                 {
@@ -119,13 +121,8 @@ namespace FerroVelho
 
                 try
                 {
-                    if (novoProduto)
-                    {
-                        int? usuarioLogado = DataContextFactory.usu != null ? (int?)DataContextFactory.usu.id_usuario : null;
-                        DataContextFactory.CriarProdutoApi(txt_codPro.Text.Trim(), txt_descrição.Text.Trim(), valorProduto, usuarioLogado);
-                        MessageBox.Show("Salvo com sucesso!");
-                    }
-                    else
+                    int? idProdutoAtual = null;
+                    if (!novoProduto)
                     {
                         if (this.produtoCorrente == null)
                         {
@@ -133,7 +130,25 @@ namespace FerroVelho
                             return;
                         }
 
-                        DataContextFactory.AtualizarProdutoApi(this.produtoCorrente.id_prod, txt_codPro.Text.Trim(), txt_descrição.Text.Trim(), valorProduto);
+                        idProdutoAtual = this.produtoCorrente.id_prod;
+                    }
+
+                    if (DataContextFactory.ExisteProdutoApi(codigoProduto, idProdutoAtual))
+                    {
+                        MessageBox.Show("Código de produto já cadastrado nesta empresa!");
+                        txt_codPro.Focus();
+                        return;
+                    }
+
+                    if (novoProduto)
+                    {
+                        int? usuarioLogado = DataContextFactory.usu != null ? (int?)DataContextFactory.usu.id_usuario : null;
+                        DataContextFactory.CriarProdutoApi(codigoProduto, descricaoProduto, valorProduto, usuarioLogado);
+                        MessageBox.Show("Salvo com sucesso!");
+                    }
+                    else
+                    {
+                        DataContextFactory.AtualizarProdutoApi(this.produtoCorrente.id_prod, codigoProduto, descricaoProduto, valorProduto);
                         MessageBox.Show("Alterado com sucesso!");
                     }
                 }

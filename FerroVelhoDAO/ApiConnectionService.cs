@@ -36,6 +36,20 @@ namespace FerroVelhoDAO
             return GetRows(apiUrl, empresaCod, "/api/produtos").Select(MapProduto).ToList();
         }
 
+        public static bool ExisteProdutoPorCodigo(string apiUrl, int empresaCod, string codigo, int? excetoIdProd)
+        {
+            string codigoNormalizado = (codigo ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(codigoNormalizado))
+            {
+                return false;
+            }
+
+            return ListarProdutos(apiUrl, empresaCod).Any(produto =>
+                produto.empresa_cod == empresaCod &&
+                string.Equals((produto.cod_prod ?? string.Empty).Trim(), codigoNormalizado, StringComparison.Ordinal) &&
+                (!excetoIdProd.HasValue || produto.id_prod != excetoIdProd.Value));
+        }
+
         public static tb_produtos CriarProduto(string apiUrl, int empresaCod, string codigo, string descricao, decimal valor, int? usuario)
         {
             return MapProduto(PostRow(apiUrl, empresaCod, "/api/produtos", new Dictionary<string, object>
@@ -675,6 +689,7 @@ namespace FerroVelhoDAO
             return new tb_produtos
             {
                 id_prod = Int(row, "id_prod"),
+                empresa_cod = Int(row, "empresa_cod", "empresaCod"),
                 cod_prod = String(row, "cod_prod"),
                 desc_prod = String(row, "desc_prod"),
                 val_prod = NullableDecimal(row, "val_prod"),

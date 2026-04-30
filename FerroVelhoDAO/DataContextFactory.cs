@@ -88,6 +88,11 @@ namespace FerroVelhoDAO
             return ApiConnectionService.ListarProdutos(ApiBaseUrl, EmpresaCod);
         }
 
+        public static bool ExisteProdutoApi(string codigo, int? excetoIdProd)
+        {
+            return ApiConnectionService.ExisteProdutoPorCodigo(ApiBaseUrl, EmpresaCod, codigo, excetoIdProd);
+        }
+
         public static tb_produtos CriarProdutoApi(string codigo, string descricao, decimal valor, int? usuario)
         {
             return ApiConnectionService.CriarProduto(ApiBaseUrl, EmpresaCod, codigo, descricao, valor, usuario);
