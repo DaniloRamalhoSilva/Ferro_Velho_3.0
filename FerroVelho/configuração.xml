@@ -1,4 +1,3 @@
 <configConexao>
-  <apiUrl>http://localhost:3000</apiUrl>
-  <empresaCod>1</empresaCod>
+  <apiUrl>https://api.timeguinchos.com.br</apiUrl>
 </configConexao>

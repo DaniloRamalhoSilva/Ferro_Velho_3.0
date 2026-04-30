@@ -16,13 +16,13 @@ namespace FerroVelhoDAO
 
         public static bool TestarConexao(string apiUrl)
         {
-            GetObject(apiUrl, "/health", false);
+            GetObject(apiUrl, "/health", false, 0);
             return true;
         }
 
-        public static tb_usuario ValidarLogin(string apiUrl, int empresaCod, string nomeUsuario, string senhaUsuario)
+        public static tb_usuario ValidarLogin(string apiUrl, string nomeUsuario, string senhaUsuario)
         {
-            var row = PostRow(apiUrl, empresaCod, "/api/auth/login", new Dictionary<string, object>
+            var row = PostPublicRow(apiUrl, "/api/auth/login", new Dictionary<string, object>
             {
                 { "nome_usuario", nomeUsuario ?? string.Empty },
                 { "senha_usuario", senhaUsuario ?? string.Empty }
@@ -448,6 +448,11 @@ namespace FerroVelhoDAO
             return SendWithBody(HttpMethod.Post, apiUrl, empresaCod, path, body);
         }
 
+        private static Dictionary<string, object> PostPublicRow(string apiUrl, string path, Dictionary<string, object> body)
+        {
+            return SendWithBody(HttpMethod.Post, apiUrl, 0, path, body, false);
+        }
+
         private static Dictionary<string, object> PutRow(string apiUrl, int empresaCod, string path, Dictionary<string, object> body)
         {
             return SendWithBody(HttpMethod.Put, apiUrl, empresaCod, path, body);
@@ -466,7 +471,7 @@ namespace FerroVelhoDAO
                 var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new InvalidOperationException("API retornou erro " + (int)response.StatusCode + ": " + json);
+                    throw BuildApiException(response, json);
                 }
 
                 return string.IsNullOrWhiteSpace(json)
@@ -477,7 +482,12 @@ namespace FerroVelhoDAO
 
         private static Dictionary<string, object> SendWithBody(HttpMethod method, string apiUrl, int empresaCod, string path, Dictionary<string, object> body)
         {
-            using (var request = BuildRequest(method, apiUrl, path, true, empresaCod))
+            return SendWithBody(method, apiUrl, empresaCod, path, body, true);
+        }
+
+        private static Dictionary<string, object> SendWithBody(HttpMethod method, string apiUrl, int empresaCod, string path, Dictionary<string, object> body, bool includeEmpresa)
+        {
+            using (var request = BuildRequest(method, apiUrl, path, includeEmpresa, empresaCod))
             {
                 request.Content = new StringContent(Serializer.Serialize(body), Encoding.UTF8, "application/json");
 
@@ -486,7 +496,7 @@ namespace FerroVelhoDAO
                     var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                     if (!response.IsSuccessStatusCode)
                     {
-                        throw new InvalidOperationException("API retornou erro " + (int)response.StatusCode + ": " + json);
+                        throw BuildApiException(response, json);
                     }
 
                     return string.IsNullOrWhiteSpace(json)
@@ -496,7 +506,7 @@ namespace FerroVelhoDAO
             }
         }
 
-        private static object GetObject(string apiUrl, string path, bool includeEmpresa, int empresaCod = 1)
+        private static object GetObject(string apiUrl, string path, bool includeEmpresa, int empresaCod)
         {
             using (var request = BuildRequest(HttpMethod.Get, apiUrl, path, includeEmpresa, empresaCod))
             using (var response = Http.SendAsync(request).GetAwaiter().GetResult())
@@ -504,7 +514,7 @@ namespace FerroVelhoDAO
                 var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new InvalidOperationException("API retornou erro " + (int)response.StatusCode + ": " + json);
+                    throw BuildApiException(response, json);
                 }
 
                 return string.IsNullOrWhiteSpace(json) ? null : Serializer.DeserializeObject(json);
@@ -516,6 +526,11 @@ namespace FerroVelhoDAO
             var request = new HttpRequestMessage(method, NormalizeBaseUrl(apiUrl) + path);
             if (includeEmpresa)
             {
+                if (empresaCod <= 0)
+                {
+                    throw new InvalidOperationException("Empresa nao definida. Realize o login antes de acessar dados da API.");
+                }
+
                 request.Headers.Add("x-empresa-cod", empresaCod.ToString(CultureInfo.InvariantCulture));
             }
 
@@ -557,6 +572,37 @@ namespace FerroVelhoDAO
         private static string ApiDate(DateTime value)
         {
             return value.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
+        }
+
+        private static InvalidOperationException BuildApiException(HttpResponseMessage response, string json)
+        {
+            string apiMessage = TryExtractApiMessage(json);
+            if (!string.IsNullOrWhiteSpace(apiMessage))
+            {
+                return new InvalidOperationException(apiMessage);
+            }
+
+            return new InvalidOperationException("API retornou erro " + (int)response.StatusCode + ": " + json);
+        }
+
+        private static string TryExtractApiMessage(string json)
+        {
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                var value = Serializer.DeserializeObject(json) as Dictionary<string, object>;
+                return value != null && value.ContainsKey("message")
+                    ? Convert.ToString(value["message"], CultureInfo.CurrentCulture)
+                    : string.Empty;
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
 
         private static DataTable ToDataTable(IEnumerable<Dictionary<string, object>> rows, params string[] columnOrder)
@@ -615,6 +661,7 @@ namespace FerroVelhoDAO
             return new tb_usuario
             {
                 id_usuario = Int(row, "id_usuario"),
+                empresa_cod = Int(row, "empresa_cod", "empresaCod"),
                 nome_usuario = String(row, "nome_usuario"),
                 senha_usuario = String(row, "senha_usuario"),
                 permi_usuario = Int(row, "permi_usuario"),

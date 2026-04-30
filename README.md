@@ -16,9 +16,13 @@ Este projeto nao acessa mais banco de dados diretamente. Todas as consultas e gr
 Na tela de configuracao do aplicativo:
 
 - `URL da API`: endereco base da API, por exemplo `http://localhost:3000`
-- `Codigo da empresa`: codigo da empresa enviado no header `x-empresa-cod`
 
-Se nao houver configuracao local, o aplicativo usa `http://localhost:3000` e empresa `1`.
+O codigo da empresa nao e configurado manualmente. Ele vem do `empresa_cod`
+retornado pelo login e passa a ser enviado no header `x-empresa-cod` em todas
+as requisicoes de negocio. Se nao houver usuario autenticado com `empresa_cod`
+valido, as chamadas de negocio para a API falham antes de enviar a requisicao.
+
+Se nao houver configuracao local, o aplicativo usa `http://localhost:3000`.
 
 ## Uso
 

@@ -17,6 +17,7 @@ namespace FerroVelhoDAO
         public static string endereco;
         public static string conexaoUser;
         public static string conexaoImp;
+        private static int? empresaCodAutenticada;
 
         public static string ApiBaseUrl
         {
@@ -39,17 +40,45 @@ namespace FerroVelhoDAO
         {
             get
             {
-                int empresaCod;
-                return int.TryParse(conexaoImp, out empresaCod) && empresaCod > 0 ? empresaCod : 1;
+                if (!empresaCodAutenticada.HasValue || empresaCodAutenticada.Value <= 0)
+                {
+                    throw new InvalidOperationException("Empresa nao definida. Realize o login antes de acessar dados da API.");
+                }
+
+                return empresaCodAutenticada.Value;
             }
         }
 
         public static tb_usuario ValidarLoginApi(string nomeUsuario, string senhaUsuario)
         {
-            return ApiConnectionService.ValidarLogin(ApiBaseUrl, EmpresaCod, nomeUsuario, senhaUsuario);
+            return ApiConnectionService.ValidarLogin(ApiBaseUrl, nomeUsuario, senhaUsuario);
         }
 
-        public static bool TestarConexaoApi(string ignored = null)
+        public static void DefinirUsuarioAutenticado(tb_usuario usuario)
+        {
+            if (usuario == null)
+            {
+                throw new InvalidOperationException("Usuario autenticado nao informado.");
+            }
+
+            if (usuario.empresa_cod <= 0)
+            {
+                throw new InvalidOperationException("Login retornou usuario sem empresa_cod valido.");
+            }
+
+            usu = usuario;
+            empresaCodAutenticada = usuario.empresa_cod;
+            conexaoImp = usuario.empresa_cod.ToString();
+        }
+
+        public static void LimparSessao()
+        {
+            usu = null;
+            empresaCodAutenticada = null;
+            conexaoImp = string.Empty;
+        }
+
+        public static bool TestarConexaoApi()
         {
             return ApiConnectionService.TestarConexao(ApiBaseUrl);
         }
@@ -341,13 +370,12 @@ namespace FerroVelhoDAO
             STW_Arquivo.Close();
         }
 
-        public static void GravarConecxao(string apiUrl, string empresaCod)
+        public static void GravarConecxao(string apiUrl)
         {
             XmlTextWriter STW_Arquivo;
             STW_Arquivo = new XmlTextWriter(@"..\..\configuração.xml", Encoding.UTF8);
             STW_Arquivo.WriteStartElement("configConexao");
             STW_Arquivo.WriteElementString("apiUrl", string.IsNullOrWhiteSpace(apiUrl) ? DefaultApiUrl : apiUrl.Trim());
-            STW_Arquivo.WriteElementString("empresaCod", string.IsNullOrWhiteSpace(empresaCod) ? "1" : empresaCod.Trim());
             STW_Arquivo.WriteEndElement();
             STW_Arquivo.Close();
         }
@@ -379,8 +407,6 @@ namespace FerroVelhoDAO
                 XElement XML = XElement.Load(@"..\..\configuração.xml");
 
                 conexaoUser = GetXmlValue(XML, "apiUrl", "dataUser");
-                conexaoImp = GetXmlValue(XML, "empresaCod", "dataImp");
-
                 if (string.IsNullOrWhiteSpace(conexaoUser) ||
                     (!conexaoUser.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
                      !conexaoUser.StartsWith("https://", StringComparison.OrdinalIgnoreCase)))
@@ -388,18 +414,13 @@ namespace FerroVelhoDAO
                     conexaoUser = DefaultApiUrl;
                 }
 
-                int empresaCod;
-                if (!int.TryParse(conexaoImp, out empresaCod) || empresaCod <= 0)
-                {
-                    conexaoImp = "1";
-                }
-
+                conexaoImp = empresaCodAutenticada.HasValue ? empresaCodAutenticada.Value.ToString() : string.Empty;
                 XML = null;
             }
             catch
             {
                 conexaoUser = DefaultApiUrl;
-                conexaoImp = "1";
+                conexaoImp = empresaCodAutenticada.HasValue ? empresaCodAutenticada.Value.ToString() : string.Empty;
             }
         }
 

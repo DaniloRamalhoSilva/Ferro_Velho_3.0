@@ -25,7 +25,7 @@ namespace FerroVelho
 
         private void bt_salvar_Click(object sender, EventArgs e)
         {
-            DataContextFactory.GravarConecxao(txt_datauser.Text, txt_datauImpressao.Text);
+            DataContextFactory.GravarConecxao(txt_datauser.Text);
             txt_datauser.Text = "";
             txt_datauImpressao.Text = "";
             load();
@@ -34,7 +34,6 @@ namespace FerroVelho
         private void bt_alterar_Click(object sender, EventArgs e)
         {
             txt_datauser.Enabled = true;
-            txt_datauImpressao.Enabled = true;
             bt_alterar.Visible = false;
             bt_salvar.Visible = true;
         }
@@ -43,7 +42,9 @@ namespace FerroVelho
         {
             DataContextFactory.FU_lerConfiguracao();
             txt_datauser.Text = DataContextFactory.conexaoUser;
-            txt_datauImpressao.Text = DataContextFactory.conexaoImp;
+            txt_datauImpressao.Text = string.IsNullOrWhiteSpace(DataContextFactory.conexaoImp)
+                ? "Definida no login"
+                : DataContextFactory.conexaoImp;
             txt_datauser.Enabled = false;
             txt_datauImpressao.Enabled = false;
             bt_alterar.Visible = true;

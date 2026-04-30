@@ -139,7 +139,7 @@ namespace FerroVelho
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Não foi possível salvar o produto. Verifique se o código já existe. Erro: " + ex.Message);
+                    MessageBox.Show("Não foi possível salvar o produto. " + ex.Message);
                     return;
                 }
 

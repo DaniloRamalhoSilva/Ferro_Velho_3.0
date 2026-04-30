@@ -53,11 +53,12 @@ namespace FerroVelho
         {
             try
             {
+                DataContextFactory.TestarConexaoApi();
                 var usuarioApi = DataContextFactory.ValidarLoginApi(txt_nome.Text, txt_senha.Text);
                 if (usuarioApi != null)
                 {
+                    DataContextFactory.DefinirUsuarioAutenticado(usuarioApi);
                     logar = true;
-                    DataContextFactory.usu = usuarioApi;
                     this.Dispose();
                 }
                 else
@@ -68,17 +69,6 @@ namespace FerroVelho
             catch
             {
                 MessageBox.Show("Não foi possível acessar a API de usuários.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                fm_configuracao fmc = new fm_configuracao();
-                fmc.ShowDialog();
-            }
-
-            try
-            {
-                DataContextFactory.TestarConexaoApi(DataContextFactory.conexaoImp);
-            }
-            catch
-            {
-                MessageBox.Show("Não foi possível validar a API configurada.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 fm_configuracao fmc = new fm_configuracao();
                 fmc.ShowDialog();
             }
