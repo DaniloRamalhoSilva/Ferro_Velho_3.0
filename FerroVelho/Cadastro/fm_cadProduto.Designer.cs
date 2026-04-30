@@ -188,7 +188,7 @@
             // 
             // idprodDataGridViewTextBoxColumn
             // 
-            this.idprodDataGridViewTextBoxColumn.DataPropertyName = "id_prod";
+            this.idprodDataGridViewTextBoxColumn.DataPropertyName = "cod_prod";
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.idprodDataGridViewTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle1;
             this.idprodDataGridViewTextBoxColumn.HeaderText = "Codigo";

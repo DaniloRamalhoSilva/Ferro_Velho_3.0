@@ -37,9 +37,9 @@
           <DataField>data_venda</DataField>
           <rd:TypeName>System.DateTime</rd:TypeName>
         </Field>
-        <Field Name="id_prod">
-          <DataField>id_prod</DataField>
-          <rd:TypeName>System.Int32</rd:TypeName>
+        <Field Name="cod_prod">
+          <DataField>cod_prod</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="id_venda">
           <DataField>id_venda</DataField>
@@ -292,7 +292,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!id_prod.Value</Value>
+                                  <Value>=Fields!cod_prod.Value</Value>
                                   <Style>
                                     <FontSize>9pt</FontSize>
                                     <FontWeight>Normal</FontWeight>

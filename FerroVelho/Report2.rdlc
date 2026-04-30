@@ -24,9 +24,9 @@
         <CommandText>/* Local Query */</CommandText>
       </Query>
       <Fields>
-        <Field Name="id_prod">
-          <DataField>id_prod</DataField>
-          <rd:TypeName>System.Decimal</rd:TypeName>
+        <Field Name="cod_prod">
+          <DataField>cod_prod</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="quant_item">
           <DataField>quant_item</DataField>
@@ -369,7 +369,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!id_prod.Value</Value>
+                                  <Value>=Fields!cod_prod.Value</Value>
                                   <Style>
                                     <FontSize>9pt</FontSize>
                                     <FontWeight>Normal</FontWeight>

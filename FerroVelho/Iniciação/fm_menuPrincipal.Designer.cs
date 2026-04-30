@@ -825,8 +825,8 @@
             // 
             // idprodDataGridViewTextBoxColumn
             // 
-            this.idprodDataGridViewTextBoxColumn.DataPropertyName = "id_prod";
-            this.idprodDataGridViewTextBoxColumn.HeaderText = "id_prod";
+            this.idprodDataGridViewTextBoxColumn.DataPropertyName = "cod_prod";
+            this.idprodDataGridViewTextBoxColumn.HeaderText = "cod_prod";
             this.idprodDataGridViewTextBoxColumn.Name = "idprodDataGridViewTextBoxColumn";
             this.idprodDataGridViewTextBoxColumn.ReadOnly = true;
             this.idprodDataGridViewTextBoxColumn.Visible = false;

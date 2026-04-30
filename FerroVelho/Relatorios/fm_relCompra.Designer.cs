@@ -182,7 +182,7 @@
             // 
             // id_prod
             // 
-            this.id_prod.DataPropertyName = "id_prod";
+            this.id_prod.DataPropertyName = "cod_prod";
             this.id_prod.HeaderText = "Codigo";
             this.id_prod.Name = "id_prod";
             this.id_prod.ReadOnly = true;

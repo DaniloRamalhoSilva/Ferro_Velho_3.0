@@ -193,7 +193,7 @@
             // 
             // idprodDataGridViewTextBoxColumn
             // 
-            this.idprodDataGridViewTextBoxColumn.DataPropertyName = "id_prod";
+            this.idprodDataGridViewTextBoxColumn.DataPropertyName = "cod_prod";
             this.idprodDataGridViewTextBoxColumn.HeaderText = "Codigo";
             this.idprodDataGridViewTextBoxColumn.Name = "idprodDataGridViewTextBoxColumn";
             this.idprodDataGridViewTextBoxColumn.ReadOnly = true;
