@@ -16,6 +16,7 @@ namespace FerroVelhoDAO
         public string desc_prod { get; set; }
         public decimal? val_prod { get; set; }
         public int? usuario { get; set; }
+        public bool excluido { get; set; }
     }
 
     public class tb_tipoUsuario

@@ -25,7 +25,7 @@ namespace FerroVelho.Relatorios
         private void fm_relProduto_Load(object sender, EventArgs e)
         {
 
-            this.tb_produtosBindingSource.DataSource = DataContextFactory.CarregarProdutosDataTableApi();
+            this.tb_produtosBindingSource.DataSource = DataContextFactory.CarregarProdutosDataTableApi(false);
 
             this.reportViewer1.RefreshReport();
             
@@ -58,7 +58,7 @@ namespace FerroVelho.Relatorios
 
         private DataTable LoadSalesData()
         {
-            return DataContextFactory.CarregarProdutosDataTableApi();
+            return DataContextFactory.CarregarProdutosDataTableApi(false);
         }
 
         public tb_impressora impressoraCorrente

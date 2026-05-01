@@ -20,7 +20,7 @@ namespace FerroVelho
 
         private void fm_outrasSaidas_Load(object sender, EventArgs e)
         {
-            this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosApi();
+            this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosApi(true);
 
             cb_desProd.DataSource = tb_produtosBindingSource;
             cb_desProd.DisplayMember = "desc_prod";

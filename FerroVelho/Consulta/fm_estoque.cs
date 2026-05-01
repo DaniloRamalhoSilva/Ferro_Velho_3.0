@@ -31,7 +31,7 @@ namespace FerroVelho
         private void load()
         {
             idprodDataGridViewTextBoxColumn.DataPropertyName = "cod_prod";
-            this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosApi();
+            this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosApi(false, true);
 
             caregarEstoque();
             bt_corrigir.Enabled = true;
@@ -157,7 +157,7 @@ namespace FerroVelho
 
         private void txt_desc_KeyUp(object sender, KeyEventArgs e)
         {
-            this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosApi()
+            this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosApi(false, true)
                 .Where(x => (x.desc_prod ?? string.Empty).StartsWith(txt_desc.Text, StringComparison.CurrentCultureIgnoreCase))
                 .ToList();
 
@@ -169,14 +169,14 @@ namespace FerroVelho
             {
             if (txt_codProd.Text == "")
             {
-                this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosApi();
+                this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosApi(false, true);
 
                 txt_desc.Text = "";
                 caregarEstoque();
             }
             else
             {
-                this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosApi()
+                this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosApi(false, true)
                     .Where(x => (x.cod_prod ?? string.Empty).StartsWith(txt_codProd.Text, StringComparison.CurrentCultureIgnoreCase))
                     .ToList();
 

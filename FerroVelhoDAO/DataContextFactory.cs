@@ -83,9 +83,9 @@ namespace FerroVelhoDAO
             return ApiConnectionService.TestarConexao(ApiBaseUrl);
         }
 
-        public static List<tb_produtos> ListarProdutosApi()
+        public static List<tb_produtos> ListarProdutosApi(bool incluirExcluidos = false, bool incluirExcluidosComSaldo = false)
         {
-            return ApiConnectionService.ListarProdutos(ApiBaseUrl, EmpresaCod);
+            return ApiConnectionService.ListarProdutos(ApiBaseUrl, EmpresaCod, incluirExcluidos, incluirExcluidosComSaldo);
         }
 
         public static bool ExisteProdutoApi(string codigo, int? excetoIdProd)
@@ -323,9 +323,9 @@ namespace FerroVelhoDAO
             return ApiConnectionService.CarregarEstoquePeriodo(ApiBaseUrl, EmpresaCod, inicio, fim, codigoProduto);
         }
 
-        public static DataTable CarregarProdutosDataTableApi()
+        public static DataTable CarregarProdutosDataTableApi(bool incluirExcluidos = true)
         {
-            return ApiConnectionService.CarregarProdutosDataTable(ApiBaseUrl, EmpresaCod);
+            return ApiConnectionService.CarregarProdutosDataTable(ApiBaseUrl, EmpresaCod, incluirExcluidos);
         }
 
         public static tb_venda CriarVendaApi(DateTime dataVenda, int usuario, decimal valorNota)

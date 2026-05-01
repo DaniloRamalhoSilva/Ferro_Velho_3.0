@@ -31,9 +31,19 @@ namespace FerroVelhoDAO
             return row == null ? null : MapUsuario(row);
         }
 
-        public static List<tb_produtos> ListarProdutos(string apiUrl, int empresaCod)
+        public static List<tb_produtos> ListarProdutos(
+            string apiUrl,
+            int empresaCod,
+            bool incluirExcluidos = false,
+            bool incluirExcluidosComSaldo = false)
         {
-            return GetRows(apiUrl, empresaCod, "/api/produtos").Select(MapProduto).ToList();
+            var query = BuildQuery(new Dictionary<string, string>
+            {
+                { "incluirExcluidos", incluirExcluidos ? "true" : null },
+                { "incluirExcluidosComSaldo", incluirExcluidosComSaldo ? "true" : null }
+            });
+
+            return GetRows(apiUrl, empresaCod, "/api/produtos" + query).Select(MapProduto).ToList();
         }
 
         public static bool ExisteProdutoPorCodigo(string apiUrl, int empresaCod, string codigo, int? excetoIdProd)
@@ -44,7 +54,7 @@ namespace FerroVelhoDAO
                 return false;
             }
 
-            return ListarProdutos(apiUrl, empresaCod).Any(produto =>
+            return ListarProdutos(apiUrl, empresaCod, true).Any(produto =>
                 produto.empresa_cod == empresaCod &&
                 string.Equals((produto.cod_prod ?? string.Empty).Trim(), codigoNormalizado, StringComparison.Ordinal) &&
                 (!excetoIdProd.HasValue || produto.id_prod != excetoIdProd.Value));
@@ -365,7 +375,7 @@ namespace FerroVelhoDAO
 
         public static DataTable CarregarFluxoCaixa(string apiUrl, int empresaCod, DateTime inicio, DateTime fim)
         {
-            return ToDataTable(GetRows(apiUrl, empresaCod, "/api/relatorios/fluxo-caixa?inicio=" + ApiDate(inicio) + "&fim=" + ApiDate(fim)));
+            return ToFluxoCaixaTable(GetRows(apiUrl, empresaCod, "/api/relatorios/fluxo-caixa?inicio=" + ApiDate(inicio) + "&fim=" + ApiDate(fim)));
         }
 
         public static decimal CalcularSaldoInicialFluxoCaixa(string apiUrl, int empresaCod, DateTime inicio)
@@ -385,9 +395,15 @@ namespace FerroVelhoDAO
             return ToDataTable(GetRows(apiUrl, empresaCod, "/api/estoque/periodo" + query));
         }
 
-        public static DataTable CarregarProdutosDataTable(string apiUrl, int empresaCod)
+        public static DataTable CarregarProdutosDataTable(string apiUrl, int empresaCod, bool incluirExcluidos = true)
         {
-            return ToDataTable(GetRows(apiUrl, empresaCod, "/api/produtos"), "id_prod", "cod_prod", "desc_prod", "val_prod", "usuario");
+            var path = "/api/produtos";
+            if (incluirExcluidos)
+            {
+                path += "?incluirExcluidos=true";
+            }
+
+            return ToDataTable(GetRows(apiUrl, empresaCod, path), "id_prod", "cod_prod", "desc_prod", "val_prod", "usuario");
         }
 
         public static tb_venda CriarVenda(string apiUrl, int empresaCod, DateTime dataVenda, int usuario, decimal valorNota)
@@ -660,6 +676,29 @@ namespace FerroVelhoDAO
             return table;
         }
 
+        private static DataTable ToFluxoCaixaTable(IEnumerable<Dictionary<string, object>> rows)
+        {
+            var table = new DataTable();
+            table.Columns.Add("Data", typeof(string));
+            table.Columns.Add("Inicio", typeof(decimal));
+            table.Columns.Add("Entrada", typeof(decimal));
+            table.Columns.Add("Saida", typeof(decimal));
+            table.Columns.Add("Saldo", typeof(decimal));
+
+            foreach (var row in rows)
+            {
+                var dataRow = table.NewRow();
+                dataRow["Data"] = DateOnlyText(row, "Data");
+                dataRow["Inicio"] = 0m;
+                dataRow["Entrada"] = Decimal(row, "Entrada");
+                dataRow["Saida"] = Decimal(row, "Saida");
+                dataRow["Saldo"] = 0m;
+                table.Rows.Add(dataRow);
+            }
+
+            return table;
+        }
+
         private static tb_tipoUsuario MapTipoUsuario(Dictionary<string, object> row)
         {
             return new tb_tipoUsuario
@@ -693,7 +732,8 @@ namespace FerroVelhoDAO
                 cod_prod = String(row, "cod_prod"),
                 desc_prod = String(row, "desc_prod"),
                 val_prod = NullableDecimal(row, "val_prod"),
-                usuario = NullableInt(row, "usuario")
+                usuario = NullableInt(row, "usuario"),
+                excluido = Bool(row, "excluido")
             };
         }
 
@@ -799,6 +839,33 @@ namespace FerroVelhoDAO
         {
             var value = Value(row, names);
             return value == null ? string.Empty : Convert.ToString(value, CultureInfo.CurrentCulture);
+        }
+
+        private static string DateOnlyText(Dictionary<string, object> row, params string[] names)
+        {
+            var value = Value(row, names);
+            if (value == null)
+            {
+                return string.Empty;
+            }
+
+            if (value is DateTime)
+            {
+                return ((DateTime)value).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            }
+
+            var text = Convert.ToString(value, CultureInfo.InvariantCulture);
+            DateTime parsed;
+            if (text.Length >= 10
+                && DateTime.TryParseExact(text.Substring(0, 10), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
+            {
+                return parsed.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            }
+
+            return DateTime.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out parsed)
+                || DateTime.TryParse(text, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out parsed)
+                ? parsed.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+                : text;
         }
 
         private static int Int(Dictionary<string, object> row, params string[] names)

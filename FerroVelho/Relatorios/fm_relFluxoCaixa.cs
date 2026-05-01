@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,31 +49,32 @@ namespace FerroVelho.Relatorios
 
             sInicio = DataContextFactory.CalcularSaldoInicialFluxoCaixaApi(inicio.Date);
             DataTable dtApi = DataContextFactory.CarregarFluxoCaixaApi(inicio.Date, fim.Date);
+            calcular(dtApi);
+            dataGridView1.AutoGenerateColumns = false;
             dataGridView1.DataSource = dtApi;
-            dataGridView1.DataMember = dtApi.TableName;
-            calcular();
         }
 
         
-        private void calcular()
+        private void calcular(DataTable fluxoCaixa)
         {
-
-            decimal inic, entrada, saida, saldo;
-            saldo = sInicio;
+            decimal saldo = sInicio;
             
-            foreach (DataGridViewRow dg in dataGridView1.Rows)
+            foreach (DataRow linha in fluxoCaixa.Rows)
             {
-                dg.Cells[0].Value = saldo;
-                inic = Convert.ToDecimal(dg.Cells[0].Value);
-                entrada = Convert.ToDecimal(dg.Cells[3].Value);
-                saida = Convert.ToDecimal(dg.Cells[4].Value);
-                saldo = inic + entrada - saida;
+                linha["Inicio"] = saldo;
+                saldo = saldo + ValorDecimal(linha["Entrada"]) - ValorDecimal(linha["Saida"]);
+                linha["Saldo"] = saldo;
+            }
+        }
 
-                dg.Cells[1].Value = saldo;                
-
+        private static decimal ValorDecimal(object valor)
+        {
+            if (valor == null || valor == DBNull.Value)
+            {
+                return 0m;
             }
 
-
+            return Convert.ToDecimal(valor, CultureInfo.InvariantCulture);
         }
 
         private void imprimir()

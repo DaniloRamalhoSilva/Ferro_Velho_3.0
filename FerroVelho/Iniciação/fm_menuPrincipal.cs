@@ -58,11 +58,19 @@ namespace FerroVelho
         {
             fm_cadastroProduto cadastroProduto = new fm_cadastroProduto();
             cadastroProduto.ShowDialog();
+
+            if (groupBox2.Visible)
+            {
+                CarregarProdutosCompra(false);
+            }
         }
         
         private void comprarToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            groupBox2.Visible = true;           
+            groupBox2.Visible = true;
+            CarregarProdutosCompra(true);
+            txt_quant.Focus();
+            guia = 0;
         }
 
         private void impressorasToolStripMenuItem_Click(object sender, EventArgs e)
@@ -219,16 +227,41 @@ namespace FerroVelho
         // Codigos referente a compra >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         int guia;
 
-        private void groupBox2_Layout(object sender, LayoutEventArgs e)
+        private void CarregarProdutosCompra(bool limparSelecao)
         {
-            this.tb_produtosBindingSource.DataSource = DataContextFactory.ListarProdutosApi();
+            string codigoAtual = limparSelecao ? string.Empty : txt_codProd.Text.Trim();
+            var produtos = DataContextFactory.ListarProdutosApi();
+
+            this.tb_produtosBindingSource.DataSource = produtos;
 
             cb_desProd.DataSource = tb_produtosBindingSource;
             cb_desProd.DisplayMember = "desc_prod";
             cb_desProd.ValueMember = "cod_prod";
+
+            if (!string.IsNullOrWhiteSpace(codigoAtual)
+                && produtos.Any(x => string.Equals(x.cod_prod, codigoAtual, StringComparison.Ordinal)))
+            {
+                cb_desProd.SelectedValue = codigoAtual;
+                return;
+            }
+
             cb_desProd.SelectedIndex = -1;
-            txt_quant.Focus();
-            guia = 0;
+            if (!limparSelecao && !string.IsNullOrWhiteSpace(codigoAtual))
+            {
+                txt_codProd.Text = string.Empty;
+                txt_valProd.Text = (0).ToString("N2");
+                calcula();
+            }
+        }
+
+        private void groupBox2_Layout(object sender, LayoutEventArgs e)
+        {
+            if (groupBox2.Visible && !(this.tb_produtosBindingSource.DataSource is List<tb_produtos>))
+            {
+                CarregarProdutosCompra(true);
+                txt_quant.Focus();
+                guia = 0;
+            }
         }
                
         private void cb_desProd_Leave(object sender, EventArgs e)
