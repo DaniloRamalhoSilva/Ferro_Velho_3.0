@@ -79,7 +79,6 @@ namespace FerroVelho
         private void fm_login_Load(object sender, EventArgs e)
         {
             DataContextFactory.FU_lerConfiguracao();
-            DataContextFactory.FU_lerCabecario();
         }
     }
 }

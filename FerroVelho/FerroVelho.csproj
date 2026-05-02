@@ -404,9 +404,6 @@
     <EmbeddedResource Include="rel_venda.rdlc">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Content Include="cabeçalho.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="configuração.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

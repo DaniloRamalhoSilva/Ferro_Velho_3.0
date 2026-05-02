@@ -34,6 +34,22 @@ namespace FerroVelhoDAO
             return row == null ? null : MapUsuario(row);
         }
 
+        public static tb_empresa BuscarEmpresa(string apiUrl, int empresaCod)
+        {
+            var row = GetRow(apiUrl, empresaCod, "/api/empresas/" + empresaCod);
+            return row == null ? null : MapEmpresa(row);
+        }
+
+        public static tb_empresa AtualizarCabecalhoEmpresa(string apiUrl, int empresaCod, string nomeFantasia, string telefoneComercial, string endereco)
+        {
+            return MapEmpresa(PutRow(apiUrl, empresaCod, "/api/empresas/" + empresaCod + "/cabecalho", new Dictionary<string, object>
+            {
+                { "empresa_nome_fantasia", nomeFantasia },
+                { "empresa_telefone_comercial", telefoneComercial },
+                { "empresa_endereco", endereco }
+            }));
+        }
+
         public static List<tb_produtos> ListarProdutos(
             string apiUrl,
             int empresaCod,
@@ -792,6 +808,18 @@ namespace FerroVelhoDAO
                 permi_usuario = Int(row, "permi_usuario"),
                 ativo = Bool(row, "ativo"),
                 tb_tipoUsuario = tipo
+            };
+        }
+
+        private static tb_empresa MapEmpresa(Dictionary<string, object> row)
+        {
+            return new tb_empresa
+            {
+                empresa_cod = Int(row, "empresa_cod", "empresaCod"),
+                empresa_nome = String(row, "empresa_nome", "empresaNome"),
+                empresa_nome_fantasia = String(row, "empresa_nome_fantasia", "empresaNomeFantasia"),
+                empresa_telefone_comercial = String(row, "empresa_telefone_comercial", "empresaTelefoneComercial", "empresa_telefone"),
+                empresa_endereco = String(row, "empresa_endereco", "empresaEndereco")
             };
         }
 

@@ -36,6 +36,15 @@ namespace FerroVelhoDAO
         public tb_tipoUsuario tb_tipoUsuario { get; set; }
     }
 
+    public class tb_empresa
+    {
+        public int empresa_cod { get; set; }
+        public string empresa_nome { get; set; }
+        public string empresa_nome_fantasia { get; set; }
+        public string empresa_telefone_comercial { get; set; }
+        public string empresa_endereco { get; set; }
+    }
+
     public class tb_cliente
     {
         public int id_cliente { get; set; }

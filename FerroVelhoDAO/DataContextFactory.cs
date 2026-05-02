@@ -11,7 +11,6 @@ namespace FerroVelhoDAO
     public class DataContextFactory
     {
         private const string DefaultApiUrl = "http://localhost:3000";
-        private const string CabecalhoFileName = "cabe\u00e7alho.xml";
         private const string ConfiguracaoFileName = "configura\u00e7\u00e3o.xml";
 
         public static tb_usuario usu;
@@ -72,6 +71,7 @@ namespace FerroVelhoDAO
             usu = usuario;
             empresaCodAutenticada = usuario.empresa_cod;
             conexaoImp = usuario.empresa_cod.ToString();
+            FU_lerCabecario();
         }
 
         public static void LimparSessao()
@@ -84,6 +84,23 @@ namespace FerroVelhoDAO
         public static bool TestarConexaoApi()
         {
             return ApiConnectionService.TestarConexao(ApiBaseUrl);
+        }
+
+        public static tb_empresa BuscarEmpresaApi()
+        {
+            return ApiConnectionService.BuscarEmpresa(ApiBaseUrl, EmpresaCod);
+        }
+
+        public static void AtualizarCabecarioApi(string nomeEmpresa, string telefoneComercial, string enderecoEmpresa)
+        {
+            var empresa = ApiConnectionService.AtualizarCabecalhoEmpresa(
+                ApiBaseUrl,
+                EmpresaCod,
+                nomeEmpresa,
+                telefoneComercial,
+                enderecoEmpresa);
+
+            AplicarCabecario(empresa);
         }
 
         public static List<tb_produtos> ListarProdutosApi(bool incluirExcluidos = false, bool incluirExcluidosComSaldo = false)
@@ -368,14 +385,7 @@ namespace FerroVelhoDAO
 
         public static void GravarCabecario(string nome, string tel, string endereco)
         {
-            XmlTextWriter STW_Arquivo;
-            STW_Arquivo = new XmlTextWriter(GetAppFilePath(CabecalhoFileName), Encoding.UTF8);
-            STW_Arquivo.WriteStartElement("cabecario");
-            STW_Arquivo.WriteElementString("Nome", nome.Trim());
-            STW_Arquivo.WriteElementString("Telefone", tel.Trim());
-            STW_Arquivo.WriteElementString("Endereco", endereco.Trim());
-            STW_Arquivo.WriteEndElement();
-            STW_Arquivo.Close();
+            AtualizarCabecarioApi(nome, tel, endereco);
         }
 
         public static void GravarConecxao(string apiUrl)
@@ -392,13 +402,7 @@ namespace FerroVelhoDAO
         {
             try
             {
-                XElement XML = XElement.Load(ResolveConfigPath(CabecalhoFileName));
-
-                nome = XML.Element("Nome").Value;
-                tel = XML.Element("Telefone").Value;
-                endereco = XML.Element("Endereco").Value;
-
-                XML = null;
+                AplicarCabecario(BuscarEmpresaApi());
             }
             catch
             {
@@ -442,6 +446,13 @@ namespace FerroVelhoDAO
 
             var legacyPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\", fileName));
             return File.Exists(legacyPath) ? legacyPath : appPath;
+        }
+
+        private static void AplicarCabecario(tb_empresa empresa)
+        {
+            nome = empresa == null ? "" : empresa.empresa_nome_fantasia;
+            tel = empresa == null ? "" : empresa.empresa_telefone_comercial;
+            endereco = empresa == null ? "" : empresa.empresa_endereco;
         }
 
         private static string GetAppFilePath(string fileName)
