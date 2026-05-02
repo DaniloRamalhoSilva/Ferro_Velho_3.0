@@ -343,30 +343,52 @@ namespace FerroVelho
         {
             if (txt_quant.Text != "" && txt_valProd.Text != "" && cb_desProd.Text != "" && txt_codProd.Text != "")
             {
-                if (txt_nNota.Text == "")
-                {
-                    novaNota();
-                    novoItem();
+                bool notaCriada = false;
 
-                    txt_nNota.Text = compraCorrente.id_compra.ToString();
-                    bt_finalCompra.Enabled = true;
-                }
-                else
+                try
                 {
-                    novoItem();
-                }
-                dg_compra.DataSource = this.tbitemcBindingSource;
-                this.tbitemcBindingSource.DataSource = DataContextFactory.ListarItensCompraApi(this.compraCorrente.id_compra);
-                calcula();
-                
-                upDateValor();
+                    if (txt_nNota.Text == "")
+                    {
+                        novaNota();
+                        notaCriada = true;
 
-                txt_codProd.Text = "";
-                txt_valProd.Text = (0).ToString("N2");
-                txt_quant.Text = "";
-                txt_subTot.Text = (0).ToString("N2");
-                cb_desProd.SelectedIndex = -1;
-                txt_quant.Focus();
+                        if (!novoItem())
+                        {
+                            cancelarCompraCriada();
+                            return;
+                        }
+
+                        txt_nNota.Text = compraCorrente.id_compra.ToString();
+                        bt_finalCompra.Enabled = true;
+                    }
+                    else if (!novoItem())
+                    {
+                        return;
+                    }
+
+                    dg_compra.DataSource = this.tbitemcBindingSource;
+                    this.tbitemcBindingSource.DataSource = DataContextFactory.ListarItensCompraApi(this.compraCorrente.id_compra);
+                    calcula();
+
+                    upDateValor();
+
+                    txt_codProd.Text = "";
+                    txt_valProd.Text = (0).ToString("N2");
+                    txt_quant.Text = "";
+                    txt_subTot.Text = (0).ToString("N2");
+                    cb_desProd.SelectedIndex = -1;
+                    txt_quant.Focus();
+                }
+                catch (Exception ex)
+                {
+                    if (notaCriada)
+                    {
+                        cancelarCompraCriada();
+                    }
+
+                    MessageBox.Show("Erro ao adicionar produto na compra: " + ex.Message);
+                    txt_quant.Focus();
+                }
 
             }
             else
@@ -450,7 +472,27 @@ namespace FerroVelho
                         
         }
 
-        private void novoItem()
+        private void cancelarCompraCriada()
+        {
+            tb_compra compra = compraCorrente;
+            if (compra != null && compra.id_compra != 0)
+            {
+                try
+                {
+                    DataContextFactory.ExcluirCompraApi(compra.id_compra);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Erro ao cancelar compra sem itens: " + ex.Message);
+                }
+            }
+
+            this.tb_compraBindingSource.DataSource = null;
+            txt_nNota.Text = "";
+            bt_finalCompra.Enabled = false;
+        }
+
+        private bool novoItem()
         {
             fm_recurcos fm = new fm_recurcos();
             decimal saldo = fm.calcular();
@@ -473,10 +515,12 @@ namespace FerroVelho
                     tb_Itemc.subTot_item,
                     tb_Itemc.valor_item);
 
+                return true;
             }
             else
             {
                 MessageBox.Show("Saldo insuficiente para essa compra! Necessário almentar valor em caixa");
+                return false;
             }
         }
                         
