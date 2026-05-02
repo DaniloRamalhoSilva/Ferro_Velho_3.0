@@ -23,6 +23,17 @@ namespace FerroVelhoDAO
     {
         public int id_tipoUsuario { get; set; }
         public string desc_tipoUsuario { get; set; }
+
+        public bool Administrador
+        {
+            get
+            {
+                return string.Equals(
+                    (desc_tipoUsuario ?? string.Empty).Trim(),
+                    "Administrador",
+                    StringComparison.OrdinalIgnoreCase);
+            }
+        }
     }
 
     public class tb_usuario
@@ -34,6 +45,14 @@ namespace FerroVelhoDAO
         public int permi_usuario { get; set; }
         public bool ativo { get; set; }
         public tb_tipoUsuario tb_tipoUsuario { get; set; }
+
+        public bool Administrador
+        {
+            get
+            {
+                return tb_tipoUsuario != null && tb_tipoUsuario.Administrador;
+            }
+        }
     }
 
     public class tb_empresa

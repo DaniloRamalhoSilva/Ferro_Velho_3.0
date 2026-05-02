@@ -31,7 +31,7 @@ namespace FerroVelho
         private void fm_menulPrincipal_Load(object sender, EventArgs e)
         {
             txt_operador.Text = DataContextFactory.usu.nome_usuario;
-            if (DataContextFactory.usu.tb_tipoUsuario.id_tipoUsuario == 1)
+            if (DataContextFactory.usu.Administrador)
             {
                 operacaoToolStripMenuItem.Visible = true;
                 cadastroToolStripMenuItem.Visible = true;
