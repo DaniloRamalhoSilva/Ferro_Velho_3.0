@@ -1,13 +1,29 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Danilo\\Documents\\Projetos\\Ferro_Velho_3.0\\",
+  "WorkspaceRootPath": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho\\Ferro_Velho_3.0\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|c:\\users\\danilo\\documents\\projetos\\ferro_velho_3.0\\ferrovelho\\consulta\\fm_notascompra.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|c:\\users\\raul\\documents\\danilo\\ferro_velho\\ferro_velho_3.0\\ferrovelho\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|solutionrelative:ferrovelho\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|c:\\users\\raul\\documents\\danilo\\ferro_velho\\ferro_velho_3.0\\ferrovelho\\configura\u00E7\u00E3o\\fm_configuracao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|solutionrelative:ferrovelho\\configura\u00E7\u00E3o\\fm_configuracao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|c:\\users\\raul\\documents\\danilo\\ferro_velho\\ferro_velho_3.0\\ferrovelho\\configura\u00E7\u00E3o\\fm_cofigimpressaora.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|solutionrelative:ferrovelho\\configura\u00E7\u00E3o\\fm_cofigimpressaora.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|c:\\users\\raul\\documents\\danilo\\ferro_velho\\ferro_velho_3.0\\ferrovelho\\configura\u00E7\u00E3o\\fm_cabecario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|solutionrelative:ferrovelho\\configura\u00E7\u00E3o\\fm_cabecario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|c:\\users\\raul\\documents\\danilo\\ferro_velho\\ferro_velho_3.0\\ferrovelho\\consulta\\fm_notascompra.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|solutionrelative:ferrovelho\\consulta\\fm_notascompra.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|C:\\Users\\Danilo\\Documents\\Projetos\\Ferro_Velho_3.0\\ferrovelho\\consulta\\fm_notascompra.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho\\Ferro_Velho_3.0\\ferrovelho\\consulta\\fm_notascompra.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{4BEFC537-BAC9-4EEA-A87F-E7C3601F1C43}|FerroVelho\\FerroVelho.csproj|solutionrelative:ferrovelho\\consulta\\fm_notascompra.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     }
   ],
@@ -18,23 +34,64 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 0,
           "Children": [
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho\\Ferro_Velho_3.0\\FerroVelho\\Program.cs",
+              "RelativeDocumentMoniker": "FerroVelho\\Program.cs",
+              "ToolTip": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho\\Ferro_Velho_3.0\\FerroVelho\\Program.cs",
+              "RelativeToolTip": "FerroVelho\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T14:18:50.001Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "fm_configuracao.cs [Design]",
+              "DocumentMoniker": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho\\Ferro_Velho_3.0\\FerroVelho\\Configura\u00E7\u00E3o\\fm_configuracao.cs",
+              "RelativeDocumentMoniker": "FerroVelho\\Configura\u00E7\u00E3o\\fm_configuracao.cs",
+              "ToolTip": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho\\Ferro_Velho_3.0\\FerroVelho\\Configura\u00E7\u00E3o\\fm_configuracao.cs [Design]",
+              "RelativeToolTip": "FerroVelho\\Configura\u00E7\u00E3o\\fm_configuracao.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T14:02:17.605Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "fm_cofigImpressaora.cs [Design]",
+              "DocumentMoniker": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho\\Ferro_Velho_3.0\\FerroVelho\\Configura\u00E7\u00E3o\\fm_cofigImpressaora.cs",
+              "RelativeDocumentMoniker": "FerroVelho\\Configura\u00E7\u00E3o\\fm_cofigImpressaora.cs",
+              "ToolTip": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho\\Ferro_Velho_3.0\\FerroVelho\\Configura\u00E7\u00E3o\\fm_cofigImpressaora.cs [Design]",
+              "RelativeToolTip": "FerroVelho\\Configura\u00E7\u00E3o\\fm_cofigImpressaora.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T14:02:13.647Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "fm_cabecario.cs [Design]",
+              "DocumentMoniker": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho\\Ferro_Velho_3.0\\FerroVelho\\Configura\u00E7\u00E3o\\fm_cabecario.cs",
+              "RelativeDocumentMoniker": "FerroVelho\\Configura\u00E7\u00E3o\\fm_cabecario.cs",
+              "ToolTip": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho\\Ferro_Velho_3.0\\FerroVelho\\Configura\u00E7\u00E3o\\fm_cabecario.cs [Design]",
+              "RelativeToolTip": "FerroVelho\\Configura\u00E7\u00E3o\\fm_cabecario.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T14:02:10.356Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "fm_notasCompra.cs [Design]",
-              "DocumentMoniker": "C:\\Users\\Danilo\\Documents\\Projetos\\Ferro_Velho_3.0\\FerroVelho\\Consulta\\fm_notasCompra.cs",
+              "DocumentMoniker": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho\\Ferro_Velho_3.0\\FerroVelho\\Consulta\\fm_notasCompra.cs",
               "RelativeDocumentMoniker": "FerroVelho\\Consulta\\fm_notasCompra.cs",
-              "ToolTip": "C:\\Users\\Danilo\\Documents\\Projetos\\Ferro_Velho_3.0\\FerroVelho\\Consulta\\fm_notasCompra.cs [Design]",
+              "ToolTip": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho\\Ferro_Velho_3.0\\FerroVelho\\Consulta\\fm_notasCompra.cs [Design]",
               "RelativeToolTip": "FerroVelho\\Consulta\\fm_notasCompra.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-25T18:26:10.152Z",
@@ -42,11 +99,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 4,
               "Title": "fm_notasCompra.cs",
-              "DocumentMoniker": "C:\\Users\\Danilo\\Documents\\Projetos\\Ferro_Velho_3.0\\FerroVelho\\Consulta\\fm_notasCompra.cs",
+              "DocumentMoniker": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho\\Ferro_Velho_3.0\\FerroVelho\\Consulta\\fm_notasCompra.cs",
               "RelativeDocumentMoniker": "FerroVelho\\Consulta\\fm_notasCompra.cs",
-              "ToolTip": "C:\\Users\\Danilo\\Documents\\Projetos\\Ferro_Velho_3.0\\FerroVelho\\Consulta\\fm_notasCompra.cs",
+              "ToolTip": "C:\\Users\\Raul\\Documents\\Danilo\\Ferro_Velho\\Ferro_Velho_3.0\\FerroVelho\\Consulta\\fm_notasCompra.cs",
               "RelativeToolTip": "FerroVelho\\Consulta\\fm_notasCompra.cs",
               "ViewState": "AgIAAKEAAAAAAAAAAIAwwKoAAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
