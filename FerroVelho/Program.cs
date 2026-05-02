@@ -15,7 +15,8 @@ namespace FerroVelho
         
         [STAThread]        
         static void Main()
-        {            
+        {
+            AppErrorHandler.Register();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

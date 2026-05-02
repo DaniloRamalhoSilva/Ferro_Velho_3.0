@@ -4,7 +4,10 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 
 namespace FerroVelhoDAO
@@ -495,32 +498,9 @@ namespace FerroVelhoDAO
 
         private static Dictionary<string, object> DeleteRow(string apiUrl, int empresaCod, string path)
         {
-            using (var request = BuildRequest(HttpMethod.Delete, apiUrl, path, true, empresaCod))
-            using (var response = Http.SendAsync(request).GetAwaiter().GetResult())
+            try
             {
-                var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw BuildApiException(response, json);
-                }
-
-                return string.IsNullOrWhiteSpace(json)
-                    ? null
-                    : Serializer.DeserializeObject(json) as Dictionary<string, object>;
-            }
-        }
-
-        private static Dictionary<string, object> SendWithBody(HttpMethod method, string apiUrl, int empresaCod, string path, Dictionary<string, object> body)
-        {
-            return SendWithBody(method, apiUrl, empresaCod, path, body, true);
-        }
-
-        private static Dictionary<string, object> SendWithBody(HttpMethod method, string apiUrl, int empresaCod, string path, Dictionary<string, object> body, bool includeEmpresa)
-        {
-            using (var request = BuildRequest(method, apiUrl, path, includeEmpresa, empresaCod))
-            {
-                request.Content = new StringContent(Serializer.Serialize(body), Encoding.UTF8, "application/json");
-
+                using (var request = BuildRequest(HttpMethod.Delete, apiUrl, path, true, empresaCod))
                 using (var response = Http.SendAsync(request).GetAwaiter().GetResult())
                 {
                     var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
@@ -534,20 +514,64 @@ namespace FerroVelhoDAO
                         : Serializer.DeserializeObject(json) as Dictionary<string, object>;
                 }
             }
+            catch (Exception ex) when (IsConnectionException(ex))
+            {
+                throw BuildConnectionException(ex);
+            }
+        }
+
+        private static Dictionary<string, object> SendWithBody(HttpMethod method, string apiUrl, int empresaCod, string path, Dictionary<string, object> body)
+        {
+            return SendWithBody(method, apiUrl, empresaCod, path, body, true);
+        }
+
+        private static Dictionary<string, object> SendWithBody(HttpMethod method, string apiUrl, int empresaCod, string path, Dictionary<string, object> body, bool includeEmpresa)
+        {
+            try
+            {
+                using (var request = BuildRequest(method, apiUrl, path, includeEmpresa, empresaCod))
+                {
+                    request.Content = new StringContent(Serializer.Serialize(body), Encoding.UTF8, "application/json");
+
+                    using (var response = Http.SendAsync(request).GetAwaiter().GetResult())
+                    {
+                        var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            throw BuildApiException(response, json);
+                        }
+
+                        return string.IsNullOrWhiteSpace(json)
+                            ? null
+                            : Serializer.DeserializeObject(json) as Dictionary<string, object>;
+                    }
+                }
+            }
+            catch (Exception ex) when (IsConnectionException(ex))
+            {
+                throw BuildConnectionException(ex);
+            }
         }
 
         private static object GetObject(string apiUrl, string path, bool includeEmpresa, int empresaCod)
         {
-            using (var request = BuildRequest(HttpMethod.Get, apiUrl, path, includeEmpresa, empresaCod))
-            using (var response = Http.SendAsync(request).GetAwaiter().GetResult())
+            try
             {
-                var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                if (!response.IsSuccessStatusCode)
+                using (var request = BuildRequest(HttpMethod.Get, apiUrl, path, includeEmpresa, empresaCod))
+                using (var response = Http.SendAsync(request).GetAwaiter().GetResult())
                 {
-                    throw BuildApiException(response, json);
-                }
+                    var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw BuildApiException(response, json);
+                    }
 
-                return string.IsNullOrWhiteSpace(json) ? null : Serializer.DeserializeObject(json);
+                    return string.IsNullOrWhiteSpace(json) ? null : Serializer.DeserializeObject(json);
+                }
+            }
+            catch (Exception ex) when (IsConnectionException(ex))
+            {
+                throw BuildConnectionException(ex);
             }
         }
 
@@ -612,7 +636,55 @@ namespace FerroVelhoDAO
                 return new InvalidOperationException(apiMessage);
             }
 
-            return new InvalidOperationException("API retornou erro " + (int)response.StatusCode + ": " + json);
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Unauthorized:
+                case HttpStatusCode.Forbidden:
+                    return new InvalidOperationException("Usuário sem permissão para concluir esta operação.");
+                case HttpStatusCode.NotFound:
+                    return new InvalidOperationException("Registro não encontrado.");
+                case HttpStatusCode.Conflict:
+                    return new InvalidOperationException("Não foi possível concluir a operação porque existe conflito com os dados atuais.");
+                case HttpStatusCode.InternalServerError:
+                    return new InvalidOperationException("A API encontrou um erro interno. Tente novamente ou chame o suporte.");
+                default:
+                    return new InvalidOperationException("Não foi possível concluir a operação. A API retornou erro " + (int)response.StatusCode + ".");
+            }
+        }
+
+        private static InvalidOperationException BuildConnectionException(Exception exception)
+        {
+            if (ContainsException<TaskCanceledException>(exception) || ContainsException<TimeoutException>(exception))
+            {
+                return new InvalidOperationException("A API demorou para responder. Verifique a conexão e tente novamente.", exception);
+            }
+
+            return new InvalidOperationException("Não foi possível conectar à API. Verifique se o servidor está aberto e tente novamente.", exception);
+        }
+
+        private static bool IsConnectionException(Exception exception)
+        {
+            return ContainsException<HttpRequestException>(exception) ||
+                   ContainsException<WebException>(exception) ||
+                   ContainsException<SocketException>(exception) ||
+                   ContainsException<TaskCanceledException>(exception) ||
+                   ContainsException<TimeoutException>(exception);
+        }
+
+        private static bool ContainsException<TException>(Exception exception)
+            where TException : Exception
+        {
+            while (exception != null)
+            {
+                if (exception is TException)
+                {
+                    return true;
+                }
+
+                exception = exception.InnerException;
+            }
+
+            return false;
         }
 
         private static string TryExtractApiMessage(string json)

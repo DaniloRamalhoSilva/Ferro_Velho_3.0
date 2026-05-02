@@ -113,6 +113,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppErrorHandler.cs" />
     <Compile Include="Dao.cs" />
     <Compile Include="Operaçoes\fm_adiantamentoOp.cs">
       <SubType>Form</SubType>
