@@ -68,9 +68,11 @@ namespace FerroVelho
             }
             catch
             {
-                MessageBox.Show("Não foi possível acessar a API de usuários.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                fm_configuracao fmc = new fm_configuracao();
-                fmc.ShowDialog();
+                MessageBox.Show(
+                    "Não foi possível conectar. Verifique se a internet está funcionando e tente novamente. Se a internet estiver funcionando e o erro continuar, entre em contato com o suporte.",
+                    "Erro de conexão",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
 
