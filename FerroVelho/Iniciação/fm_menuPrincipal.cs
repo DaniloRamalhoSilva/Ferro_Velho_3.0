@@ -600,7 +600,7 @@ namespace FerroVelho
             txt_quant.Focus();
         }
 
-        private void bt_finalCompra_Click(object sender, EventArgs e)
+        private void finalizarCompra()
         {
             if (Convert.ToDecimal(labelTotal.Text) < 0)
             {
@@ -614,6 +614,11 @@ namespace FerroVelho
                 finalizar();
                 guia = 0;
             }            
+        }
+
+        private void bt_finalCompra_Click(object sender, EventArgs e)
+        {
+            finalizarCompra();
         }
 
         private void limpar()
@@ -772,7 +777,7 @@ namespace FerroVelho
                 }
                 else
                 {
-                    finalizar();
+                    finalizarCompra();
                 }
                 
             }
@@ -787,7 +792,7 @@ namespace FerroVelho
                 }
                 else
                 {
-                    finalizar();
+                    finalizarCompra();
                 }
 
             }
@@ -803,7 +808,7 @@ namespace FerroVelho
                 }
                 else
                 {
-                    finalizar();
+                    finalizarCompra();
                 }
 
             }
