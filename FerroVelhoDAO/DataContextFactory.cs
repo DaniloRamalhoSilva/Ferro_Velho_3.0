@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
@@ -10,6 +11,8 @@ namespace FerroVelhoDAO
     public class DataContextFactory
     {
         private const string DefaultApiUrl = "http://localhost:3000";
+        private const string CabecalhoFileName = "cabe\u00e7alho.xml";
+        private const string ConfiguracaoFileName = "configura\u00e7\u00e3o.xml";
 
         public static tb_usuario usu;
         public static string nome;
@@ -366,7 +369,7 @@ namespace FerroVelhoDAO
         public static void GravarCabecario(string nome, string tel, string endereco)
         {
             XmlTextWriter STW_Arquivo;
-            STW_Arquivo = new XmlTextWriter(@"..\..\cabeçalho.xml", Encoding.UTF8);
+            STW_Arquivo = new XmlTextWriter(GetAppFilePath(CabecalhoFileName), Encoding.UTF8);
             STW_Arquivo.WriteStartElement("cabecario");
             STW_Arquivo.WriteElementString("Nome", nome.Trim());
             STW_Arquivo.WriteElementString("Telefone", tel.Trim());
@@ -378,7 +381,7 @@ namespace FerroVelhoDAO
         public static void GravarConecxao(string apiUrl)
         {
             XmlTextWriter STW_Arquivo;
-            STW_Arquivo = new XmlTextWriter(@"..\..\configuração.xml", Encoding.UTF8);
+            STW_Arquivo = new XmlTextWriter(GetAppFilePath(ConfiguracaoFileName), Encoding.UTF8);
             STW_Arquivo.WriteStartElement("configConexao");
             STW_Arquivo.WriteElementString("apiUrl", string.IsNullOrWhiteSpace(apiUrl) ? DefaultApiUrl : apiUrl.Trim());
             STW_Arquivo.WriteEndElement();
@@ -389,7 +392,7 @@ namespace FerroVelhoDAO
         {
             try
             {
-                XElement XML = XElement.Load(@"..\..\cabeçalho.xml");
+                XElement XML = XElement.Load(ResolveConfigPath(CabecalhoFileName));
 
                 nome = XML.Element("Nome").Value;
                 tel = XML.Element("Telefone").Value;
@@ -409,7 +412,7 @@ namespace FerroVelhoDAO
         {
             try
             {
-                XElement XML = XElement.Load(@"..\..\configuração.xml");
+                XElement XML = XElement.Load(ResolveConfigPath(ConfiguracaoFileName));
 
                 conexaoUser = GetXmlValue(XML, "apiUrl", "dataUser");
                 if (string.IsNullOrWhiteSpace(conexaoUser) ||
@@ -427,6 +430,23 @@ namespace FerroVelhoDAO
                 conexaoUser = DefaultApiUrl;
                 conexaoImp = empresaCodAutenticada.HasValue ? empresaCodAutenticada.Value.ToString() : string.Empty;
             }
+        }
+
+        private static string ResolveConfigPath(string fileName)
+        {
+            var appPath = GetAppFilePath(fileName);
+            if (File.Exists(appPath))
+            {
+                return appPath;
+            }
+
+            var legacyPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\", fileName));
+            return File.Exists(legacyPath) ? legacyPath : appPath;
+        }
+
+        private static string GetAppFilePath(string fileName)
+        {
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
         }
 
         private static string GetXmlValue(XElement xml, string currentName, string legacyName)
