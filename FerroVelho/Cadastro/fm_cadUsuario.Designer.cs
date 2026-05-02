@@ -48,7 +48,6 @@
             this.btn_excluir = new System.Windows.Forms.Button();
             this.btn_alterar = new System.Windows.Forms.Button();
             this.lb_idUsuario = new System.Windows.Forms.Label();
-            this.tbusuarioBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -60,7 +59,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.tb_tipoUsuarioBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tb_usuarioBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridView1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbusuarioBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // bt_salvar
@@ -259,11 +257,6 @@
             this.lb_idUsuario.TabIndex = 16;
             this.lb_idUsuario.Text = "nd";
             // 
-            // tbusuarioBindingSource
-            // 
-            this.tbusuarioBindingSource.DataMember = "tb_usuario";
-            this.tbusuarioBindingSource.DataSource = this.tb_tipoUsuarioBindingSource;
-            // 
             // dataGridViewTextBoxColumn2
             // 
             this.dataGridViewTextBoxColumn2.DataPropertyName = "nome_usuario";
@@ -374,7 +367,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.tb_tipoUsuarioBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tb_usuarioBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridView1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbusuarioBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -399,7 +391,6 @@
         private System.Windows.Forms.Button btn_excluir;
         private System.Windows.Forms.Button btn_alterar;
         private System.Windows.Forms.Label lb_idUsuario;
-        private System.Windows.Forms.BindingSource tbusuarioBindingSource;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
