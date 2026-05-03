@@ -27,3 +27,10 @@ Se nao houver configuracao local, o aplicativo usa `http://localhost:3000`.
 ## Uso
 
 Ao iniciar o aplicativo, sera apresentada a tela de login. O menu principal possui modulos de cadastros, consultas, operacoes, relatorios e configuracoes, todos alimentados pela API.
+
+## Documentacao para versao web
+
+A documentacao completa do projeto desktop, dos fluxos de negocio e do contrato
+usado para criar uma versao web em React esta em:
+
+- `docs/documentacao-projeto-react.md`
