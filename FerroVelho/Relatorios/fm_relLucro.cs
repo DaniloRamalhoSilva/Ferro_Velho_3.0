@@ -7,6 +7,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,9 +18,12 @@ namespace FerroVelho.Relatorios
 {
     public partial class fm_relLucro : Form
     {
+        private static readonly CultureInfo BrazilianCulture = CultureInfo.GetCultureInfo("pt-BR");
+
         public fm_relLucro()
         {
             InitializeComponent();
+            ConfigureGridFormatting();
         }
 
         private DateTime inicio, fim;
@@ -75,6 +79,32 @@ namespace FerroVelho.Relatorios
             dataGridView2.ClearSelection();
             dataGridView3.ClearSelection();
             dataGridView4.ClearSelection();
+        }
+
+        private void ConfigureGridFormatting()
+        {
+            ApplyMoneyFormat(
+                Total,
+                Column2,
+                Column3,
+                dataGridViewTextBoxColumn4,
+                dataGridViewTextBoxColumn6,
+                dataGridViewTextBoxColumn8,
+                dataGridViewTextBoxColumn12,
+                dataGridViewTextBoxColumn14,
+                dataGridViewTextBoxColumn16,
+                dataGridViewTextBoxColumn20,
+                dataGridViewTextBoxColumn22,
+                dataGridViewTextBoxColumn24);
+        }
+
+        private static void ApplyMoneyFormat(params DataGridViewTextBoxColumn[] columns)
+        {
+            foreach (DataGridViewTextBoxColumn column in columns)
+            {
+                column.DefaultCellStyle.Format = "C2";
+                column.DefaultCellStyle.FormatProvider = BrazilianCulture;
+            }
         }
 
         private void bt_imprimir_Click(object sender, EventArgs e)

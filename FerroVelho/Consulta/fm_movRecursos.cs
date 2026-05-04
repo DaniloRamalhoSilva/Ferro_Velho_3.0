@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,9 +14,12 @@ namespace FerroVelho
 {
     public partial class fm_movRecursos : Form
     {
+        private static readonly CultureInfo BrazilianCulture = CultureInfo.GetCultureInfo("pt-BR");
+
         public fm_movRecursos()
         {
             InitializeComponent();
+            ConfigureGridFormatting();
         }
 
         DateTime inicio, fim;
@@ -60,6 +64,12 @@ namespace FerroVelho
                     e.CellStyle.ForeColor = Color.Green;
                 }                
             }
+        }
+
+        private void ConfigureGridFormatting()
+        {
+            Column1.DefaultCellStyle.Format = "C2";
+            Column1.DefaultCellStyle.FormatProvider = BrazilianCulture;
         }
 
         private void imprimir()

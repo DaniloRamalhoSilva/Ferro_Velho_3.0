@@ -7,6 +7,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,9 +18,12 @@ namespace FerroVelho.Relatorios
 {
     public partial class fm_relCompra : Form
     {
+        private static readonly CultureInfo BrazilianCulture = CultureInfo.GetCultureInfo("pt-BR");
+
         public fm_relCompra()
         {
             InitializeComponent();
+            ConfigureGridFormatting();
         }
 
         DateTime comeco, inicio, fim;
@@ -82,16 +86,29 @@ namespace FerroVelho.Relatorios
 
             decimal saldoPg = totalInicioPg + entradaPeriodoPg - saidaPeriodoPg - compraPeriodoPg + descontoPeriodoPg + creditoPeriodoPg;
 
-            lb_total.Text = compraPeriodoPg.ToString("C2");
-            lb_inicial.Text = totalInicioPg.ToString("C2");
-            lb_entrada.Text = entradaPeriodoPg.ToString("C2");
-            lb_saida.Text = saidaPeriodoPg.ToString("C2");
-            lb_gastoCompra.Text = (compraPeriodoPg - descontoPeriodoPg - creditoPeriodoPg).ToString("C2");
-            lb_saldo.Text = saldoPg.ToString("C2");
-            lb_adiantamento.Text = descontoPeriodoPg.ToString("C2");
-            lb_credito.Text = creditoPeriodoPg.ToString("C2");
-            lb_TgastoCompra.Text = (compraPeriodoPg - descontoPeriodoPg - creditoPeriodoPg).ToString("C2");
+            lb_total.Text = FormatMoney(compraPeriodoPg);
+            lb_inicial.Text = FormatMoney(totalInicioPg);
+            lb_entrada.Text = FormatMoney(entradaPeriodoPg);
+            lb_saida.Text = FormatMoney(saidaPeriodoPg);
+            lb_gastoCompra.Text = FormatMoney(compraPeriodoPg - descontoPeriodoPg - creditoPeriodoPg);
+            lb_saldo.Text = FormatMoney(saldoPg);
+            lb_adiantamento.Text = FormatMoney(descontoPeriodoPg);
+            lb_credito.Text = FormatMoney(creditoPeriodoPg);
+            lb_TgastoCompra.Text = FormatMoney(compraPeriodoPg - descontoPeriodoPg - creditoPeriodoPg);
 
+        }
+
+        private void ConfigureGridFormatting()
+        {
+            Peso.DefaultCellStyle.Format = "N2";
+            Peso.DefaultCellStyle.FormatProvider = BrazilianCulture;
+            Total.DefaultCellStyle.Format = "C2";
+            Total.DefaultCellStyle.FormatProvider = BrazilianCulture;
+        }
+
+        private static string FormatMoney(decimal value)
+        {
+            return value.ToString("C2", BrazilianCulture);
         }
 
         private void bt_imprimir_Click(object sender, EventArgs e)

@@ -7,6 +7,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,9 +18,12 @@ namespace FerroVelho.Relatorios
 {
     public partial class fm_relVenda : Form
     {
+        private static readonly CultureInfo BrazilianCulture = CultureInfo.GetCultureInfo("pt-BR");
+
         public fm_relVenda()
         {
             InitializeComponent();
+            ConfigureGridFormatting();
         }
         DateTime inicio, fim;
 
@@ -54,7 +58,15 @@ namespace FerroVelho.Relatorios
             dataGridView1.DataMember = dtApi.TableName;
             lb_total.Text = DataContextFactory.CalcularTotalVendaProdutosApi(
                 inicio.Date.Add(new TimeSpan(00, 00, 00)),
-                fim.Date.Add(new TimeSpan(23, 59, 59))).ToString("C2");
+                fim.Date.Add(new TimeSpan(23, 59, 59))).ToString("C2", BrazilianCulture);
+        }
+
+        private void ConfigureGridFormatting()
+        {
+            Peso.DefaultCellStyle.Format = "N2";
+            Peso.DefaultCellStyle.FormatProvider = BrazilianCulture;
+            Total.DefaultCellStyle.Format = "C2";
+            Total.DefaultCellStyle.FormatProvider = BrazilianCulture;
         }
 
         private int m_currentPageIndex;

@@ -315,7 +315,10 @@ namespace FerroVelhoDAO
 
         public static DataTable CarregarMovimentacaoRecursos(string apiUrl, int empresaCod, DateTime inicio, DateTime fim)
         {
-            return ToDataTable(GetRows(apiUrl, empresaCod, "/api/recursos/movimentacao?inicio=" + ApiDate(inicio.Date) + "&fim=" + ApiDate(fim.Date)));
+            return ToDataTable(
+                GetRows(apiUrl, empresaCod, "/api/recursos/movimentacao?inicio=" + ApiDate(inicio.Date) + "&fim=" + ApiDate(fim.Date)),
+                null,
+                new[] { "Valor" });
         }
 
         public static DataTable ListarCompras(string apiUrl, int empresaCod, DateTime? inicio, DateTime? fim, int? idCompra)
@@ -327,7 +330,10 @@ namespace FerroVelhoDAO
                 { "id_compra", idCompra.HasValue ? idCompra.Value.ToString(CultureInfo.InvariantCulture) : null }
             });
 
-            return ToDataTable(GetRows(apiUrl, empresaCod, "/api/compras" + query), "id_compra", "data_compra", "desconto_compra", "subtot_compra", "valor_nota", "usuario", "id_cliente");
+            return ToDataTable(
+                GetRows(apiUrl, empresaCod, "/api/compras" + query),
+                new[] { "id_compra", "data_compra", "desconto_compra", "subtot_compra", "valor_nota", "usuario", "id_cliente" },
+                new[] { "desconto_compra", "subtot_compra", "valor_nota" });
         }
 
         public static DataTable ListarVendas(string apiUrl, int empresaCod, DateTime? inicio, DateTime? fim, int? idVenda)
@@ -339,22 +345,34 @@ namespace FerroVelhoDAO
                 { "id_venda", idVenda.HasValue ? idVenda.Value.ToString(CultureInfo.InvariantCulture) : null }
             });
 
-            return ToDataTable(GetRows(apiUrl, empresaCod, "/api/vendas" + query), "id_venda", "data_venda", "valor_nota", "usuario");
+            return ToDataTable(
+                GetRows(apiUrl, empresaCod, "/api/vendas" + query),
+                new[] { "id_venda", "data_venda", "valor_nota", "usuario" },
+                new[] { "valor_nota" });
         }
 
         public static DataTable CarregarEstoqueAtual(string apiUrl, int empresaCod)
         {
-            return ToDataTable(GetRows(apiUrl, empresaCod, "/api/estoque/atual"), "id_prod", "cod_prod", "desc_prod", "qunt_est");
+            return ToDataTable(
+                GetRows(apiUrl, empresaCod, "/api/estoque/atual"),
+                new[] { "id_prod", "cod_prod", "desc_prod", "qunt_est" },
+                new[] { "qunt_est" });
         }
 
         public static DataTable CarregarResumoCompraProdutos(string apiUrl, int empresaCod, DateTime inicio, DateTime fim)
         {
-            return ToDataTable(GetRows(apiUrl, empresaCod, "/api/relatorios/compras/produtos?inicio=" + ApiDate(inicio) + "&fim=" + ApiDate(fim)));
+            return ToDataTable(
+                GetRows(apiUrl, empresaCod, "/api/relatorios/compras/produtos?inicio=" + ApiDate(inicio) + "&fim=" + ApiDate(fim)),
+                null,
+                new[] { "Peso", "Total" });
         }
 
         public static DataTable CarregarRelatorioCompraItens(string apiUrl, int empresaCod, int idCompra)
         {
-            return ToDataTable(GetRows(apiUrl, empresaCod, "/api/relatorios/compras/" + idCompra + "/itens"));
+            return ToDataTable(
+                GetRows(apiUrl, empresaCod, "/api/relatorios/compras/" + idCompra + "/itens"),
+                null,
+                new[] { "quant_item", "subTot_item", "subtot_item", "valor_item" });
         }
 
         public static DataTable CarregarRelatorioCompraCabecalho(string apiUrl, int empresaCod, int idCompra)
@@ -369,12 +387,30 @@ namespace FerroVelhoDAO
 
         public static DataTable CalcularResumoCompraCaixa(string apiUrl, int empresaCod, DateTime inicio, DateTime fim)
         {
-            return ToDataTable(GetRows(apiUrl, empresaCod, "/api/relatorios/compras/caixa?inicio=" + ApiDate(inicio) + "&fim=" + ApiDate(fim)));
+            return ToDataTable(
+                GetRows(apiUrl, empresaCod, "/api/relatorios/compras/caixa?inicio=" + ApiDate(inicio) + "&fim=" + ApiDate(fim)),
+                null,
+                new[]
+                {
+                    "saida_antes",
+                    "entrada_antes",
+                    "compra_antes",
+                    "desconto_antes",
+                    "credito_antes",
+                    "saida_periodo",
+                    "entrada_periodo",
+                    "compra_periodo",
+                    "desconto_periodo",
+                    "credito_periodo"
+                });
         }
 
         public static DataTable CarregarResumoVendaProdutos(string apiUrl, int empresaCod, DateTime inicio, DateTime fim)
         {
-            return ToDataTable(GetRows(apiUrl, empresaCod, "/api/relatorios/vendas/produtos?inicio=" + ApiDate(inicio) + "&fim=" + ApiDate(fim)));
+            return ToDataTable(
+                GetRows(apiUrl, empresaCod, "/api/relatorios/vendas/produtos?inicio=" + ApiDate(inicio) + "&fim=" + ApiDate(fim)),
+                null,
+                new[] { "Peso", "Total" });
         }
 
         public static decimal CalcularTotalVendaProdutos(string apiUrl, int empresaCod, DateTime inicio, DateTime fim)
@@ -384,12 +420,18 @@ namespace FerroVelhoDAO
 
         public static DataTable CarregarLucroDetalhado(string apiUrl, int empresaCod, DateTime inicio, DateTime fim)
         {
-            return ToDataTable(GetRows(apiUrl, empresaCod, "/api/relatorios/lucro/detalhado?inicio=" + ApiDate(inicio) + "&fim=" + ApiDate(fim)));
+            return ToDataTable(
+                GetRows(apiUrl, empresaCod, "/api/relatorios/lucro/detalhado?inicio=" + ApiDate(inicio) + "&fim=" + ApiDate(fim)),
+                null,
+                new[] { "pesoC", "compra", "pesoV", "venda", "peso", "lucro" });
         }
 
         public static DataTable CarregarLucroTotal(string apiUrl, int empresaCod, DateTime inicio, DateTime fim)
         {
-            return ToDataTable(GetRows(apiUrl, empresaCod, "/api/relatorios/lucro/total?inicio=" + ApiDate(inicio) + "&fim=" + ApiDate(fim)));
+            return ToDataTable(
+                GetRows(apiUrl, empresaCod, "/api/relatorios/lucro/total?inicio=" + ApiDate(inicio) + "&fim=" + ApiDate(fim)),
+                null,
+                new[] { "pesoCT", "compraT", "pesoVT", "vendaT", "pesoT", "lucroT" });
         }
 
         public static DataTable CarregarFluxoCaixa(string apiUrl, int empresaCod, DateTime inicio, DateTime fim)
@@ -422,7 +464,10 @@ namespace FerroVelhoDAO
                 path += "?incluirExcluidos=true";
             }
 
-            return ToDataTable(GetRows(apiUrl, empresaCod, path), "id_prod", "cod_prod", "desc_prod", "val_prod", "usuario");
+            return ToDataTable(
+                GetRows(apiUrl, empresaCod, path),
+                new[] { "id_prod", "cod_prod", "desc_prod", "val_prod", "usuario" },
+                new[] { "val_prod" });
         }
 
         public static tb_venda CriarVenda(string apiUrl, int empresaCod, DateTime dataVenda, int usuario, decimal valorNota)
@@ -725,9 +770,15 @@ namespace FerroVelhoDAO
 
         private static DataTable ToDataTable(IEnumerable<Dictionary<string, object>> rows, params string[] columnOrder)
         {
+            return ToDataTable(rows, columnOrder, null);
+        }
+
+        private static DataTable ToDataTable(IEnumerable<Dictionary<string, object>> rows, string[] columnOrder, string[] decimalColumns)
+        {
             var list = rows.ToList();
             var table = new DataTable();
             var keys = new List<string>();
+            var decimalKeys = new HashSet<string>(decimalColumns ?? new string[0], StringComparer.OrdinalIgnoreCase);
 
             if (columnOrder != null)
             {
@@ -747,7 +798,7 @@ namespace FerroVelhoDAO
 
             foreach (var key in keys)
             {
-                table.Columns.Add(key, typeof(object));
+                table.Columns.Add(key, decimalKeys.Contains(key) ? typeof(decimal) : typeof(object));
             }
 
             foreach (var row in list)
@@ -755,7 +806,20 @@ namespace FerroVelhoDAO
                 var dataRow = table.NewRow();
                 foreach (var key in keys)
                 {
-                    dataRow[key] = row.ContainsKey(key) && row[key] != null ? row[key] : DBNull.Value;
+                    object value = row.ContainsKey(key) ? row[key] : null;
+                    if (value == null)
+                    {
+                        dataRow[key] = DBNull.Value;
+                    }
+                    else if (decimalKeys.Contains(key))
+                    {
+                        decimal? decimalValue = NullableDecimalValue(value);
+                        dataRow[key] = decimalValue.HasValue ? (object)decimalValue.Value : DBNull.Value;
+                    }
+                    else
+                    {
+                        dataRow[key] = value;
+                    }
                 }
 
                 table.Rows.Add(dataRow);
@@ -983,13 +1047,68 @@ namespace FerroVelhoDAO
         private static decimal Decimal(Dictionary<string, object> row, params string[] names)
         {
             var value = Value(row, names);
-            return value == null ? 0m : Convert.ToDecimal(value, CultureInfo.InvariantCulture);
+            return DecimalValue(value);
         }
 
         private static decimal? NullableDecimal(Dictionary<string, object> row, params string[] names)
         {
             var value = Value(row, names);
-            return value == null ? (decimal?)null : Convert.ToDecimal(value, CultureInfo.InvariantCulture);
+            return NullableDecimalValue(value);
+        }
+
+        private static decimal DecimalValue(object value)
+        {
+            return NullableDecimalValue(value) ?? 0m;
+        }
+
+        private static decimal? NullableDecimalValue(object value)
+        {
+            if (value == null || value == DBNull.Value)
+            {
+                return null;
+            }
+
+            if (value is decimal)
+            {
+                return (decimal)value;
+            }
+
+            string text = Convert.ToString(value, CultureInfo.InvariantCulture);
+            decimal parsed;
+            if (TryParseDecimalText(text, out parsed))
+            {
+                return parsed;
+            }
+
+            return Convert.ToDecimal(value, CultureInfo.InvariantCulture);
+        }
+
+        private static bool TryParseDecimalText(string text, out decimal value)
+        {
+            value = 0m;
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return false;
+            }
+
+            text = text.Trim().Replace("R$", string.Empty).Trim();
+            bool hasComma = text.IndexOf(',') >= 0;
+            bool hasDot = text.IndexOf('.') >= 0;
+
+            if (hasComma && hasDot)
+            {
+                int lastComma = text.LastIndexOf(',');
+                int lastDot = text.LastIndexOf('.');
+                text = lastComma > lastDot
+                    ? text.Replace(".", string.Empty).Replace(",", ".")
+                    : text.Replace(",", string.Empty);
+            }
+            else if (hasComma)
+            {
+                text = text.Replace(".", string.Empty).Replace(",", ".");
+            }
+
+            return decimal.TryParse(text, NumberStyles.Number, CultureInfo.InvariantCulture, out value);
         }
 
         private static bool Bool(Dictionary<string, object> row, params string[] names)
