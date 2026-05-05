@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,9 +14,12 @@ namespace FerroVelho
 {
     public partial class fm_notasVenda : Form
     {
+        private static readonly CultureInfo BrazilianCulture = CultureInfo.GetCultureInfo("pt-BR");
+
         public fm_notasVenda()
         {
             InitializeComponent();
+            ConfigureGridFormatting();
         }
 
         private void fm_notasVenda_Load(object sender, EventArgs e)
@@ -45,6 +49,12 @@ namespace FerroVelho
             }
             AtualizarUsuarioSelecionado();
             carregaItem();
+        }
+
+        private void ConfigureGridFormatting()
+        {
+            dataGridViewTextBoxColumn2.DefaultCellStyle.Format = "dd/MM/yyyy HH:mm";
+            dataGridViewTextBoxColumn2.DefaultCellStyle.FormatProvider = BrazilianCulture;
         }
 
         private void carregaItem()

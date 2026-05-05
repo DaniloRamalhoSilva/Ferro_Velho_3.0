@@ -333,7 +333,8 @@ namespace FerroVelhoDAO
             return ToDataTable(
                 GetRows(apiUrl, empresaCod, "/api/compras" + query),
                 new[] { "id_compra", "data_compra", "desconto_compra", "subtot_compra", "valor_nota", "usuario", "id_cliente" },
-                new[] { "desconto_compra", "subtot_compra", "valor_nota" });
+                new[] { "desconto_compra", "subtot_compra", "valor_nota" },
+                new[] { "data_compra" });
         }
 
         public static DataTable ListarVendas(string apiUrl, int empresaCod, DateTime? inicio, DateTime? fim, int? idVenda)
@@ -348,7 +349,8 @@ namespace FerroVelhoDAO
             return ToDataTable(
                 GetRows(apiUrl, empresaCod, "/api/vendas" + query),
                 new[] { "id_venda", "data_venda", "valor_nota", "usuario" },
-                new[] { "valor_nota" });
+                new[] { "valor_nota" },
+                new[] { "data_venda" });
         }
 
         public static DataTable CarregarEstoqueAtual(string apiUrl, int empresaCod)
@@ -770,15 +772,21 @@ namespace FerroVelhoDAO
 
         private static DataTable ToDataTable(IEnumerable<Dictionary<string, object>> rows, params string[] columnOrder)
         {
-            return ToDataTable(rows, columnOrder, null);
+            return ToDataTable(rows, columnOrder, null, null);
         }
 
         private static DataTable ToDataTable(IEnumerable<Dictionary<string, object>> rows, string[] columnOrder, string[] decimalColumns)
+        {
+            return ToDataTable(rows, columnOrder, decimalColumns, null);
+        }
+
+        private static DataTable ToDataTable(IEnumerable<Dictionary<string, object>> rows, string[] columnOrder, string[] decimalColumns, string[] dateColumns)
         {
             var list = rows.ToList();
             var table = new DataTable();
             var keys = new List<string>();
             var decimalKeys = new HashSet<string>(decimalColumns ?? new string[0], StringComparer.OrdinalIgnoreCase);
+            var dateKeys = new HashSet<string>(dateColumns ?? new string[0], StringComparer.OrdinalIgnoreCase);
 
             if (columnOrder != null)
             {
@@ -798,7 +806,17 @@ namespace FerroVelhoDAO
 
             foreach (var key in keys)
             {
-                table.Columns.Add(key, decimalKeys.Contains(key) ? typeof(decimal) : typeof(object));
+                Type columnType = typeof(object);
+                if (decimalKeys.Contains(key))
+                {
+                    columnType = typeof(decimal);
+                }
+                else if (dateKeys.Contains(key))
+                {
+                    columnType = typeof(DateTime);
+                }
+
+                table.Columns.Add(key, columnType);
             }
 
             foreach (var row in list)
@@ -815,6 +833,11 @@ namespace FerroVelhoDAO
                     {
                         decimal? decimalValue = NullableDecimalValue(value);
                         dataRow[key] = decimalValue.HasValue ? (object)decimalValue.Value : DBNull.Value;
+                    }
+                    else if (dateKeys.Contains(key))
+                    {
+                        DateTime? dateValue = NullableDateValue(value);
+                        dataRow[key] = dateValue.HasValue ? (object)dateValue.Value : DBNull.Value;
                     }
                     else
                     {
@@ -1081,6 +1104,39 @@ namespace FerroVelhoDAO
             }
 
             return Convert.ToDecimal(value, CultureInfo.InvariantCulture);
+        }
+
+        private static DateTime? NullableDateValue(object value)
+        {
+            if (value == null || value == DBNull.Value)
+            {
+                return null;
+            }
+
+            if (value is DateTime)
+            {
+                return (DateTime)value;
+            }
+
+            string text = Convert.ToString(value, CultureInfo.InvariantCulture);
+            DateTime parsed;
+            if (!string.IsNullOrWhiteSpace(text)
+                && text.Length >= 19
+                && text[10] == 'T'
+                && DateTime.TryParseExact(
+                    text.Substring(0, 19),
+                    "yyyy-MM-dd'T'HH:mm:ss",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out parsed))
+            {
+                return parsed;
+            }
+
+            return DateTime.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out parsed)
+                || DateTime.TryParse(text, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out parsed)
+                ? parsed
+                : (DateTime?)null;
         }
 
         private static bool TryParseDecimalText(string text, out decimal value)
