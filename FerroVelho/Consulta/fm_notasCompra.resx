@@ -120,11 +120,14 @@
   <metadata name="nome_usuarioLabel.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
+  <metadata name="label4.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="bt_pesquisa.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        xAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANqSURBVEhLtVZL
+        wwAADsMBx2+oZAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANqSURBVEhLtVZL
         KK1RFP6jhIFnHnkVUSgTj4G5VyaUEhkoE0ZKnhMjRGHAxMAMZSSPIpHEACkMhBETRTFQ3lK+e79l733/
         3/nPPee411ernLXXWp+9Xvu3ECBeXl4wOzuL8vJyxMTEwLIshIeHIz8/H319fXh+flaW7vCb8PDwEKWl
         pULgS6KiorCysoKHhwfl/Qc+Cd/f3zE6OuoIGBwcjNjYWCQlJSErKwupqamIj49HWFiYw66pqQnX19cq
@@ -160,7 +163,7 @@
   <data name="button1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        xAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANqSURBVEhLtVZL
+        wwAADsMBx2+oZAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANqSURBVEhLtVZL
         KK1RFP6jhIFnHnkVUSgTj4G5VyaUEhkoE0ZKnhMjRGHAxMAMZSSPIpHEACkMhBETRTFQ3lK+e79l733/
         3/nPPee411ernLXXWp+9Xvu3ECBeXl4wOzuL8vJyxMTEwLIshIeHIz8/H319fXh+flaW7vCb8PDwEKWl
         pULgS6KiorCysoKHhwfl/Qc+Cd/f3zE6OuoIGBwcjNjYWCQlJSErKwupqamIj49HWFiYw66pqQnX19cq
@@ -178,9 +181,6 @@
         YRUVFTnImF7W9KcgTcPOIxk/HVjTnwPwCzl1HZJqhG9LAAAAAElFTkSuQmCC
 </value>
   </data>
-  <metadata name="label4.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAEAPUAAAAEAIAAoPwAAFgAAACgAAAA9AAAAgAAAAAEAIAAAAAAAAD0AAMMOAADDDgAAAAAAAAAA

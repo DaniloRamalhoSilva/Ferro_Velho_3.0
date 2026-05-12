@@ -223,6 +223,11 @@ namespace FerroVelhoDAO
             ApiConnectionService.AtualizarCompraValores(ApiBaseUrl, EmpresaCod, idCompra, descontoCompra, subtotCompra, valorNota, idCliente);
         }
 
+        public static void AlterarDataComprasApi(IEnumerable<int> idsCompra, DateTime dataCompra)
+        {
+            ApiConnectionService.AlterarDataCompras(ApiBaseUrl, EmpresaCod, idsCompra, dataCompra);
+        }
+
         public static void InserirItemCompraApi(string codigoProduto, int idCompra, decimal quantItem, decimal subTotItem, decimal valorItem)
         {
             ApiConnectionService.InserirItemCompra(ApiBaseUrl, EmpresaCod, codigoProduto, idCompra, quantItem, subTotItem, valorItem);

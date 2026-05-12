@@ -30,12 +30,12 @@
         {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.Label nome_usuarioLabel;
+            System.Windows.Forms.Label label4;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(fm_notasCompra));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.Label label4;
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -56,6 +56,13 @@
             this.tbcompraDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tb_itemcBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tb_vendaDataGridView = new System.Windows.Forms.DataGridView();
+            this.idcompraDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.datacompraDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.subtot_compra = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.desconto_compra = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.valornotaDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.usuarioDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.id_cliente = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tb_compraBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.button1 = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
@@ -64,13 +71,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lb_cliente = new System.Windows.Forms.Label();
-            this.idcompraDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.datacompraDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.subtot_compra = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.desconto_compra = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.valornotaDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.usuarioDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.id_cliente = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btn_alterar_data_compra = new System.Windows.Forms.Button();
             nome_usuarioLabel = new System.Windows.Forms.Label();
             label4 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
@@ -90,6 +91,17 @@
             nome_usuarioLabel.Size = new System.Drawing.Size(54, 13);
             nome_usuarioLabel.TabIndex = 28;
             nome_usuarioLabel.Text = "Operador:";
+            // 
+            // label4
+            // 
+            label4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            label4.AutoSize = true;
+            label4.Location = new System.Drawing.Point(400, 546);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(42, 13);
+            label4.TabIndex = 32;
+            label4.Text = "Cliente:";
             // 
             // dt_fim
             // 
@@ -293,6 +305,69 @@
             this.tb_vendaDataGridView.TabIndex = 19;
             this.tb_vendaDataGridView.CurrentCellChanged += new System.EventHandler(this.tb_vendaDataGridView_CurrentCellChanged);
             // 
+            // idcompraDataGridViewTextBoxColumn
+            // 
+            this.idcompraDataGridViewTextBoxColumn.DataPropertyName = "id_compra";
+            this.idcompraDataGridViewTextBoxColumn.HeaderText = "Nº Nota";
+            this.idcompraDataGridViewTextBoxColumn.Name = "idcompraDataGridViewTextBoxColumn";
+            this.idcompraDataGridViewTextBoxColumn.ReadOnly = true;
+            this.idcompraDataGridViewTextBoxColumn.Width = 80;
+            // 
+            // datacompraDataGridViewTextBoxColumn
+            // 
+            this.datacompraDataGridViewTextBoxColumn.DataPropertyName = "data_compra";
+            dataGridViewCellStyle5.Format = "g";
+            dataGridViewCellStyle5.NullValue = null;
+            this.datacompraDataGridViewTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle5;
+            this.datacompraDataGridViewTextBoxColumn.HeaderText = "Data da compra";
+            this.datacompraDataGridViewTextBoxColumn.Name = "datacompraDataGridViewTextBoxColumn";
+            this.datacompraDataGridViewTextBoxColumn.ReadOnly = true;
+            this.datacompraDataGridViewTextBoxColumn.Width = 160;
+            // 
+            // subtot_compra
+            // 
+            this.subtot_compra.DataPropertyName = "subtot_compra";
+            this.subtot_compra.HeaderText = "Subtotal";
+            this.subtot_compra.Name = "subtot_compra";
+            this.subtot_compra.ReadOnly = true;
+            this.subtot_compra.Width = 80;
+            // 
+            // desconto_compra
+            // 
+            this.desconto_compra.DataPropertyName = "desconto_compra";
+            this.desconto_compra.HeaderText = "Desconto";
+            this.desconto_compra.Name = "desconto_compra";
+            this.desconto_compra.ReadOnly = true;
+            this.desconto_compra.Width = 80;
+            // 
+            // valornotaDataGridViewTextBoxColumn
+            // 
+            this.valornotaDataGridViewTextBoxColumn.DataPropertyName = "valor_nota";
+            dataGridViewCellStyle6.Format = "C2";
+            dataGridViewCellStyle6.NullValue = null;
+            this.valornotaDataGridViewTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle6;
+            this.valornotaDataGridViewTextBoxColumn.HeaderText = "Valor";
+            this.valornotaDataGridViewTextBoxColumn.Name = "valornotaDataGridViewTextBoxColumn";
+            this.valornotaDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // usuarioDataGridViewTextBoxColumn
+            // 
+            this.usuarioDataGridViewTextBoxColumn.DataPropertyName = "usuario";
+            this.usuarioDataGridViewTextBoxColumn.HeaderText = "usuario";
+            this.usuarioDataGridViewTextBoxColumn.Name = "usuarioDataGridViewTextBoxColumn";
+            this.usuarioDataGridViewTextBoxColumn.ReadOnly = true;
+            this.usuarioDataGridViewTextBoxColumn.Visible = false;
+            // 
+            // id_cliente
+            // 
+            this.id_cliente.DataPropertyName = "id_cliente";
+            dataGridViewCellStyle7.NullValue = "Cliente não informado";
+            this.id_cliente.DefaultCellStyle = dataGridViewCellStyle7;
+            this.id_cliente.HeaderText = "Cliente";
+            this.id_cliente.Name = "id_cliente";
+            this.id_cliente.ReadOnly = true;
+            this.id_cliente.Visible = false;
+            // 
             // tb_compraBindingSource
             // 
             this.tb_compraBindingSource.DataSource = typeof(FerroVelhoDAO.tb_compra);
@@ -359,17 +434,6 @@
             this.label1.TabIndex = 30;
             this.label1.Text = "Data Fim:";
             // 
-            // label4
-            // 
-            label4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            label4.AutoSize = true;
-            label4.Location = new System.Drawing.Point(400, 546);
-            label4.Name = "label4";
-            label4.Size = new System.Drawing.Size(42, 13);
-            label4.TabIndex = 32;
-            label4.Text = "Cliente:";
-            // 
             // lb_cliente
             // 
             this.lb_cliente.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
@@ -380,74 +444,24 @@
             this.lb_cliente.TabIndex = 33;
             this.lb_cliente.Text = "label1";
             // 
-            // idcompraDataGridViewTextBoxColumn
+            // btn_alterar_data_compra
             // 
-            this.idcompraDataGridViewTextBoxColumn.DataPropertyName = "id_compra";
-            this.idcompraDataGridViewTextBoxColumn.HeaderText = "Nº Nota";
-            this.idcompraDataGridViewTextBoxColumn.Name = "idcompraDataGridViewTextBoxColumn";
-            this.idcompraDataGridViewTextBoxColumn.ReadOnly = true;
-            this.idcompraDataGridViewTextBoxColumn.Width = 80;
-            // 
-            // datacompraDataGridViewTextBoxColumn
-            // 
-            this.datacompraDataGridViewTextBoxColumn.DataPropertyName = "data_compra";
-            dataGridViewCellStyle5.Format = "g";
-            dataGridViewCellStyle5.NullValue = null;
-            this.datacompraDataGridViewTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle5;
-            this.datacompraDataGridViewTextBoxColumn.HeaderText = "Data da compra";
-            this.datacompraDataGridViewTextBoxColumn.Name = "datacompraDataGridViewTextBoxColumn";
-            this.datacompraDataGridViewTextBoxColumn.ReadOnly = true;
-            this.datacompraDataGridViewTextBoxColumn.Width = 160;
-            // 
-            // subtot_compra
-            // 
-            this.subtot_compra.DataPropertyName = "subtot_compra";
-            this.subtot_compra.HeaderText = "Subtotal";
-            this.subtot_compra.Name = "subtot_compra";
-            this.subtot_compra.ReadOnly = true;
-            this.subtot_compra.Width = 80;
-            // 
-            // desconto_compra
-            // 
-            this.desconto_compra.DataPropertyName = "desconto_compra";
-            this.desconto_compra.HeaderText = "Desconto";
-            this.desconto_compra.Name = "desconto_compra";
-            this.desconto_compra.ReadOnly = true;
-            this.desconto_compra.Width = 80;
-            // 
-            // valornotaDataGridViewTextBoxColumn
-            // 
-            this.valornotaDataGridViewTextBoxColumn.DataPropertyName = "valor_nota";
-            dataGridViewCellStyle6.Format = "C2";
-            dataGridViewCellStyle6.NullValue = null;
-            this.valornotaDataGridViewTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle6;
-            this.valornotaDataGridViewTextBoxColumn.HeaderText = "Valor";
-            this.valornotaDataGridViewTextBoxColumn.Name = "valornotaDataGridViewTextBoxColumn";
-            this.valornotaDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // usuarioDataGridViewTextBoxColumn
-            // 
-            this.usuarioDataGridViewTextBoxColumn.DataPropertyName = "usuario";
-            this.usuarioDataGridViewTextBoxColumn.HeaderText = "usuario";
-            this.usuarioDataGridViewTextBoxColumn.Name = "usuarioDataGridViewTextBoxColumn";
-            this.usuarioDataGridViewTextBoxColumn.ReadOnly = true;
-            this.usuarioDataGridViewTextBoxColumn.Visible = false;
-            // 
-            // id_cliente
-            // 
-            this.id_cliente.DataPropertyName = "id_cliente";
-            dataGridViewCellStyle7.NullValue = "Cliente não informado";
-            this.id_cliente.DefaultCellStyle = dataGridViewCellStyle7;
-            this.id_cliente.HeaderText = "Cliente";
-            this.id_cliente.Name = "id_cliente";
-            this.id_cliente.ReadOnly = true;
-            this.id_cliente.Visible = false;
+            this.btn_alterar_data_compra.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_alterar_data_compra.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_alterar_data_compra.Location = new System.Drawing.Point(561, 127);
+            this.btn_alterar_data_compra.Name = "btn_alterar_data_compra";
+            this.btn_alterar_data_compra.Size = new System.Drawing.Size(244, 31);
+            this.btn_alterar_data_compra.TabIndex = 34;
+            this.btn_alterar_data_compra.Text = "Alterar data compra";
+            this.btn_alterar_data_compra.UseVisualStyleBackColor = true;
+            this.btn_alterar_data_compra.Click += new System.EventHandler(this.btn_alterar_data_compra_Click);
             // 
             // fm_notasCompra
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(812, 567);
+            this.Controls.Add(this.btn_alterar_data_compra);
             this.Controls.Add(label4);
             this.Controls.Add(this.lb_cliente);
             this.Controls.Add(this.label2);
@@ -513,5 +527,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn valornotaDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn usuarioDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn id_cliente;
+        private System.Windows.Forms.Button btn_alterar_data_compra;
     }
 }

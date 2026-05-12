@@ -15,11 +15,16 @@ namespace FerroVelho
     public partial class fm_notasCompra : Form
     {
         private static readonly CultureInfo BrazilianCulture = CultureInfo.GetCultureInfo("pt-BR");
+        private Panel painelAlterarDataCompra;
+        private DateTimePicker dt_alterar_data_compra;
+        private Button btn_confirmar_alterar_data_compra;
+        private Button btn_cancelar_alterar_data_compra;
 
         public fm_notasCompra()
         {
             InitializeComponent();
             ConfigureGridFormatting();
+            ConfigureAlterarDataCompraPanel();
         }
 
         private void fm_notasCompra_Load(object sender, EventArgs e)
@@ -55,6 +60,60 @@ namespace FerroVelho
             datacompraDataGridViewTextBoxColumn.DefaultCellStyle.Format = "dd/MM/yyyy HH:mm";
             datacompraDataGridViewTextBoxColumn.DefaultCellStyle.FormatProvider = BrazilianCulture;
         }
+
+        private void ConfigureAlterarDataCompraPanel()
+        {
+            painelAlterarDataCompra = new Panel
+            {
+                Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                BackColor = SystemColors.ControlLightLight,
+                BorderStyle = BorderStyle.FixedSingle,
+                Location = new Point(btn_alterar_data_compra.Left, btn_alterar_data_compra.Bottom + 4),
+                Size = new Size(btn_alterar_data_compra.Width, 105),
+                Visible = false
+            };
+
+            Label lbNovaData = new Label
+            {
+                AutoSize = true,
+                Location = new Point(10, 10),
+                Text = "Nova data:"
+            };
+
+            dt_alterar_data_compra = new DateTimePicker
+            {
+                Format = DateTimePickerFormat.Short,
+                Location = new Point(10, 29),
+                MaxDate = DateTime.Today,
+                Size = new Size(120, 20)
+            };
+
+            btn_confirmar_alterar_data_compra = new Button
+            {
+                Location = new Point(10, 63),
+                Size = new Size(105, 28),
+                Text = "Confirmar",
+                UseVisualStyleBackColor = true
+            };
+            btn_confirmar_alterar_data_compra.Click += btn_confirmar_alterar_data_compra_Click;
+
+            btn_cancelar_alterar_data_compra = new Button
+            {
+                Location = new Point(125, 63),
+                Size = new Size(105, 28),
+                Text = "Cancelar",
+                UseVisualStyleBackColor = true
+            };
+            btn_cancelar_alterar_data_compra.Click += btn_cancelar_alterar_data_compra_Click;
+
+            painelAlterarDataCompra.Controls.Add(lbNovaData);
+            painelAlterarDataCompra.Controls.Add(dt_alterar_data_compra);
+            painelAlterarDataCompra.Controls.Add(btn_confirmar_alterar_data_compra);
+            painelAlterarDataCompra.Controls.Add(btn_cancelar_alterar_data_compra);
+
+            Controls.Add(painelAlterarDataCompra);
+            painelAlterarDataCompra.BringToFront();
+        }
          
         private void carregaItem()
         {
@@ -75,22 +134,108 @@ namespace FerroVelho
 
         private bool TryGetValorLinhaAtual(int coluna, out int valor)
         {
+            return TryGetValorLinha(tb_vendaDataGridView.CurrentRow, coluna, out valor);
+        }
+
+        private bool TryGetValorLinha(DataGridViewRow row, int coluna, out int valor)
+        {
             valor = 0;
 
-            if (tb_vendaDataGridView.CurrentRow == null ||
-                tb_vendaDataGridView.CurrentRow.IsNewRow ||
-                tb_vendaDataGridView.CurrentRow.Cells.Count <= coluna)
+            if (row == null ||
+                row.IsNewRow ||
+                row.Cells.Count <= coluna)
             {
                 return false;
             }
 
-            object cellValue = tb_vendaDataGridView.CurrentRow.Cells[coluna].Value;
+            object cellValue = row.Cells[coluna].Value;
             if (cellValue == null || cellValue == DBNull.Value)
             {
                 return false;
             }
 
             return int.TryParse(cellValue.ToString(), out valor);
+        }
+
+        private bool TryGetDataCompraLinha(DataGridViewRow row, out DateTime dataCompra)
+        {
+            dataCompra = DateTime.MinValue;
+
+            if (row == null ||
+                row.IsNewRow ||
+                row.Cells.Count <= datacompraDataGridViewTextBoxColumn.Index)
+            {
+                return false;
+            }
+
+            object cellValue = row.Cells[datacompraDataGridViewTextBoxColumn.Index].Value;
+            if (cellValue == null || cellValue == DBNull.Value)
+            {
+                return false;
+            }
+
+            if (cellValue is DateTime)
+            {
+                dataCompra = ((DateTime)cellValue);
+                return true;
+            }
+
+            string texto = Convert.ToString(cellValue, CultureInfo.CurrentCulture);
+            return DateTime.TryParse(texto, BrazilianCulture, DateTimeStyles.AssumeLocal, out dataCompra) ||
+                DateTime.TryParse(texto, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out dataCompra) ||
+                DateTime.TryParse(texto, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out dataCompra);
+        }
+
+        private bool TryGetComprasGridParaAlteracao(out List<int> idsCompra, out DateTime dataCompraAtual)
+        {
+            idsCompra = new List<int>();
+            dataCompraAtual = DateTime.MinValue;
+            bool possuiDataReferencia = false;
+            DateTime dataReferencia = DateTime.MinValue;
+
+            foreach (DataGridViewRow row in tb_vendaDataGridView.Rows)
+            {
+                if (row.IsNewRow)
+                {
+                    continue;
+                }
+
+                int idCompra;
+                if (!TryGetValorLinha(row, idcompraDataGridViewTextBoxColumn.Index, out idCompra))
+                {
+                    MessageBox.Show("A grid possui uma compra sem número de nota válido.");
+                    return false;
+                }
+
+                DateTime dataCompra;
+                if (!TryGetDataCompraLinha(row, out dataCompra))
+                {
+                    MessageBox.Show("A grid possui uma compra sem data válida.");
+                    return false;
+                }
+
+                if (!possuiDataReferencia)
+                {
+                    dataReferencia = dataCompra.Date;
+                    possuiDataReferencia = true;
+                }
+                else if (dataReferencia != dataCompra.Date)
+                {
+                    MessageBox.Show("Não é possível alterar compras de datas diferentes.");
+                    return false;
+                }
+
+                idsCompra.Add(idCompra);
+            }
+
+            if (idsCompra.Count == 0)
+            {
+                MessageBox.Show("Não há compras na grid para alterar.");
+                return false;
+            }
+
+            dataCompraAtual = dataReferencia;
+            return true;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -210,6 +355,63 @@ namespace FerroVelho
             return DataContextFactory.BuscarNomeClienteApi(id);
         }
 
+        private void btn_alterar_data_compra_Click(object sender, EventArgs e)
+        {
+            if (painelAlterarDataCompra.Visible)
+            {
+                painelAlterarDataCompra.Visible = false;
+                return;
+            }
+
+            List<int> idsCompra;
+            DateTime dataCompraAtual;
+            if (!TryGetComprasGridParaAlteracao(out idsCompra, out dataCompraAtual))
+            {
+                return;
+            }
+
+            dt_alterar_data_compra.MaxDate = DateTime.Today;
+            dt_alterar_data_compra.Value = dataCompraAtual.Date > DateTime.Today
+                ? DateTime.Today
+                : dataCompraAtual.Date;
+
+            painelAlterarDataCompra.Visible = true;
+            painelAlterarDataCompra.BringToFront();
+        }
+
+        private void btn_cancelar_alterar_data_compra_Click(object sender, EventArgs e)
+        {
+            painelAlterarDataCompra.Visible = false;
+        }
+
+        private void btn_confirmar_alterar_data_compra_Click(object sender, EventArgs e)
+        {
+            DateTime novaDataCompra = dt_alterar_data_compra.Value.Date;
+            if (novaDataCompra > DateTime.Today)
+            {
+                MessageBox.Show("A data selecionada não pode ser futura.");
+                return;
+            }
+
+            List<int> idsCompra;
+            DateTime dataCompraAtual;
+            if (!TryGetComprasGridParaAlteracao(out idsCompra, out dataCompraAtual))
+            {
+                return;
+            }
+
+            try
+            {
+                DataContextFactory.AlterarDataComprasApi(idsCompra, novaDataCompra);
+                painelAlterarDataCompra.Visible = false;
+                consulta();
+                MessageBox.Show("Data da compra alterada com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao alterar data da compra: " + ex.Message);
+            }
+        }
     }
 }
 

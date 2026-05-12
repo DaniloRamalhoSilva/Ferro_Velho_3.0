@@ -254,6 +254,15 @@ namespace FerroVelhoDAO
             });
         }
 
+        public static void AlterarDataCompras(string apiUrl, int empresaCod, IEnumerable<int> idsCompra, DateTime dataCompra)
+        {
+            PutRow(apiUrl, empresaCod, "/api/compras/data-compra", new Dictionary<string, object>
+            {
+                { "ids_compra", idsCompra == null ? new int[0] : idsCompra.ToArray() },
+                { "data_compra", ApiDate(dataCompra.Date) }
+            });
+        }
+
         public static void InserirItemCompra(string apiUrl, int empresaCod, string codigoProduto, int idCompra, decimal quantItem, decimal subTotItem, decimal valorItem)
         {
             PostRow(apiUrl, empresaCod, "/api/compras/" + idCompra + "/itens", new Dictionary<string, object>
