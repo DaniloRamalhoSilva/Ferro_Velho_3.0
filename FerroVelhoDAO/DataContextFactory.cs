@@ -10,7 +10,7 @@ namespace FerroVelhoDAO
 {
     public class DataContextFactory
     {
-        private const string DefaultApiUrl = "http://localhost:3000";
+        private const string DefaultApiUrl = "https://ferrovelho.api.technologyrs.com.br";
         private const string ConfiguracaoFileName = "configura\u00e7\u00e3o.xml";
 
         public static tb_usuario usu;
