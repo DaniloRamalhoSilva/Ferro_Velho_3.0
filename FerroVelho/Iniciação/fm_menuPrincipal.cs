@@ -78,14 +78,15 @@ namespace FerroVelho
 
         private void CalcularSubTotal()
         {
-            if(string.IsNullOrEmpty(txt_quant.Text) && string.IsNullOrEmpty(txt_codProd.Text))
+            decimal quantidade;
+            if (decimal.TryParse(txt_quant.Text, out quantidade) && !string.IsNullOrEmpty(txt_codProd.Text))
             {
-                decimal peso = Convert.ToDecimal(txt_quant.Text);
-                decimal valor = ;
-                decimal valorProduto = Quantidade * _produtoCorrente.Valor;
+                decimal valorProduto = quantidade * _produtoCorrente.Valor;
 
                 txt_subTot.Text = valorProduto.ToString("N2");
+                return;
             }
+
             txt_subTot.Text = 0.ToString("N2");
         }
 
@@ -176,7 +177,10 @@ namespace FerroVelho
 
                 ItemCompra itemCompra = new ItemCompra();
 
-                itemCompra.Quantidade = 
+                itemCompra.IdProduto = txt_codProd.Text;
+                itemCompra.Quantidade = txt_quant.Text;
+                itemCompra.SubTotal = txt_subTot.Text;
+                itemCompra.Valor = txt_valProd.Text;
 
                 _compraCorrente.ItensCompras.Add(itemCompra);
 
