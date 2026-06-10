@@ -41,7 +41,6 @@ namespace FerroVelho.Relatorios
 
         string comand;
         decimal sInicio;
-
         private void pesquisa()
         {
             comeco = dt_inicio.MinDate;
@@ -51,44 +50,35 @@ namespace FerroVelho.Relatorios
             SqlCommand comando = new SqlCommand();
             comando.CommandType = CommandType.Text;
 
-            comando.CommandText = "SELECT sum(tb_caixa.valor_caixa) As total " +
+            comando.CommandText = "SELECT a.Entrada - b.Saida as total " +
+                "FROM (SELECT sum(tb_caixa.valor_caixa) As Entrada " +
                 "FROM tb_caixa " +
-                "WHERE tb_caixa.data_caixa between '" + comeco + "' and '" + inicio.Date.Add(new TimeSpan(00, 00, -01)) + "' ";
-            decimal S = DataContextFactory.FiltrarValor(comando);
+                "WHERE tb_caixa.data_caixa between '" + comeco + "' and '" + inicio.AddDays(-1) + "')a, " +
+                "(SELECT sum(tb_compra.valor_nota) As Saida " +
+                "FROM tb_compra " +
+                "WHERE tb_compra.data_compra between '" + comeco + "' and '" + inicio.AddDays(-1) + "')b";
 
-            comando.CommandText = "SELECT sum(tb_compra.valor_nota) As total " +
-            "FROM tb_compra " +
-            "WHERE tb_compra.data_compra between '" + comeco + "' and '" + inicio.Date.Add(new TimeSpan(00, 00, -01)) + "'";
-            decimal E = DataContextFactory.FiltrarValor(comando);
-
-            sInicio = S - E;
+            sInicio = DataContextFactory.FiltrarValor(comando);
 
             //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-            comand = "SELECT cast(e.Data as DATE) as Data, sum(e.Entrada) as Entrada, sum(e.Saida) as Saida " +
-                "FROM(SELECT tb_caixa.data_caixa as Data, sum(tb_caixa.valor_caixa) As Entrada, 0 as Saida " +
+            comand = "SELECT a.Data, a.Entrada, a.Saida " +
+                "FROM (SELECT e.Data, sum(e.Entrada) as Entrada, sum(e.Saida) as Saida " +
+                "FROM (SELECT tb_caixa.data_caixa as Data, sum(tb_caixa.valor_caixa) As Entrada, 0 as Saida " +
                 "FROM tb_caixa " +
-                "where tb_caixa.valor_caixa > 0 " +
-                "GROUP BY tb_caixa.data_caixa " +
-                "union all " +
-                "SELECT tb_caixa.data_caixa as Data, 0 As Entrada, sum(tb_caixa.valor_caixa) * -1 as Saida " +
-                "FROM tb_caixa " +
-                "where tb_caixa.valor_caixa < 0 " +
                 "GROUP BY tb_caixa.data_caixa " +
                 "union all " +
                 "SELECT tb_compra.data_compra as Data, 0 as Entrada, sum(tb_compra.valor_nota) As Saida " +
                 "FROM tb_compra " +
                 "GROUP BY tb_compra.data_compra)e " +
-                "WHERE cast(e.Data as DATE) between '" + inicio + "' and '" + fim + "'" +
-                "GROUP BY cast(e.Data as DATE) " +
-                "order by cast(e.Data as date)";                
+                "GROUP BY e.Data)a " +
+                "WHERE a.Data between '" + inicio + "' and '" + fim + "'" +
+                "order by Data";
             DataTable dt = DataContextFactory.Filtrar(comand);
             dataGridView1.DataSource = dt;
             dataGridView1.DataMember = dt.TableName;
 
             calcular();
-
-            //dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
         }
 
         

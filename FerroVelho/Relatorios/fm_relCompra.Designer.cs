@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(fm_relCompra));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.dt_fim = new System.Windows.Forms.DateTimePicker();
@@ -51,20 +51,12 @@
             this.label5 = new System.Windows.Forms.Label();
             this.lb_entrada = new System.Windows.Forms.Label();
             this.lb_saldo = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.lb_compras = new System.Windows.Forms.Label();
             this.tb_impressoraBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.lb_adiantamento = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.lb_saida = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.lb_total = new System.Windows.Forms.Label();
-            this.lb_credito = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.lb_TgastoCompra = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.lb_gastoCompra = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tb_impressoraBindingSource)).BeginInit();
@@ -160,14 +152,14 @@
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.BackgroundColor = System.Drawing.Color.White;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.id_prod,
@@ -199,9 +191,9 @@
             // Peso
             // 
             this.Peso.DataPropertyName = "Peso";
-            dataGridViewCellStyle8.Format = "N3";
-            dataGridViewCellStyle8.NullValue = null;
-            this.Peso.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle2.Format = "N3";
+            dataGridViewCellStyle2.NullValue = null;
+            this.Peso.DefaultCellStyle = dataGridViewCellStyle2;
             this.Peso.HeaderText = "Peso";
             this.Peso.Name = "Peso";
             this.Peso.ReadOnly = true;
@@ -209,9 +201,9 @@
             // Total
             // 
             this.Total.DataPropertyName = "Total";
-            dataGridViewCellStyle9.Format = "C2";
-            dataGridViewCellStyle9.NullValue = null;
-            this.Total.DefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle3.Format = "C2";
+            dataGridViewCellStyle3.NullValue = null;
+            this.Total.DefaultCellStyle = dataGridViewCellStyle3;
             this.Total.HeaderText = "Total";
             this.Total.Name = "Total";
             this.Total.ReadOnly = true;
@@ -219,11 +211,11 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(61, 49);
+            this.label3.Location = new System.Drawing.Point(15, 49);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(92, 13);
+            this.label3.Size = new System.Drawing.Size(145, 13);
             this.label3.TabIndex = 40;
-            this.label3.Text = "Entrada em caixa:";
+            this.label3.Text = "Entrada em caixa no periodo:";
             // 
             // lb_inicial
             // 
@@ -237,20 +229,20 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(69, 135);
+            this.label4.Location = new System.Drawing.Point(25, 99);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(82, 13);
+            this.label4.Size = new System.Drawing.Size(135, 13);
             this.label4.TabIndex = 42;
-            this.label4.Text = "Saldo em caixa:";
+            this.label4.Text = "Saldo em caixa no periodo:";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(87, 25);
+            this.label5.Location = new System.Drawing.Point(41, 25);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(66, 13);
+            this.label5.Size = new System.Drawing.Size(119, 13);
             this.label5.TabIndex = 43;
-            this.label5.Text = "Saldo inicial:";
+            this.label5.Text = "Saldo inicial no periodo:";
             // 
             // lb_entrada
             // 
@@ -264,11 +256,29 @@
             // lb_saldo
             // 
             this.lb_saldo.AutoSize = true;
-            this.lb_saldo.Location = new System.Drawing.Point(159, 135);
+            this.lb_saldo.Location = new System.Drawing.Point(159, 99);
             this.lb_saldo.Name = "lb_saldo";
             this.lb_saldo.Size = new System.Drawing.Size(35, 13);
             this.lb_saldo.TabIndex = 45;
             this.lb_saldo.Text = "label4";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(57, 75);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(104, 13);
+            this.label6.TabIndex = 46;
+            this.label6.Text = "Compras no periodo:";
+            // 
+            // lb_compras
+            // 
+            this.lb_compras.AutoSize = true;
+            this.lb_compras.Location = new System.Drawing.Point(159, 75);
+            this.lb_compras.Name = "lb_compras";
+            this.lb_compras.Size = new System.Drawing.Size(35, 13);
+            this.lb_compras.TabIndex = 47;
+            this.lb_compras.Text = "label4";
             // 
             // tb_impressoraBindingSource
             // 
@@ -277,12 +287,10 @@
             // groupBox2
             // 
             this.groupBox2.BackColor = System.Drawing.Color.White;
-            this.groupBox2.Controls.Add(this.lb_gastoCompra);
-            this.groupBox2.Controls.Add(this.label14);
-            this.groupBox2.Controls.Add(this.label7);
-            this.groupBox2.Controls.Add(this.lb_saida);
             this.groupBox2.Controls.Add(this.label5);
+            this.groupBox2.Controls.Add(this.lb_compras);
             this.groupBox2.Controls.Add(this.label3);
+            this.groupBox2.Controls.Add(this.label6);
             this.groupBox2.Controls.Add(this.lb_inicial);
             this.groupBox2.Controls.Add(this.lb_saldo);
             this.groupBox2.Controls.Add(this.label4);
@@ -290,46 +298,10 @@
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.Location = new System.Drawing.Point(15, 345);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(259, 165);
+            this.groupBox2.Size = new System.Drawing.Size(259, 124);
             this.groupBox2.TabIndex = 48;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Controle do caixa:";
-            // 
-            // lb_adiantamento
-            // 
-            this.lb_adiantamento.AutoSize = true;
-            this.lb_adiantamento.Location = new System.Drawing.Point(409, 411);
-            this.lb_adiantamento.Name = "lb_adiantamento";
-            this.lb_adiantamento.Size = new System.Drawing.Size(35, 13);
-            this.lb_adiantamento.TabIndex = 51;
-            this.lb_adiantamento.Text = "label4";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(283, 411);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(120, 13);
-            this.label8.TabIndex = 50;
-            this.label8.Text = "Desc. de adiantamento:";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(68, 73);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(85, 13);
-            this.label7.TabIndex = 48;
-            this.label7.Text = " Saida em caixa:";
-            // 
-            // lb_saida
-            // 
-            this.lb_saida.AutoSize = true;
-            this.lb_saida.Location = new System.Drawing.Point(159, 73);
-            this.lb_saida.Name = "lb_saida";
-            this.lb_saida.Size = new System.Drawing.Size(35, 13);
-            this.lb_saida.TabIndex = 49;
-            this.lb_saida.Text = "label4";
             // 
             // groupBox3
             // 
@@ -338,7 +310,7 @@
             this.groupBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox3.Location = new System.Drawing.Point(280, 345);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(238, 62);
+            this.groupBox3.Size = new System.Drawing.Size(238, 69);
             this.groupBox3.TabIndex = 49;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Total de compra:";
@@ -355,73 +327,11 @@
             this.lb_total.Text = "00,00";
             this.lb_total.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // lb_credito
-            // 
-            this.lb_credito.AutoSize = true;
-            this.lb_credito.Location = new System.Drawing.Point(409, 430);
-            this.lb_credito.Name = "lb_credito";
-            this.lb_credito.Size = new System.Drawing.Size(35, 13);
-            this.lb_credito.TabIndex = 53;
-            this.lb_credito.Text = "label4";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(317, 430);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(86, 13);
-            this.label10.TabIndex = 52;
-            this.label10.Text = "Credito a cliente:";
-            // 
-            // lb_TgastoCompra
-            // 
-            this.lb_TgastoCompra.AutoSize = true;
-            this.lb_TgastoCompra.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_TgastoCompra.Location = new System.Drawing.Point(410, 483);
-            this.lb_TgastoCompra.Name = "lb_TgastoCompra";
-            this.lb_TgastoCompra.Size = new System.Drawing.Size(41, 13);
-            this.lb_TgastoCompra.TabIndex = 55;
-            this.lb_TgastoCompra.Text = "label4";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(285, 483);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(122, 13);
-            this.label12.TabIndex = 54;
-            this.label12.Text = "Gasto com compras:";
-            // 
-            // lb_gastoCompra
-            // 
-            this.lb_gastoCompra.AutoSize = true;
-            this.lb_gastoCompra.Location = new System.Drawing.Point(159, 96);
-            this.lb_gastoCompra.Name = "lb_gastoCompra";
-            this.lb_gastoCompra.Size = new System.Drawing.Size(35, 13);
-            this.lb_gastoCompra.TabIndex = 57;
-            this.lb_gastoCompra.Text = "label4";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(49, 96);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(104, 13);
-            this.label14.TabIndex = 56;
-            this.label14.Text = "Gasto com compras:";
-            // 
             // fm_relCompra
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(530, 502);
-            this.Controls.Add(this.lb_TgastoCompra);
-            this.Controls.Add(this.label12);
-            this.Controls.Add(this.lb_credito);
-            this.Controls.Add(this.label10);
-            this.Controls.Add(this.lb_adiantamento);
-            this.Controls.Add(this.label8);
+            this.ClientSize = new System.Drawing.Size(530, 472);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.dataGridView1);
@@ -441,7 +351,6 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -462,6 +371,8 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label lb_entrada;
         private System.Windows.Forms.Label lb_saldo;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label lb_compras;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label lb_total;
@@ -469,15 +380,5 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn desc_prod;
         private System.Windows.Forms.DataGridViewTextBoxColumn Peso;
         private System.Windows.Forms.DataGridViewTextBoxColumn Total;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label lb_saida;
-        private System.Windows.Forms.Label lb_adiantamento;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Label lb_gastoCompra;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Label lb_credito;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label lb_TgastoCompra;
-        private System.Windows.Forms.Label label12;
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.Reporting.WinForms;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -9,47 +10,94 @@ using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FerroVelho.Relatorios
 {
     public partial class fm_repEstoque : Form
     {
-        #region [ VARIAVEIS GLOBAL ]
-
-private int m_currentPageIndex;
-        private IList<Stream> m_streams;
-
-        #endregion
-
-        #region [ CONSTRUTOR ]
-
         public fm_repEstoque()
         {
             InitializeComponent();
-            dt_inicio.Value = DateTime.Now;
-            dt_fim.Value = DateTime.Now;            
         }
 
-        #endregion
-
-        #region [ MÉTODOS PRIVADOS ]
-
-        private void AbrirTelaImpressao()
+        private void fm_repEstoque_Load(object sender, EventArgs e)
         {
-            DataTable dt = Pesquisa();
-            fm_impEstoque fm = new fm_impEstoque(dt);
-            fm.Show();
+            dt_fim.Value = DateTime.Now;
+            
+            pesquisa();
         }
 
-        private Stream CreateStream(string name, string fileNameExtension, Encoding encoding, string mimeType, bool willSeek)
+        private void bt_pesquisa_Click(object sender, EventArgs e)
         {
-            Stream stream = new MemoryStream();
-            m_streams.Add(stream);
-            return stream;
+            pesquisa();
         }
 
-        private void Export(LocalReport report)
+        private void bt_imprimir_Click(object sender, EventArgs e)
+        {
+            pesquisa();
+            imprimir();
+        }
+
+        string comando;
+
+        private void pesquisa()
+        {
+             comando = "SELECT a.id_prod as Codigo, a.desc_prod as Descrição, a.Peso as Entrada, b.Peso as Saida, b.Peso - a.Peso as Estoque " +
+                "FROM (SELECT tb_itemv.id_prod, tb_produtos.desc_prod, sum(tb_itemv.quant_item) As Peso " +
+                "FROM tb_itemv " +
+                "INNER JOIN tb_produtos ON tb_itemv.id_prod = tb_produtos.id_prod " +
+                "INNER JOIN tb_venda ON tb_itemv.id_venda = tb_venda.id_venda " +
+                "WHERE tb_venda.data_venda between '" + dt_inicio.Value + "' and '" + dt_fim.Value + 
+                "' GROUP BY tb_itemv.id_prod, tb_produtos.desc_prod)a " +
+                "INNER JOIN " +
+                "(SELECT tb_itemc.id_prod, tb_produtos.desc_prod, sum(tb_itemc.quant_item) As Peso " +
+                "FROM tb_itemc " +
+                "INNER JOIN tb_produtos ON tb_itemc.id_prod = tb_produtos.id_prod " +
+                "INNER JOIN tb_compra ON tb_itemc.id_compra = tb_compra.id_compra " +
+                "WHERE tb_compra.data_compra between '" + dt_inicio.Value + "' and '" + dt_fim.Value +
+                "' GROUP BY tb_itemc.id_prod, tb_produtos.desc_prod)b " +
+                "on(a.desc_prod = b.desc_prod) and(a.id_prod = b.id_prod) ";
+            DataTable dt = DataContextFactory.Filtrar(comando);
+            dataGridView1.DataSource = dt;
+            dataGridView1.DataMember = dt.TableName;
+        }
+
+        private int m_currentPageIndex;
+        private IList<Stream> m_streams;
+
+        public void imprimir()
+        {
+            this.tb_impressoraBindingSource.DataSource = DataContextFactory.DataContext.tb_impressora.Where(x => x.id_impressora == 1);
+
+            LocalReport report = new LocalReport();
+            report.ReportPath = @"..\..\rel_estoque.rdlc";
+            report.DataSources.Add(new ReportDataSource("DataSet1", LoadSalesData()));
+            report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("dataInicio", dt_inicio.Text));
+            report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("dataFim", dt_fim.Text));
+            report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("empressa", DataContextFactory.nome));
+            report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("tel", DataContextFactory.tel));
+            report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("end", DataContextFactory.endereco));
+            Export(report);
+            Print();
+        }
+
+        private DataTable LoadSalesData()
+        {
+            DataTable dt = DataContextFactory.Filtrar(comando);
+            return dt;
+        }
+
+        public tb_impressora impressoraCorrente
+        {
+            get
+            {
+                return (tb_impressora)this.tb_impressoraBindingSource.Current;
+            }
+        }
+
+        public void Export(LocalReport report)
         {
             string deviceInfo =
               @"<DeviceInfo>
@@ -67,60 +115,30 @@ private int m_currentPageIndex;
                 stream.Position = 0;
         }
 
-        public void Imprimir()
+        private Stream CreateStream(string name, string fileNameExtension, Encoding encoding, string mimeType, bool willSeek)
         {
-            string[] arrPar = new string[] { "@id_impressora" };
-            string[] arrVal = new string[] { "1" };
-            DataTable dt = DataContextFactory.GetDataTableBySP("s_tb_impressora", arrPar, arrVal);
-
-            this.tb_impressoraBindingSource.DataSource = dt;
-
-            LocalReport report = new LocalReport();
-            report.ReportPath = @"..\..\rel_estoque.rdlc";
-            report.DataSources.Add(new ReportDataSource("DataSet1", dt));
-            report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("empressa", DataContextFactory.nome));
-            report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("tel", DataContextFactory.tel));
-            report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("end", DataContextFactory.endereco));
-            Export(report);
-            Print();
-        }
-
-        private DataTable Pesquisa()
-        {
-            DateTime dataInicio = dt_inicio.Value;
-            DateTime dataFim = dt_fim.Value;
-
-            string[] arrPar = new string[] { "@dataInicial", "@dataFinal", "@id_prod" };
-            string[] arrVal = new string[] { dataInicio.ToString("dd/MM/yyyy 00:00:00.00"), dataFim.ToString("dd/MM/yyyy 23:59:59.99"), string.IsNullOrEmpty(txt_codProd.Text)? null :  txt_codProd.Text.Trim() };
-            DataTable dt = DataContextFactory.GetDataTableBySP("s_tb_estoque", arrPar, arrVal);
-
-            dataGridView1.DataSource = dt;
-            dataGridView1.DataMember = dt.TableName;
-
-            return dt;
+            Stream stream = new MemoryStream();
+            m_streams.Add(stream);
+            return stream;
         }
 
         public void Print()
         {
             if (m_streams == null || m_streams.Count == 0)
                 throw new Exception("Error: no stream to print.");
-            PrintDialog printDlg = new PrintDialog();
             PrintDocument printDoc = new PrintDocument();
 
-            if (printDlg.ShowDialog() == DialogResult.OK)
-            {
-                printDoc.PrinterSettings.PrinterName = printDlg.PrinterSettings.PrinterName;
+            printDoc.PrinterSettings.PrinterName = impressoraCorrente.nome_impressora;
 
-                if (!printDoc.PrinterSettings.IsValid)
-                {
-                    throw new Exception("Error: cannot find the default printer.");
-                }
-                else
-                {
-                    printDoc.PrintPage += new PrintPageEventHandler(PrintPage);
-                    m_currentPageIndex = 0;
-                    printDoc.Print();
-                }
+            if (!printDoc.PrinterSettings.IsValid)
+            {
+                throw new Exception("Error: cannot find the default printer.");
+            }
+            else
+            {
+                printDoc.PrintPage += new PrintPageEventHandler(PrintPage);
+                m_currentPageIndex = 0;
+                printDoc.Print();
             }
         }
 
@@ -141,46 +159,5 @@ private int m_currentPageIndex;
             m_currentPageIndex++;
             ev.HasMorePages = (m_currentPageIndex < m_streams.Count);
         }
-
-
-        #endregion
-
-        #region  [EVENTOS ]
-
-        private void fm_repEstoque_Load(object sender, EventArgs e)
-        {
-            Pesquisa();
-            txt_codProd.Focus();
-        }
-
-        private void bt_pesquisa_Click(object sender, EventArgs e)
-        {
-            Pesquisa();
-        }
-
-        private void bt_imprimir_Click(object sender, EventArgs e)
-        {
-            Imprimir();
-        }
-
-        private void bt_relImp_Click(object sender, EventArgs e)
-        {
-            AbrirTelaImpressao();
-        }
-
-        private void txt_codProd_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (char.IsDigit(e.KeyChar) || e.KeyChar.Equals((char)Keys.Back) || char.IsPunctuation(e.KeyChar))
-            {
-                return;
-            }
-            if (e.KeyChar == 13)
-            {
-                Pesquisa();
-            }
-            e.Handled = true;
-        }
-
-        #endregion
     }
 }

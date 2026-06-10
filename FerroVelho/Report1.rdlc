@@ -778,7 +778,7 @@
                     <Value>=First(Fields!data_venda.Value, "DataSet1")</Value>
                     <Style>
                       <FontSize>8pt</FontSize>
-                      <Format>dd/MM/yyyy - hh:mm</Format>
+                      <Format>dd/MM/yyyy</Format>
                     </Style>
                   </TextRun>
                 </TextRuns>

@@ -26,7 +26,7 @@ namespace FerroVelhoDAO
             {
                 if (dataContext == null)
                     dataContext = new FerroVelhoDataContext();
-                dataContext.Connection.ConnectionString = conexaoUser; 
+                dataContext.Connection.ConnectionString = conexaoUser;
                 return dataContext;
             } 
         }
@@ -39,61 +39,6 @@ namespace FerroVelhoDAO
 
         }
 
-        public static DataTable GetDataTableBySP(string storedProcedure, object[] arrParametros = null, object[] arrParametrosValores = null, bool enviarDbNullValue = true)
-        {
-            try
-            {
-                DataTable dt = new DataTable();
-
-                SqlConnection conn = Conectar();
-
-                SqlCommand cmd = new SqlCommand(storedProcedure, conn);
-                cmd.CommandTimeout = 45000;
-                cmd.CommandType = CommandType.StoredProcedure;
-                //conn.Open();
-
-                if (arrParametros != null && arrParametrosValores != null && arrParametros.Length == arrParametrosValores.Length)
-                {
-                    for (int i = 0; i < arrParametros.Length; i++)
-                    {
-                        if (arrParametrosValores[i] != null)
-                        {
-                            if (arrParametrosValores[i].GetType() != typeof(byte[]))
-                                cmd.Parameters.Add(new SqlParameter(arrParametros[i].ToString(), arrParametrosValores[i].ToString()));
-                            else
-                                cmd.Parameters.Add(new SqlParameter(arrParametros[i].ToString(), arrParametrosValores[i]));
-                        }
-                        else if (enviarDbNullValue)
-                            cmd.Parameters.Add(new SqlParameter(arrParametros[i].ToString(), DBNull.Value));
-                    }
-                }
-
-                SqlDataAdapter da = new SqlDataAdapter(cmd);
-
-                da.Fill(dt);
-                conn.Close();
-
-                if (cmd != null) cmd.Dispose();
-                if (da != null) da.Dispose();
-                if (conn != null) conn.Close();
-                if (conn != null) conn.Dispose();
-
-                return dt;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-
-                e.Data["storedProcedure"] = storedProcedure;
-                e.Data["arrParametros"] = arrParametros != null ? string.Join(",", arrParametros) : null;
-                e.Data["arrParametrosValores"] = arrParametrosValores != null ? string.Join(",", arrParametrosValores) : null;
-                e.Data["enviarDbNullValue"] = enviarDbNullValue;
-
-                throw;
-            }
-        }
-
-
         public static DataTable Filtrar(string comando)
         {
             SqlConnection con = Conectar();
@@ -101,9 +46,8 @@ namespace FerroVelhoDAO
             da.SelectCommand.CommandText = comando;
             DataTable dt = new DataTable();
             da.Fill(dt);
-            con.Close();
+
             return dt;
-            
         }
 
         public static decimal FiltrarValor (SqlCommand comando)
@@ -116,18 +60,12 @@ namespace FerroVelhoDAO
             try
             {
                 dr.Read();
-                decimal aki = (decimal)dr["total"];
-                con.Close();
-                return aki;
-                
+                return (decimal)dr["total"];
             }
             catch
             {
-                con.Close();
                 return 0;
-                
             }
-            
 
         }
 
@@ -138,22 +76,6 @@ namespace FerroVelhoDAO
             comando.ExecuteNonQuery();
             con.Close();
 
-        }
-
-        public static SqlDataReader CRUDID(SqlCommand comando)
-        {
-            SqlConnection con = Conectar();
-            comando.Connection = con;
-            SqlDataReader dr = comando.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-            return dr;
-        }
-
-        public static SqlDataReader Selecionar(SqlCommand comando)
-        {
-            SqlConnection con = Conectar();
-            comando.Connection = con;
-            SqlDataReader dr = comando.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-            return dr;
         }
 
         public static void GravarCabecario(string nome, string tel, string endereco)

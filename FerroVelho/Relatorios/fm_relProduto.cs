@@ -96,23 +96,19 @@ namespace FerroVelho.Relatorios
         {
             if (m_streams == null || m_streams.Count == 0)
                 throw new Exception("Error: no stream to print.");
-            PrintDialog printDlg = new PrintDialog();
             PrintDocument printDoc = new PrintDocument();
 
-            if (printDlg.ShowDialog() == DialogResult.OK)
-            {   
-                printDoc.PrinterSettings.PrinterName = printDlg.PrinterSettings.PrinterName;
+            printDoc.PrinterSettings.PrinterName = impressoraCorrente.nome_impressora;
 
-                if (!printDoc.PrinterSettings.IsValid)
-                {
-                    throw new Exception("Error: cannot find the default printer.");
-                }
-                else
-                {
-                    printDoc.PrintPage += new PrintPageEventHandler(PrintPage);
-                    m_currentPageIndex = 0;
-                    printDoc.Print();
-                }
+            if (!printDoc.PrinterSettings.IsValid)
+            {
+                throw new Exception("Error: cannot find the default printer.");
+            }
+            else
+            {
+                printDoc.PrintPage += new PrintPageEventHandler(PrintPage);
+                m_currentPageIndex = 0;
+                printDoc.Print();
             }
         }
 

@@ -24,11 +24,11 @@ namespace FerroVelho.Relatorios
         }
 
         DateTime comeco, inicio, fim;
-        
+
         private void fm_relCompra_Load(object sender, EventArgs e)
         {
             dt_fim.Value = DateTime.Now;
-            dt_inicio.Value = DateTime.Now;                                    
+            dt_inicio.Value = DateTime.Now;
 
             pesquisa();
             caixa();
@@ -40,7 +40,7 @@ namespace FerroVelho.Relatorios
             pesquisa();
             caixa();
         }
-                    
+
         private void pesquisa()
         {
             inicio = dt_inicio.Value;
@@ -56,7 +56,7 @@ namespace FerroVelho.Relatorios
             dataGridView1.DataSource = dt;
             dataGridView1.DataMember = dt.TableName;
         }
-                
+
         private void caixa()
         {
             comeco = dt_inicio.MinDate;
@@ -66,16 +66,10 @@ namespace FerroVelho.Relatorios
             SqlCommand comando = new SqlCommand();
             comando.CommandType = CommandType.Text;
 
-            comando.CommandText = "SELECT sum(valor_caixa)  * -1 as total " +
-                "FROM tb_caixa " +
-                "WHERE data_caixa between '" + comeco + "' and '" + inicio.Date.Add(new TimeSpan(00, 00, -01)) + "' and valor_caixa < 0 ";
-            decimal sInicioP = DataContextFactory.FiltrarValor(comando);
-
             comando.CommandText = "SELECT sum(valor_caixa) as total " +
                 "FROM tb_caixa " +
-                "WHERE data_caixa between '" + comeco + "' and '" + inicio.Date.Add(new TimeSpan(00, 00, -01)) + "' and valor_caixa > 0 ";
-            decimal sInicioN = DataContextFactory.FiltrarValor(comando);
-
+                "WHERE data_caixa between '" + comeco + "' and '" + inicio.Date.Add(new TimeSpan(00, 00, -01)) + "'";
+            decimal sInicio = DataContextFactory.FiltrarValor(comando);
 
             comando.CommandText = "SELECT sum(tb_itemc.subTot_item) as total " +
                 "FROM tb_itemc " +
@@ -83,30 +77,12 @@ namespace FerroVelho.Relatorios
                 "WHERE tb_compra.data_compra between '" + comeco + "' and '" + inicio.Date.Add(new TimeSpan(00, 00, -01)) + "'";
             decimal cInicio = DataContextFactory.FiltrarValor(comando);
 
-            comando.CommandText = "SELECT sum(tb_compra.desconto_compra) as total " +
-                "from tb_compra " +
-                "WHERE tb_compra.data_compra between '" + comeco + "' and '" + inicio.Date.Add(new TimeSpan(00, 00, -01)) + "'";
-            decimal descontoInicio = DataContextFactory.FiltrarValor(comando);
-
-            comando.CommandText = "SELECT sum(tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota)  as total " +
-                "from tb_compra " +
-                "WHERE tb_compra.data_compra between '" + comeco + "' and '" + inicio.Date.Add(new TimeSpan(00, 00, -01)) + "'";
-            decimal credito= DataContextFactory.FiltrarValor(comando);
-
-
-            decimal totInicio = sInicioN - sInicioP - cInicio + descontoInicio + credito;
-
-
-
-            comando.CommandText = "SELECT sum(valor_caixa) * -1 as total " +
-               "FROM tb_caixa " +
-               "WHERE data_caixa between '" + inicio.Date.Add(new TimeSpan(00, 00, 00)) + "' and '" + fim.Date.Add(new TimeSpan(23, 59, 59)) + "' and valor_caixa < 0 ";
-            sInicioP = DataContextFactory.FiltrarValor(comando);
+            decimal totInicio = sInicio - cInicio;
 
             comando.CommandText = "SELECT sum(valor_caixa) as total " +
                "FROM tb_caixa " +
-               "WHERE data_caixa between '" + inicio.Date.Add(new TimeSpan(00, 00, 00)) + "' and '" + fim.Date.Add(new TimeSpan(23, 59, 59)) + "' and valor_caixa > 0 ";
-            sInicioN = DataContextFactory.FiltrarValor(comando);
+               "WHERE data_caixa between '" + inicio.Date.Add(new TimeSpan(00, 00, 00)) + "' and '" + fim.Date.Add(new TimeSpan(23, 59, 59)) + "'";
+            sInicio = DataContextFactory.FiltrarValor(comando);
 
             comando.CommandText = "SELECT sum(tb_itemc.subTot_item) as total " +
                 "FROM tb_itemc " +
@@ -114,30 +90,14 @@ namespace FerroVelho.Relatorios
                 "WHERE tb_compra.data_compra between '" + inicio.Date.Add(new TimeSpan(00, 00, 00)) + "' and '" + fim.Date.Add(new TimeSpan(23, 59, 59)) + "'";
             cInicio = DataContextFactory.FiltrarValor(comando);
 
-            comando.CommandText = "SELECT sum(tb_compra.desconto_compra) as total " +
-                "from tb_compra " +
-                "WHERE tb_compra.data_compra between '" + inicio.Date.Add(new TimeSpan(00, 00, 00)) + "' and '" + fim.Date.Add(new TimeSpan(23, 59, 59)) + "'";
-            descontoInicio = DataContextFactory.FiltrarValor(comando);
+            decimal saldo = totInicio + sInicio - cInicio;
 
-            comando.CommandText = "SELECT sum(tb_compra.subtot_compra - tb_compra.desconto_compra - tb_compra.valor_nota)  as total " +
-                "from tb_compra " +
-                "WHERE tb_compra.data_compra between '" + inicio.Date.Add(new TimeSpan(00, 00, 00)) + "' and '" + fim.Date.Add(new TimeSpan(23, 59, 59)) + "'";
-            credito = DataContextFactory.FiltrarValor(comando);
-
-            decimal saldo = totInicio + sInicioN - sInicioP - cInicio + descontoInicio + credito;
-
-            lb_total.Text = cInicio.ToString("C2");
 
             lb_inicial.Text = totInicio.ToString("C2");
-            lb_entrada.Text = sInicioN.ToString("C2");
-            lb_saida.Text = sInicioP.ToString("C2");
-            lb_gastoCompra.Text = (cInicio - descontoInicio - credito).ToString("C2");
+            lb_entrada.Text = sInicio.ToString("C2");
+            lb_compras.Text = cInicio.ToString("C2");
             lb_saldo.Text = saldo.ToString("C2");
-            
-            lb_adiantamento.Text = descontoInicio.ToString("C2");
-            lb_credito.Text = credito.ToString("C2");
-
-            lb_TgastoCompra.Text = (cInicio - descontoInicio - credito).ToString("C2");           
+            lb_total.Text = cInicio.ToString("C2");
 
         }
 
@@ -162,8 +122,7 @@ namespace FerroVelho.Relatorios
             report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("dataFim", dt_fim.Text));
             report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("sInicio", lb_inicial.Text));
             report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("sEntrada", lb_entrada.Text));
-            report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("sSaida", lb_saida.Text));
-            report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("sGastoCompra", lb_gastoCompra.Text));
+            report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("sSaida", lb_compras.Text));
             report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("sSaldo", lb_saldo.Text));
             report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("empressa", DataContextFactory.nome));
             report.SetParameters(new Microsoft.Reporting.WinForms.ReportParameter("tel", DataContextFactory.tel));
@@ -221,28 +180,24 @@ namespace FerroVelho.Relatorios
             m_streams.Add(stream);
             return stream;
         }
-        
+
         public void Print()
         {
             if (m_streams == null || m_streams.Count == 0)
                 throw new Exception("Error: no stream to print.");
-            PrintDialog printDlg = new PrintDialog();
             PrintDocument printDoc = new PrintDocument();
 
-            if (printDlg.ShowDialog() == DialogResult.OK)
-            {
-                printDoc.PrinterSettings.PrinterName = printDlg.PrinterSettings.PrinterName;
+            printDoc.PrinterSettings.PrinterName = impressoraCorrente.nome_impressora;
 
-                if (!printDoc.PrinterSettings.IsValid)
-                {
-                    throw new Exception("Error: cannot find the default printer.");
-                }
-                else
-                {
-                    printDoc.PrintPage += new PrintPageEventHandler(PrintPage);
-                    m_currentPageIndex = 0;
-                    printDoc.Print();
-                }
+            if (!printDoc.PrinterSettings.IsValid)
+            {
+                throw new Exception("Error: cannot find the default printer.");
+            }
+            else
+            {
+                printDoc.PrintPage += new PrintPageEventHandler(PrintPage);
+                m_currentPageIndex = 0;
+                printDoc.Print();
             }
         }
 

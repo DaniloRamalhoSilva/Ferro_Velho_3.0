@@ -22,7 +22,6 @@ namespace FerroVelho.Relatorios
         {
             InitializeComponent();
         }
-        DateTime inicio, fim;
 
         private void fm_relVenda_Load(object sender, EventArgs e)
         {
@@ -47,14 +46,11 @@ namespace FerroVelho.Relatorios
 
         private void pesquisa()
         {
-            inicio = dt_inicio.Value;
-            fim = dt_fim.Value;
-
             comando = "SELECT tb_itemv.id_prod, tb_produtos.desc_prod, sum(tb_itemv.quant_item) As Peso, sum(tb_itemv.subTot_item) As Total " +
                 "FROM tb_itemv " +
                 "INNER JOIN tb_produtos ON tb_itemv.id_prod = tb_produtos.id_prod " +
                 "INNER JOIN tb_venda ON tb_itemv.id_venda = tb_venda.id_venda  " +
-                "WHERE tb_venda.data_venda between '" + inicio.Date.Add(new TimeSpan(00, 00, 00)) + "' and '" + fim.Date.Add(new TimeSpan(23, 59, 59)) +
+                "WHERE tb_venda.data_venda between '" + dt_inicio.Value + "' and '" + dt_fim.Value +
                 "' GROUP BY tb_itemv.id_prod, tb_produtos.desc_prod";
             DataTable dt = DataContextFactory.Filtrar(comando);
             dataGridView1.DataSource = dt;
@@ -65,7 +61,7 @@ namespace FerroVelho.Relatorios
             comand.CommandText = "SELECT sum(tb_itemv.subTot_item) as total " +
                 "FROM tb_itemv " +
                 "INNER JOIN tb_venda ON tb_itemv.id_venda = tb_venda.id_venda " +
-                "WHERE tb_venda.data_venda between '" + inicio.Date.Add(new TimeSpan(00, 00, 00)) + "' and '" + fim.Date.Add(new TimeSpan(23, 59, 59)) + "'";
+                "WHERE tb_venda.data_venda between '" + dt_inicio.Value + "' and '" + dt_fim.Value + "'";
             decimal cInicio = DataContextFactory.FiltrarValor(comand);
 
             lb_total.Text = cInicio.ToString("C2");
@@ -133,23 +129,19 @@ namespace FerroVelho.Relatorios
         {
             if (m_streams == null || m_streams.Count == 0)
                 throw new Exception("Error: no stream to print.");
-            PrintDialog printDlg = new PrintDialog();
             PrintDocument printDoc = new PrintDocument();
 
-            if (printDlg.ShowDialog() == DialogResult.OK)
-            {
-                printDoc.PrinterSettings.PrinterName = printDlg.PrinterSettings.PrinterName;
+            printDoc.PrinterSettings.PrinterName = impressoraCorrente.nome_impressora;
 
-                if (!printDoc.PrinterSettings.IsValid)
-                {
-                    throw new Exception("Error: cannot find the default printer.");
-                }
-                else
-                {
-                    printDoc.PrintPage += new PrintPageEventHandler(PrintPage);
-                    m_currentPageIndex = 0;
-                    printDoc.Print();
-                }
+            if (!printDoc.PrinterSettings.IsValid)
+            {
+                throw new Exception("Error: cannot find the default printer.");
+            }
+            else
+            {
+                printDoc.PrintPage += new PrintPageEventHandler(PrintPage);
+                m_currentPageIndex = 0;
+                printDoc.Print();
             }
         }
 

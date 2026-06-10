@@ -435,7 +435,6 @@
                     <Value>=Parameters!dataInicio.Value</Value>
                     <Style>
                       <FontSize>9pt</FontSize>
-                      <Format>dd/MM/yyyy</Format>
                     </Style>
                   </TextRun>
                   <TextRun>
@@ -448,7 +447,6 @@
                     <Value>=Parameters!dataFim.Value</Value>
                     <Style>
                       <FontSize>9pt</FontSize>
-                      <Format>dd/MM/yyyy</Format>
                     </Style>
                   </TextRun>
                 </TextRuns>
