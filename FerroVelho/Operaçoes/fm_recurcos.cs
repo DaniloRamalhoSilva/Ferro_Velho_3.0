@@ -1,5 +1,4 @@
-﻿using FerroVelho.Classes;
-using FerroVelhoDAO;
+﻿using FerroVelhoDAO;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,6 +21,14 @@ namespace FerroVelho
 
         int guia = 0;
 
+        public tb_caixa saldoCorrente
+        {
+            get
+            {
+                return (tb_caixa)this.tb_caixaBindingSource.Current;
+            }
+        }
+
         private void fm_recurcos_Load(object sender, EventArgs e)
         {
             bt_continuar.Visible = false;
@@ -30,8 +37,29 @@ namespace FerroVelho
 
         public void atualizar()
         {
-            decimal saldo = Caixa.GetSaldo();
+            decimal saldo = calcular();
             lb_saldo.Text = saldo.ToString("N2");
+        }
+
+        public decimal calcular()
+        {
+            decimal totalSaida, totalEntrada, desconto, saldo, credito;            
+
+            try { totalSaida = Convert.ToDecimal(DataContextFactory.DataContext.tb_itemc.Sum(x => x.subTot_item)); }
+            catch { totalSaida = 0; };
+
+            try { totalEntrada = Convert.ToDecimal(DataContextFactory.DataContext.tb_caixa.Sum(x => x.valor_caixa)); }
+            catch { totalEntrada = 0; };
+
+            try { desconto = Convert.ToDecimal(DataContextFactory.DataContext.tb_compra.Sum(x => x.desconto_compra)); }
+            catch { desconto = 0; };
+
+            try { credito = Convert.ToDecimal(DataContextFactory.DataContext.tb_compra.Sum(x => x.subtot_compra - x.desconto_compra - x.valor_nota)); }
+            catch { credito = 0; };
+
+            saldo = totalEntrada - totalSaida + desconto + credito;
+
+            return saldo;
         }
 
         private void txt_valRecur_Leave(object sender, EventArgs e)
@@ -147,6 +175,8 @@ namespace FerroVelho
 
             MessageBox.Show(texto);
         }
+
+
 
 
         private void txt_valRecur_KeyPress(object sender, KeyPressEventArgs e)
