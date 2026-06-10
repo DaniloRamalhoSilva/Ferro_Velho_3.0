@@ -157,6 +157,12 @@ namespace FerroVelho
             fm.ShowDialog();
         }
 
+        private void financeiroToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            fm_relLucro fm = new fm_relLucro();
+            fm.ShowDialog();
+        }
+
         private void bt_calculadora_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("calc");

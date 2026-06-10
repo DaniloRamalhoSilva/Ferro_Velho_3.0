@@ -61,6 +61,7 @@
             this.movimentaçãoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.compraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.vendaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.financeiroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.comfiguraçoesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.impressorasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cabeçalhoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -265,7 +266,8 @@
             this.produtosToolStripMenuItem,
             this.estoqueToolStripMenuItem,
             this.saldoCaixaToolStripMenuItem,
-            this.movimentaçãoToolStripMenuItem});
+            this.movimentaçãoToolStripMenuItem,
+            this.financeiroToolStripMenuItem});
             this.relatorioToolStripMenuItem.Name = "relatorioToolStripMenuItem";
             this.relatorioToolStripMenuItem.Size = new System.Drawing.Size(66, 20);
             this.relatorioToolStripMenuItem.Text = "Relatorio";
@@ -313,6 +315,13 @@
             this.vendaToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
             this.vendaToolStripMenuItem.Text = "Venda";
             this.vendaToolStripMenuItem.Click += new System.EventHandler(this.vendaToolStripMenuItem_Click);
+            // 
+            // financeiroToolStripMenuItem
+            // 
+            this.financeiroToolStripMenuItem.Name = "financeiroToolStripMenuItem";
+            this.financeiroToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.financeiroToolStripMenuItem.Text = "Financeiro";
+            this.financeiroToolStripMenuItem.Click += new System.EventHandler(this.financeiroToolStripMenuItem_Click);
             // 
             // comfiguraçoesToolStripMenuItem
             // 
@@ -910,6 +919,7 @@
         private System.Windows.Forms.ToolStripMenuItem movimentaçãoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem compraToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem vendaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem financeiroToolStripMenuItem;
         private System.Windows.Forms.BindingSource tbitemcBindingSource;
         private System.Windows.Forms.BindingSource tb_produtosBindingSource;
         private System.Windows.Forms.BindingSource tb_compraBindingSource;

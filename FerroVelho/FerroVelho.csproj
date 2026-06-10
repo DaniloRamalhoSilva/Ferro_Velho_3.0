@@ -222,6 +222,18 @@
     <Compile Include="Relatorios\fm_relFluxoCaixa.Designer.cs">
       <DependentUpon>fm_relFluxoCaixa.cs</DependentUpon>
     </Compile>
+    <Compile Include="Relatorios\fm_impFinanceiro.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Relatorios\fm_impFinanceiro.Designer.cs">
+      <DependentUpon>fm_impFinanceiro.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Relatorios\fm_relLucro.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Relatorios\fm_relLucro.Designer.cs">
+      <DependentUpon>fm_relLucro.cs</DependentUpon>
+    </Compile>
     <Compile Include="Relatorios\fm_relProduto.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -298,6 +310,12 @@
     <EmbeddedResource Include="Relatorios\fm_relFluxoCaixa.resx">
       <DependentUpon>fm_relFluxoCaixa.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Relatorios\fm_impFinanceiro.resx">
+      <DependentUpon>fm_impFinanceiro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Relatorios\fm_relLucro.resx">
+      <DependentUpon>fm_relLucro.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Relatorios\fm_relProduto.resx">
       <DependentUpon>fm_relProduto.cs</DependentUpon>
     </EmbeddedResource>
@@ -325,6 +343,9 @@
     <EmbeddedResource Include="rel_venda.rdlc">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="rel_financeiroSimp.rdlc" />
+    <EmbeddedResource Include="rel_FinanceiroDetaA4.rdlc" />
+    <EmbeddedResource Include="rel_FinanceiroSimpA4.rdlc" />
     <EmbeddedResource Include="Report3.rdlc" />
     <None Include="bd_ferroVelhoDataSet.xsc">
       <DependentUpon>bd_ferroVelhoDataSet.xsd</DependentUpon>
